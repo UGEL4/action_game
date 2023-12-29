@@ -1,0 +1,68 @@
+BasedOnStyle: Microsoft
+Language: CSharp
+UseTab: Never
+TabWidth: 4
+AccessModifierOffset: -4
+IndentWidth: 4
+ObjCBlockIndentWidth: 4
+ContinuationIndentWidth: 0
+MaxEmptyLinesToKeep: 1
+
+NamespaceIndentation: All
+
+AllowShortIfStatementsOnASingleLine: true
+AllowShortBlocksOnASingleLine: true
+
+AlignTrailingComments: true
+SpacesBeforeTrailingComments: 1
+SpacesInSquareBrackets: false
+IndentCaseLabels: true
+SpaceBeforeAssignmentOperators: true
+#AlignAfterOpenBracket: true
+BreakConstructorInitializersBeforeComma: true
+SpaceAfterCStyleCast: false
+SpaceBeforeParens: ControlStatements
+SpaceBeforeRangeBasedForLoopColon: true
+SpaceInEmptyParentheses: false
+#BreakBeforeBraces: Allman
+
+ColumnLimit: 0
+PointerAlignment: Left
+AllowAllParametersOfDeclarationOnNextLine: true
+AlignEscapedNewlinesLeft: true
+AllowAllArgumentsOnNextLine: true
+
+BreakBeforeBinaryOperators: None
+BreakBeforeTernaryOperators: false
+AlignOperands: Align
+
+BinPackArguments: true
+BinPackParameters: true
+AlignAfterOpenBracket: Align 
+IndentPPDirectives: BeforeHash
+
+BreakBeforeBraces: Custom
+BraceWrapping:
+  AfterCaseLabel: true
+  AfterClass: true
+  AfterStruct: true
+  AfterEnum: true
+  AfterNamespace: true
+  AfterUnion: true
+  AfterFunction: true
+  BeforeElse: true
+  IndentBraces: false
+  AfterExternBlock: false
+  AfterControlStatement: true
+Cpp11BracedListStyle: false
+
+AlignConsecutiveAssignments: Consecutive
+
+FixNamespaceComments: true
+
+
+AttributeMacros : ["DUAL_UNLIKELY", "DUAL_FORCEINLINE", "FORCEINLINE"]
+WhitespaceSensitiveMacros : ["sattr", "spush_attr"]
+ForEachMacros : ["forloop"]
+
+SortIncludes: false
