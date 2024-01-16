@@ -12,5 +12,5 @@ public class CharacterAction
     public int mOrder;
     //下一个自然动作
     public CharacterAction mNextAction;
-    public List<ActionFrame> mActionFrames;
+    //public List<ActionFrame> mActionFrames;
 }
