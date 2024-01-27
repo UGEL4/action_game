@@ -30,7 +30,7 @@ public class PlayerController : MonoBehaviour
 
     void Update()
     {
-        HandleMovement();
+        //HandleMovement();
     }
 
     void HandleMovement()
@@ -40,7 +40,7 @@ public class PlayerController : MonoBehaviour
         if (adjDir.magnitude > 0.0f)
         {
             var targetRot = Quaternion.LookRotation(adjDir);
-            transform.rotation = Quaternion.RotateTowards(transform.rotation, targetRot, 2.0f * Time.deltaTime);
+            //transform.rotation = Quaternion.RotateTowards(transform.rotation, targetRot, 2.0f * Time.deltaTime);
             transform.LookAt(transform.position + adjDir);
             HandleRotation();
 
@@ -59,10 +59,32 @@ public class PlayerController : MonoBehaviour
         mCurMoveDir.z = xy.y;
         mCurMoveDir.y = 0.0f;
         mCurMoveDir.Normalize();
+
+        //
+        ProduceInputDir();
     }
 
     public bool IsMoving()
     {
         return mCurMoveDir.x != 0.0f || mCurMoveDir.z != 0.0f;
+    }
+
+    public Vector3 GetCameraForward()
+    {
+        var adjDir  = Quaternion.AngleAxis(mainCamera.eulerAngles.y, Vector3.up) * mCurMoveDir;
+        //return mainCamera.forward;
+        return adjDir;
+    }
+
+    void ProduceInputDir()
+    {
+        var adjDir  = Quaternion.AngleAxis(mainCamera.eulerAngles.y, Vector3.up) * mCurMoveDir;
+        var forward = transform.forward;
+        var right   = transform.right;
+        float dotF = Vector3.Dot(adjDir, forward);
+        float dotR = Vector3.Dot(adjDir, right);
+        Debug.Log("ProduceInputDir:");
+        Debug.Log(dotF);
+        Debug.Log(dotR);
     }
 }

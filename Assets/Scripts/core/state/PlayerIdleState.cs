@@ -9,7 +9,7 @@ public class PlayerIdleState : BaseState<PlayerFSM.PlayerState>
     }
     public override void Enter(FSM<PlayerFSM.PlayerState> fsm)
     {
-        Debug.Log("PlayerIdleState.Enter");
+        //Debug.Log("PlayerIdleState.Enter");
         //mOwner.animator?.SetFloat("Speed", 0.0f);
         mOwner.animator?.CrossFade("idle", 0.1f);
     }
@@ -19,7 +19,7 @@ public class PlayerIdleState : BaseState<PlayerFSM.PlayerState>
     }
     public override void Exit(FSM<PlayerFSM.PlayerState> fsm)
     {
-        Debug.Log("PlayerIdleState.Exit");
+        //Debug.Log("PlayerIdleState.Exit");
     }
 
     public override PlayerFSM.PlayerState GetNextState()

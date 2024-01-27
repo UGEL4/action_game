@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 public class ActionController : MonoBehaviour
 {
-    private List<CharacterAction> AllActions {get; set;} = new List<CharacterAction>();
+    public List<CharacterAction> AllActions {get; set;} = new List<CharacterAction>();
     private List<CharacterAction> _oraderedActions = new List<CharacterAction>();
     public Animator animator;
     private CharacterAction CurAction;

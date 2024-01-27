@@ -9,7 +9,7 @@ public class PlayerWalkState : BaseState<PlayerFSM.PlayerState>
     }
     public override void Enter(FSM<PlayerFSM.PlayerState> fsm)
     {
-        Debug.Log("PlayerWalkState.Enter");
+        //Debug.Log("PlayerWalkState.Enter");
         //mOwner.animator?.SetFloat("Speed", 1.0f);
         mOwner.animator?.CrossFade("walking", 0.9f);
     }
@@ -19,7 +19,7 @@ public class PlayerWalkState : BaseState<PlayerFSM.PlayerState>
     }
     public override void Exit(FSM<PlayerFSM.PlayerState> fsm)
     {
-        Debug.Log("PlayerWalkState.Exit");
+        //Debug.Log("PlayerWalkState.Exit");
     }
 
     public override PlayerFSM.PlayerState GetNextState()
