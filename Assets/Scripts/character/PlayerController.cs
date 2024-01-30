@@ -1,5 +1,7 @@
+using System;
 using Cinemachine;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class PlayerController : MonoBehaviour
 {
@@ -11,6 +13,8 @@ public class PlayerController : MonoBehaviour
     private Vector3 mCurMoveDir = new Vector3();
 
     Transform mainCamera;
+
+    private Character owner;
     void Awake()
     {
         controller  = GetComponent<CharacterController>();
@@ -78,13 +82,50 @@ public class PlayerController : MonoBehaviour
 
     void ProduceInputDir()
     {
-        var adjDir  = Quaternion.AngleAxis(mainCamera.eulerAngles.y, Vector3.up) * mCurMoveDir;
-        var forward = transform.forward;
-        var right   = transform.right;
-        float dotF = Vector3.Dot(adjDir, forward);
-        float dotR = Vector3.Dot(adjDir, right);
-        Debug.Log("ProduceInputDir:");
-        Debug.Log(dotF);
-        Debug.Log(dotR);
+        if (owner == null) return;
+        Vector3 inputDir  = CameraRelativeFlatten(mCurMoveDir, Vector3.up);
+        float dotF        = Vector3.Dot(inputDir, transform.forward);
+        float dotR        = Vector3.Dot(inputDir, transform.right);
+        float invalidArea = 0.2f;
+        bool xHasInput    = Mathf.Abs(dotR) >= invalidArea;
+        bool yHasInput    = Mathf.Abs(dotF) >= invalidArea;
+        if (yHasInput)
+        {
+            if (dotF > 0.0f)
+            {
+                owner.AddInputCommand(KeyMap.Forward);
+            }
+            else
+            {
+                owner.AddInputCommand(KeyMap.Back);
+            }
+        }
+        if (xHasInput)
+        {
+            if (dotR > 0.0f)
+            {
+                owner.AddInputCommand(KeyMap.Right);
+            }
+            else
+            {
+                owner.AddInputCommand(KeyMap.Left);
+            }
+        }
+        if (!xHasInput && !yHasInput) owner.AddInputCommand(KeyMap.NoDir);
+    }
+
+    Vector3 CameraRelativeFlatten(Vector3 input, Vector3 localUp)
+    {
+        // The first part creates a rotation looking into the ground, with
+        // "up" matching the camera's look direction as closely as it can.
+        // The second part rotates this 90 degrees, so "forward" input matches
+        // the camera's look direction as closely as it can in the horizontal plane.
+        Quaternion flatten = Quaternion.LookRotation(
+                             -localUp,
+                             mainCamera.forward) *
+                             Quaternion.Euler(Vector3.right * -90f);
+
+        // Now we rotate our input vector into this frame of reference
+        return flatten * input;
     }
 }

@@ -16,17 +16,14 @@ public class InputToCommand : MonoBehaviour
 
     void Start()
     {
-        if (Input != null)
-        {
-            Input.Move += OnAxisInput;
-        }
+
     }
 
     void Update()
     {
         float dt = Time.deltaTime;
         int index = 0;
-        /* while (index < mInputList.Count)
+        while (index < mInputList.Count)
         {
             if (mCurrTimeStamp - mInputList[index].timeStamp > RecordKeepTime)
             {
@@ -36,62 +33,38 @@ public class InputToCommand : MonoBehaviour
             {
                 index++;
             }
-        } */
+        }
 
         //mNewInputList.Clear();
 
         mCurrTimeStamp += dt;
     }
 
-    void OnAxisInput(Vector2 value)
+    public void AddInput(KeyMap key)
     {
-        float deadArea = 0.2f;
-        bool xHasInput = Mathf.Abs(value.x) >= deadArea;
-        bool yHasInput = Mathf.Abs(value.y) >= deadArea;
-        if (xHasInput || yHasInput)
-        {
-            AddDirInput(value);
-        }
-    }
-
-    void AddInput(KeyMap key, Vector2 dir)
-    {
-        KeyRecord keyRecord = new KeyRecord(key, mCurrTimeStamp, dir);
+        KeyRecord keyRecord = new KeyRecord(key, mCurrTimeStamp);
         mInputList.Add(keyRecord);
     }
 
-    void AddDirInput(Vector2 value)
+    public bool ActionOccur(ActionCommand actionCmd)
     {
-        Vector3 ownerForward = Owner.GetForward();
-        Vector3 ownerRight   = Owner.GetRight();
-        Vector3 cameraForward = Owner.GetCameraForward();
-        Debug.Log("朝向");
-        Debug.Log(ownerForward);
-        Debug.Log(ownerRight);
-        Debug.Log(cameraForward);
-        Vector3 tmpDir       = new Vector3(value.x, 0.0f, value.y);
-        float dotF           = Vector3.Dot(tmpDir, ownerForward);
-        float dotR           = Vector3.Dot(tmpDir, ownerRight);
-        Debug.Log("输入");
-        Debug.Log(value);
-        Debug.Log(dotR);
-        Debug.Log(dotR);
-        if (dotF > 0.0f)
+        double lastStamp = mCurrTimeStamp - Math.Max(actionCmd.validInSecond, Time.deltaTime);
+        for (int i = 0; i < actionCmd.keySequences.Length; i++)
         {
-            AddInput(KeyMap.Forward, value);
+            bool found = false;
+            for (int j = 0; j < mInputList.Count; j++)
+            {
+                if (mInputList[j].timeStamp >= lastStamp && mInputList[j].key == actionCmd.keySequences[i])
+                {
+                    found = true;
+                    lastStamp = mInputList[j].timeStamp;
+                    break;
+                }
+            }
+            if (found) continue;
+            return false;
         }
-        else
-        {
-            AddInput(KeyMap.Back, value);
-        }
-        if (dotR > 0.0f)
-        {
-            AddInput(KeyMap.Right, value);
-        }
-        else
-        {
-            AddInput(KeyMap.Left, value);
-        }
+        return true;
     }
 }
 
@@ -110,11 +83,9 @@ public struct KeyRecord
 {
     public double timeStamp;
     public KeyMap key;
-    public Vector2 dir;
-    public KeyRecord(KeyMap key, double timeStamp, Vector2 dir)
+    public KeyRecord(KeyMap key, double timeStamp)
     {
         this.key       = key;
         this.timeStamp = timeStamp;
-        this.dir       = dir;
     }
 }

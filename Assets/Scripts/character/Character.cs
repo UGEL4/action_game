@@ -115,4 +115,9 @@ public class Character : MonoBehaviour
     {
         return controller.GetCameraForward();
     }
+
+    public void AddInputCommand(KeyMap key)
+    {
+        inputToCommand?.AddInput(key);
+    }
 }

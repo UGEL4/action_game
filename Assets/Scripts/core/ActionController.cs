@@ -13,7 +13,15 @@ public class ActionController : MonoBehaviour
     {
         foreach (CharacterAction ac in AllActions)
         {
-            
+            if (CanActionCancelCurrentAction(ac))
+            {
+                
+            }
         }
+    }
+
+    bool CanActionCancelCurrentAction(CharacterAction actionInfo)
+    {
+        return false;
     }
 }
