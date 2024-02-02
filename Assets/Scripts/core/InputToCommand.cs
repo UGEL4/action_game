@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
-public class InputToCommand : MonoBehaviour
+public class InputToCommand
 {
     private List<KeyRecord> mInputList = new List<KeyRecord>();
     private List<KeyRecord> mNewInputList = new List<KeyRecord>();
@@ -10,16 +10,14 @@ public class InputToCommand : MonoBehaviour
     /// 保持一个按键的存在时间最多这么多秒，太早的就释放掉了
     /// </summary>
     private const float RecordKeepTime = 1.2f;
+    private Character mOwner;
 
-    [SerializeField] InputReader Input;
-    public Character Owner { set; private get; }
-
-    void Start()
+    public InputToCommand(Character owner)
     {
-
+        mOwner = owner;
     }
 
-    void Update()
+    public void Tick()
     {
         float dt = Time.deltaTime;
         int index = 0;
@@ -28,6 +26,7 @@ public class InputToCommand : MonoBehaviour
             if (mCurrTimeStamp - mInputList[index].timeStamp > RecordKeepTime)
             {
                 mInputList.RemoveAt(index);
+                //Debug.Log("RemoveAt: " + mInputList.Count);
             }
             else
             {
@@ -44,6 +43,7 @@ public class InputToCommand : MonoBehaviour
     {
         KeyRecord keyRecord = new KeyRecord(key, mCurrTimeStamp);
         mInputList.Add(keyRecord);
+        //Debug.Log("AddInput: " + mCurrTimeStamp);
     }
 
     public bool ActionOccur(ActionCommand actionCmd)
@@ -54,6 +54,8 @@ public class InputToCommand : MonoBehaviour
             bool found = false;
             for (int j = 0; j < mInputList.Count; j++)
             {
+                //Debug.Log("ActionOccur: " + mInputList[j].timeStamp + ", " + lastStamp + ", " + actionCmd.validInSecond);
+                //Debug.Log("ActionOccur: " + mInputList.Count);
                 if (mInputList[j].timeStamp >= lastStamp && mInputList[j].key == actionCmd.keySequences[i])
                 {
                     found = true;
@@ -76,7 +78,8 @@ public enum KeyMap
     Back,
     Forward,
     Left,
-    Right
+    Right,
+    DirInput,
 }
 
 public struct KeyRecord

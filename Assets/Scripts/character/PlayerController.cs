@@ -10,11 +10,13 @@ public class PlayerController : MonoBehaviour
     [SerializeField] InputReader input;
     // Start is called before the first frame update
 
+    //方向输入
     private Vector3 mCurMoveDir = new Vector3();
+    private InputActionPhase mDirInputPhase = InputActionPhase.Disabled;
 
-    Transform mainCamera;
+    private Transform mainCamera;
 
-    private Character owner;
+    [SerializeField] Character owner;
     void Awake()
     {
         controller  = GetComponent<CharacterController>();
@@ -22,9 +24,6 @@ public class PlayerController : MonoBehaviour
         //freeLookCam.Follow = transform;
         //freeLookCam.LookAt = transform;
         //freeLookCam.OnTargetObjectWarped(transform, transform.position - freeLookCam.transform.position - Vector3.forward);
-
-        //input
-        InitializeInput();
     }
 
     void InitializeInput()
@@ -32,9 +31,22 @@ public class PlayerController : MonoBehaviour
         input.Move += OnMove;
     }
 
+    void Start()
+    {
+        InitializeInput();
+    }
+
     void Update()
     {
-        //HandleMovement();
+        if (mDirInputPhase == InputActionPhase.Performed)
+        {
+            owner.AddInputCommand(KeyMap.DirInput);
+        }
+    }
+
+    void OnDestroy()
+    {
+        input.Move -= OnMove;
     }
 
     void HandleMovement()
@@ -57,8 +69,9 @@ public class PlayerController : MonoBehaviour
         
     }
 
-    void OnMove(Vector2 xy)
+    void OnMove(Vector2 xy, InputActionPhase phase)
     {
+        mDirInputPhase = phase;
         mCurMoveDir.x = xy.x;
         mCurMoveDir.z = xy.y;
         mCurMoveDir.y = 0.0f;
@@ -66,6 +79,7 @@ public class PlayerController : MonoBehaviour
 
         //
         ProduceInputDir();
+        Log.SimpleLog.Info("OnMove: ", xy, phase);
     }
 
     public bool IsMoving()
@@ -82,6 +96,7 @@ public class PlayerController : MonoBehaviour
 
     void ProduceInputDir()
     {
+        //Debug.Log("ProduceInputDir");
         if (owner == null) return;
         Vector3 inputDir  = CameraRelativeFlatten(mCurMoveDir, Vector3.up);
         float dotF        = Vector3.Dot(inputDir, transform.forward);
@@ -89,7 +104,7 @@ public class PlayerController : MonoBehaviour
         float invalidArea = 0.2f;
         bool xHasInput    = Mathf.Abs(dotR) >= invalidArea;
         bool yHasInput    = Mathf.Abs(dotF) >= invalidArea;
-        if (yHasInput)
+        /* if (yHasInput)
         {
             if (dotF > 0.0f)
             {
@@ -110,8 +125,15 @@ public class PlayerController : MonoBehaviour
             {
                 owner.AddInputCommand(KeyMap.Left);
             }
+        } */
+        if (!xHasInput && !yHasInput)
+        {
+            owner.AddInputCommand(KeyMap.NoDir);
         }
-        if (!xHasInput && !yHasInput) owner.AddInputCommand(KeyMap.NoDir);
+        else
+        {
+            owner.AddInputCommand(KeyMap.DirInput);
+        }
     }
 
     Vector3 CameraRelativeFlatten(Vector3 input, Vector3 localUp)

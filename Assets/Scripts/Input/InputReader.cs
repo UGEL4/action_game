@@ -3,12 +3,13 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.InputSystem;
+using UnityEngine.InputSystem.Interactions;
 using static PlayerInput;
 
 [CreateAssetMenu(fileName = "InputReader", menuName = "Input/InputReader")]
 public class InputReader : ScriptableObject, IPlayerActions
 {
-    public UnityAction<Vector2> Move = delegate {};
+    public UnityAction<Vector2, InputActionPhase> Move = delegate {};
     public UnityAction<Vector2> Look = delegate {};
 
     PlayerInput input;
@@ -16,7 +17,7 @@ public class InputReader : ScriptableObject, IPlayerActions
 
     public void OnMove(InputAction.CallbackContext context)
     {
-        Move.Invoke(context.ReadValue<Vector2>());
+        Move.Invoke(context.ReadValue<Vector2>(), context.phase);
     }
     public void OnLook(InputAction.CallbackContext context)
     {
