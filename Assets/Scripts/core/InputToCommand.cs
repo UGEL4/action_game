@@ -26,7 +26,6 @@ public class InputToCommand
             if (mCurrTimeStamp - mInputList[index].timeStamp > RecordKeepTime)
             {
                 mInputList.RemoveAt(index);
-                //Debug.Log("RemoveAt: " + mInputList.Count);
             }
             else
             {
@@ -43,7 +42,6 @@ public class InputToCommand
     {
         KeyRecord keyRecord = new KeyRecord(key, mCurrTimeStamp);
         mInputList.Add(keyRecord);
-        //Debug.Log("AddInput: " + mCurrTimeStamp);
     }
 
     public bool ActionOccur(ActionCommand actionCmd)
@@ -54,8 +52,6 @@ public class InputToCommand
             bool found = false;
             for (int j = 0; j < mInputList.Count; j++)
             {
-                //Debug.Log("ActionOccur: " + mInputList[j].timeStamp + ", " + lastStamp + ", " + actionCmd.validInSecond);
-                //Debug.Log("ActionOccur: " + mInputList.Count);
                 if (mInputList[j].timeStamp >= lastStamp && mInputList[j].key == actionCmd.keySequences[i])
                 {
                     found = true;

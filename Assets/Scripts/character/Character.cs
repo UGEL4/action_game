@@ -45,10 +45,11 @@ public class Character : MonoBehaviour
             idleAction.mPriority          = 100;
             idleAction.mAutoNextActionName = "Idle";
             idleAction.keepPlayingAnim = true;
+            idleAction.mAutoTerminate  = false;
             {
                 BeCanceledTag bct                = new BeCanceledTag();
                 bct.cancelTag                    = new string[1] {"InitAction"};
-                bct.priority                     = 1;
+                bct.priority                     = 0;
                 idleAction.mBeCanceledTagList    = new BeCanceledTag[1];
                 idleAction.mBeCanceledTagList[0] = bct;
                 idleAction.mCancelTagList = new CancelTag[1];
@@ -60,10 +61,11 @@ public class Character : MonoBehaviour
             walkAction.mPriority       = 100;
             walkAction.mAutoNextActionName = "Idle";
             walkAction.keepPlayingAnim = true;
+            walkAction.mAutoTerminate = true;
             {
                 CancelTag ct                 = new CancelTag();
                 ct.tag                       = "InitAction";
-                ct.priority                  = 1;
+                ct.priority                  = 0;
                 walkAction.mCancelTagList    = new CancelTag[1];
                 walkAction.mCancelTagList[0] = ct;
 

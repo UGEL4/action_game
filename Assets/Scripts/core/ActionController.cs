@@ -52,14 +52,13 @@ public class ActionController
         {
             if (CanActionCancelCurrentAction(ac, _pec, true, out CancelTag foundTag, out BeCanceledTag beCanceledTag))
             {
-                //Debug.Log("CanActionCancelCurrentAction:" + CurAction.mActionName + ", " + ac.mActionName);
+                //Log.SimpleLog.Info("CanActionCancelCurrentAction:", CurAction.mActionName, ac.mActionName);
                 preorderActionList.Add(new PreorderActionInfo(ac.mActionName, ac.mPriority + foundTag.priority + beCanceledTag.priority));
             }
         }
         //if (preorderActionList.Count == 0 ||)
-        if (preorderActionList.Count == 0 && _pec >= 1)
+        if (preorderActionList.Count == 0 && (_pec >= 1 || CurAction.mAutoTerminate))
         {
-            //Debug.Log("preorderActionList:" + CurAction.mActionName + ", " + CurAction.mAutoNextActionName + ", " + preorderActionList.Count);
             preorderActionList.Add(new PreorderActionInfo(CurAction.mAutoNextActionName));
         }
 
@@ -68,12 +67,10 @@ public class ActionController
             preorderActionList.Sort((action1, action2) => action1.Priority > action2.Priority ? -1 : 1);
             if (preorderActionList[0].ActionId == CurAction.mActionName && CurAction.keepPlayingAnim)
             {
-                //Debug.Log("KeepAction:" + preorderActionList[0].ActionId);
                 KeepAction(_pec);
             }
             else
             {
-                Debug.Log("ChangeAction:" + preorderActionList[0].ActionId);
                 ChangeAction(preorderActionList[0].ActionId);
             }
         }

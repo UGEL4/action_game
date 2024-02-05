@@ -1,17 +1,19 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Text;
 using UnityEngine;
 
 namespace Log
 {
     public class SimpleLog
     {
-        public static void Log(params object[] messages)
+        public static void Log(string level, params object[] messages)
         {
-            string str = string.Empty;
+            StringBuilder str = new StringBuilder(level);
             foreach (var m in messages)
             {
-                str += m.ToString() + " ";
+                str.Append(m.ToString());
+                str.Append(" ");
             }
             Debug.Log(str);
         }

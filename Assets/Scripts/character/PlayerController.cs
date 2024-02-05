@@ -79,7 +79,6 @@ public class PlayerController : MonoBehaviour
 
         //
         ProduceInputDir();
-        Log.SimpleLog.Info("OnMove: ", xy, phase);
     }
 
     public bool IsMoving()
@@ -96,7 +95,6 @@ public class PlayerController : MonoBehaviour
 
     void ProduceInputDir()
     {
-        //Debug.Log("ProduceInputDir");
         if (owner == null) return;
         Vector3 inputDir  = CameraRelativeFlatten(mCurMoveDir, Vector3.up);
         float dotF        = Vector3.Dot(inputDir, transform.forward);

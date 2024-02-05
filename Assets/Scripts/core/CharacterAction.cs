@@ -12,6 +12,7 @@ public class CharacterAction
     public int mPriority;
     //下一个自然动作
     public string mAutoNextActionName;
+    public bool mAutoTerminate;
     //public List<ActionFrame> mActionFrames;
     public bool keepPlayingAnim;
 
