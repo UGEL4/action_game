@@ -11,12 +11,15 @@ public class PlayerController : MonoBehaviour
     // Start is called before the first frame update
 
     //方向输入
-    private Vector3 mCurMoveDir = new Vector3();
+    public Vector3 mCurMoveDir  = new Vector3();
     private InputActionPhase mDirInputPhase = InputActionPhase.Disabled;
 
     private Transform mainCamera;
 
     [SerializeField] Character owner;
+
+    public Vector3 CurrMoveDir => mCurMoveDir;
+
     void Awake()
     {
         controller  = GetComponent<CharacterController>();

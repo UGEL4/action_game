@@ -57,7 +57,7 @@ public class Character : MonoBehaviour
             actions.Add(idleAction);
             CharacterAction walkAction = new CharacterAction();
             walkAction.mActionName     = "Walk";
-            walkAction.mAnimation      = "Walk_60fps";
+            walkAction.mAnimation      = "Run_60fps";
             walkAction.mPriority       = 100;
             walkAction.mAutoNextActionName = "Idle";
             walkAction.keepPlayingAnim = true;
