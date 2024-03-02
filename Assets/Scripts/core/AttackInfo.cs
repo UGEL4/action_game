@@ -1,8 +1,24 @@
-public class AttackInfo
+using System;
+
+[Serializable]
+public struct AttackInfo
 {
-    //攻击能打中同一个对象的次数
-    private int mCanHitSameTarget = 0;
-    private int mAttackPhase = 0;
+    public int attackPhase;
     //攻击倍数
-    private float mAttack = 0.0f;
+    public float attackPower;
+    //攻击能打中同一个对象的次数
+    public int canHitSameTarget;
+    public float hitSameTargetDelay;
+    public float hitStun;
+
+    //攻击的推力
+    public MoveInfo pushPower;
+
+    //卡帧
+    public float freeze;
+
+    public ActionChangeInfo selfActionChangeInfo;
+    public ActionChangeInfo targetActionChangeInfo;
+
+    public string[] tmpBeCancelledTagTurnOn;
 }

@@ -76,6 +76,10 @@ public enum KeyMap
     Left,
     Right,
     DirInput,
+    ButtonX,
+    ButtonY,
+    ButtonA,
+    ButtonB,
 }
 
 public struct KeyRecord

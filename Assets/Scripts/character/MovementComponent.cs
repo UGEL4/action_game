@@ -6,6 +6,7 @@ public class MovementComponent : MonoBehaviour
 {
     [SerializeField] PlayerController playerController;
     [SerializeField] CharacterController controller;
+    [SerializeField] Character owner;
     public float speed = 10;
 
     // Update is called once per frame
@@ -21,6 +22,8 @@ public class MovementComponent : MonoBehaviour
 
     void HandleMovement()
     {
+        float MoveInputAcceptance = owner.GetMoveInputAcceptance();
+        if (MoveInputAcceptance <= 0.0) return;
         //var moveDir = new Vector3(input.Direction.x, 0.0f, input.Direction.y).normalized;
         var adjDir  = Quaternion.AngleAxis(mCameraTransform.eulerAngles.y, Vector3.up) * playerController.CurrMoveDir;
         if (adjDir.magnitude > 0.0f)
@@ -30,7 +33,7 @@ public class MovementComponent : MonoBehaviour
             transform.LookAt(transform.position + adjDir);
             //HandleRotation();
 
-            Vector3 moveDir = adjDir * speed * Time.deltaTime;
+            Vector3 moveDir = adjDir * speed * Time.deltaTime * MoveInputAcceptance;
             controller.Move(moveDir);
         }
     }

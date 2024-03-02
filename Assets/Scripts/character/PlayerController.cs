@@ -32,6 +32,8 @@ public class PlayerController : MonoBehaviour
     void InitializeInput()
     {
         input.Move += OnMove;
+        input.AttackA += OnAttackA;
+        input.AttackB += OnAttackB;
     }
 
     void Start()
@@ -50,6 +52,8 @@ public class PlayerController : MonoBehaviour
     void OnDestroy()
     {
         input.Move -= OnMove;
+        input.AttackA -= OnAttackA;
+        input.AttackB -= OnAttackB;
     }
 
     void HandleMovement()
@@ -150,5 +154,15 @@ public class PlayerController : MonoBehaviour
 
         // Now we rotate our input vector into this frame of reference
         return flatten * input;
+    }
+
+    void OnAttackA()
+    {
+        owner.AddActionCommand(KeyMap.ButtonX);
+    }
+
+    void OnAttackB()
+    {
+        owner.AddActionCommand(KeyMap.ButtonY);
     }
 }

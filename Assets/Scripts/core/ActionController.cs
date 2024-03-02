@@ -19,6 +19,13 @@ public class ActionController
     /// </summary>
     private float _pec = 0;
 
+    /// <summary>
+    /// 这个动作在上一个update经历了多少百分比了
+    /// </summary>
+    private float _wasPercentage = 0;
+
+    public float MoveInputAcceptance {get; private set;}
+
     public void SetChangeActinCallback(Action<CharacterAction, CharacterAction> cb)
     {
         _onChangeAction = cb;
@@ -47,6 +54,9 @@ public class ActionController
         AnimatorStateInfo animatorState = animator.GetCurrentAnimatorStateInfo(0);
         AnimatorStateInfo nextAnimatorState = animator.GetNextAnimatorStateInfo(0);
         _pec = Mathf.Clamp01(nextAnimatorState.length > 0 ? nextAnimatorState.normalizedTime : animatorState.normalizedTime);
+
+        //计算移动接受输入
+        CalculateInputAcceptance(_wasPercentage, _pec);
         
         foreach (CharacterAction ac in AllActions)
         {
@@ -61,6 +71,8 @@ public class ActionController
         {
             preorderActionList.Add(new PreorderActionInfo(CurAction.mAutoNextActionName));
         }
+
+        _wasPercentage = _pec;
 
         if (preorderActionList.Count > 0)
         {
@@ -87,6 +99,7 @@ public class ActionController
             bool tagFit = false;
             foreach (string bcTagName in bcTagInfo.cancelTag)
             {
+                if (!(_wasPercentage <= bcTagInfo.range.max && curPercent >= bcTagInfo.range.min)) continue;
                 foreach (CancelTag cTag in actionInfo.mCancelTagList)
                 {
                     if (bcTagName == cTag.tag)
@@ -152,4 +165,15 @@ public class ActionController
         return null;
     }
 
+    public void CalculateInputAcceptance(float wasPec, float pec)
+    {
+        MoveInputAcceptance = 0;
+        if (CurAction.moveInputAcceptance == null) return;
+        foreach (MoveInputAcceptance acceptance in CurAction.moveInputAcceptance)
+        {
+            if (acceptance.range.min <= pec && acceptance.range.max >= wasPec &&
+                (MoveInputAcceptance <= 0 || acceptance.rate < MoveInputAcceptance))
+                MoveInputAcceptance = acceptance.rate;
+        }
+    }
 }
