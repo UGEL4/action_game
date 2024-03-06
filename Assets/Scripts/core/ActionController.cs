@@ -8,10 +8,12 @@ public class ActionController
     private Animator animator;
     private InputToCommand command;
     public List<CharacterAction> AllActions {get; set;} = new List<CharacterAction>();
-    private CharacterAction CurAction;
+    public CharacterAction CurAction { private set; get; } 
     private List<BeCanceledTag> curBeCanceledTagList = new List<BeCanceledTag>();
     private List<PreorderActionInfo> preorderActionList = new List<PreorderActionInfo>();
     private Action<CharacterAction, CharacterAction> _onChangeAction = null;
+    public List<AttackBoxTurnOnInfo> ActiveAttackBoxTurnOnInfoList { private set; get; } = new List<AttackBoxTurnOnInfo>();
+    public List<string> ActiveAttackBoxTurnOnInfoTagList { private set; get; } = new List<string>();
 
     /// <summary>
     /// 当前动画百分比，放这里方便些，其实最好放一个函数里
@@ -55,6 +57,7 @@ public class ActionController
         AnimatorStateInfo nextAnimatorState = animator.GetNextAnimatorStateInfo(0);
         _pec = Mathf.Clamp01(nextAnimatorState.length > 0 ? nextAnimatorState.normalizedTime : animatorState.normalizedTime);
 
+        CalculateBoxInfo(_wasPercentage, _pec);
         //计算移动接受输入
         CalculateInputAcceptance(_wasPercentage, _pec);
         
@@ -153,6 +156,9 @@ public class ActionController
             {
                 curBeCanceledTagList.Add(tag);
             }
+
+            ActiveAttackBoxTurnOnInfoList.Clear();
+            ActiveAttackBoxTurnOnInfoTagList.Clear();
         }
     }
 
@@ -174,6 +180,55 @@ public class ActionController
             if (acceptance.range.min <= pec && acceptance.range.max >= wasPec &&
                 (MoveInputAcceptance <= 0 || acceptance.rate < MoveInputAcceptance))
                 MoveInputAcceptance = acceptance.rate;
+        }
+    }
+
+    public void AddTempBeCanceledTag(TempBeCancelledTag tag)
+    {
+        curBeCanceledTagList.Add(BeCanceledTag.FromTemp(tag, _pec));
+    }
+
+    public void AddTempBeCanceledTag(string id)
+    {
+        foreach (TempBeCancelledTag temp in CurAction.mTempBeCanceledTagList)
+        {
+            if (id == temp.id)
+            {
+                AddTempBeCanceledTag(temp);
+                return;
+            }
+        }
+    }
+
+    /// <summary>
+    /// 计算当前动画帧的信息
+    /// </summary>
+    /// <param name="wasPec">上一帧的百分比</param>
+    /// <param name="pec">百分比进度</param>
+    private void CalculateBoxInfo(float wasPec, float pec)
+    {
+        ActiveAttackBoxTurnOnInfoList.Clear();
+        ActiveAttackBoxTurnOnInfoTagList.Clear();
+        foreach (AttackBoxTurnOnInfo info in CurAction.attackPhaseList)
+        {
+            bool open = false;
+            foreach (PercentageRange range in info.turnOnRangeList)
+            {
+                if (pec >= range.min && wasPec <= range.max)
+                {
+                    open = true;
+                    break;
+                }
+            }
+            if (open)
+            {
+                //Log.SimpleLog.Info("range: ", range.min, range.max, wasPec, pec);
+                foreach (string tag in info.attackBoxTag)
+                {
+                    if (!ActiveAttackBoxTurnOnInfoTagList.Contains(tag)) ActiveAttackBoxTurnOnInfoTagList.Add(tag);
+                }
+                ActiveAttackBoxTurnOnInfoList.Add(info);
+            }
         }
     }
 }

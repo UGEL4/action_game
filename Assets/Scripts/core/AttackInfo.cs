@@ -20,5 +20,5 @@ public struct AttackInfo
     public ActionChangeInfo selfActionChangeInfo;
     public ActionChangeInfo targetActionChangeInfo;
 
-    public string[] tmpBeCancelledTagTurnOn;
+    public string[] tempBeCancelledTagTurnOn;
 }

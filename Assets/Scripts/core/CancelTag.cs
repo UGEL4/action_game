@@ -14,6 +14,13 @@ public struct BeCanceledTag
     public int priority;
 
     public PercentageRange range;
+
+    public static BeCanceledTag FromTemp(TempBeCancelledTag tag, float fromPercentage) => new BeCanceledTag
+    {
+        cancelTag = tag.cancelTag,
+        priority  = tag.increasePriority,
+        range     = new PercentageRange(fromPercentage, fromPercentage + tag.percentage)
+    };
 }
 
 [Serializable]
