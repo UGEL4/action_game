@@ -1,7 +1,9 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using Action;
 
+[Serializable]
 public class CharacterAction
 {
     // 动作名

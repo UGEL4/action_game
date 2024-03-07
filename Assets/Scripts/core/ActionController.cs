@@ -146,6 +146,7 @@ public class ActionController
         CharacterAction action = GetActionById(actionName);
         if (action != null)
         {
+            Log.SimpleLog.Log("ChangeAction: ", actionName);
             //
             _onChangeAction?.Invoke(CurAction, action);
             animator.CrossFade(action.mAnimation, 0.0f, 0, 0.0f);
