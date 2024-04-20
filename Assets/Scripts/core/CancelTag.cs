@@ -5,12 +5,30 @@ public struct CancelTag
 {
     public string tag;
     public int priority;
+
+    /// <summary>
+    /// 这个动作会从normalized多少的地方开始播放
+    /// </summary>
+    public float startFromPercentage;
+    
+    /// <summary>
+    /// 动画融合进来的百分比时间长度
+    /// </summary>
+    public float fadeInPercentage;
 }
 
 [Serializable]
 public struct BeCanceledTag
 {
     public string[] cancelTag;
+
+    /// <summary>
+    /// 动画融合出去的时间
+    /// Unity推荐用normalized作为一个标尺，因为用second对于做动画本身有点要求
+    /// 当然也可能是我对CrossFadeInFixedTime理解有误
+    /// </summary>
+    public float fadeOutPercentage;
+
     public int priority;
 
     public PercentageRange range;

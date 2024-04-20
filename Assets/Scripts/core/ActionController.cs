@@ -44,7 +44,7 @@ public class ActionController
     {
         AllActions.Clear();
         if (actions != null) AllActions = actions;
-        ChangeAction(defaultActionId);
+        ChangeAction(defaultActionId, 0.0f, 0.0f);
     }
 
     public void Tick()
@@ -66,7 +66,8 @@ public class ActionController
             if (CanActionCancelCurrentAction(ac, _pec, true, out CancelTag foundTag, out BeCanceledTag beCanceledTag))
             {
                 //Log.SimpleLog.Info("CanActionCancelCurrentAction:", CurAction.mActionName, ac.mActionName);
-                preorderActionList.Add(new PreorderActionInfo(ac.mActionName, ac.mPriority + foundTag.priority + beCanceledTag.priority));
+                preorderActionList.Add(new PreorderActionInfo(ac.mActionName, ac.mPriority + foundTag.priority + beCanceledTag.priority,
+                Mathf.Min(beCanceledTag.fadeOutPercentage, foundTag.fadeInPercentage), foundTag.startFromPercentage));
             }
         }
         //if (preorderActionList.Count == 0 ||)
@@ -86,7 +87,7 @@ public class ActionController
             }
             else
             {
-                ChangeAction(preorderActionList[0].ActionId);
+                ChangeAction(preorderActionList[0].ActionId, preorderActionList[0].TransitionNormalized, preorderActionList[0].FromNormalized);
             }
         }
 
@@ -141,7 +142,7 @@ public class ActionController
         }
     }
 
-    void ChangeAction(string actionName)
+    void ChangeAction(string actionName, float normalizedTransitionDuration, float normalizedTimeOffset)
     {
         CharacterAction action = GetActionById(actionName);
         if (action != null)
@@ -149,7 +150,7 @@ public class ActionController
             Log.SimpleLog.Log("ChangeAction: ", actionName);
             //
             _onChangeAction?.Invoke(CurAction, action);
-            animator.CrossFade(action.mAnimation, 0.0f, 0, 0.0f);
+            animator.CrossFade(action.mAnimation, normalizedTransitionDuration, 0, normalizedTimeOffset);
             //
             CurAction = action;
             curBeCanceledTagList.Clear();
