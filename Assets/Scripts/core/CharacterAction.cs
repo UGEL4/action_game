@@ -18,6 +18,8 @@ public class CharacterAction
     //public List<ActionFrame> mActionFrames;
     public bool keepPlayingAnim;
 
+    public uint mTotalFrameCount;
+
     public CancelTag[] mCancelTagList;
 
     public BeCanceledTag[] mBeCanceledTagList;

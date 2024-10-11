@@ -5,4 +5,6 @@ public struct ActionCommand
 {
     public KeyMap[] keySequences;
     public float validInSecond;
+
+    public byte validInFrameCount;
 }

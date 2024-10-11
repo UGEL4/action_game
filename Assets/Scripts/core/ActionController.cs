@@ -26,6 +26,9 @@ public class ActionController
     /// </summary>
     private float _wasPercentage = 0;
 
+    private uint mLastFrameIndex = 0;
+    private uint mCurrentFrameIndex = 0;
+
     public float MoveInputAcceptance {get; private set;}
 
     public void SetChangeActinCallback(Action<CharacterAction, CharacterAction> cb)
@@ -44,7 +47,7 @@ public class ActionController
     {
         AllActions.Clear();
         if (actions != null) AllActions = actions;
-        ChangeAction(defaultActionId, 0.0f, 0.0f);
+        ChangeAction(defaultActionId, 0.0f, 0.0f, 0);
     }
 
     public void Tick()
@@ -57,6 +60,12 @@ public class ActionController
         AnimatorStateInfo nextAnimatorState = animator.GetNextAnimatorStateInfo(0);
         _pec = Mathf.Clamp01(nextAnimatorState.length > 0 ? nextAnimatorState.normalizedTime : animatorState.normalizedTime);
 
+        mCurrentFrameIndex += 1;
+        if (mCurrentFrameIndex > CurAction.mTotalFrameCount)
+        {
+            mCurrentFrameIndex = 0;
+        }
+
         CalculateBoxInfo(_wasPercentage, _pec);
         //计算移动接受输入
         CalculateInputAcceptance(_wasPercentage, _pec);
@@ -65,9 +74,9 @@ public class ActionController
         {
             if (CanActionCancelCurrentAction(ac, _pec, true, out CancelTag foundTag, out BeCanceledTag beCanceledTag))
             {
-                //Log.SimpleLog.Info("CanActionCancelCurrentAction:", CurAction.mActionName, ac.mActionName);
+                //Log.SimpleLog.Info("CanActionCancelCurrentAction:", CurAction.mActionName, ac.mActionName, foundTag.startFromFrameIndex);
                 preorderActionList.Add(new PreorderActionInfo(ac.mActionName, ac.mPriority + foundTag.priority + beCanceledTag.priority,
-                Mathf.Min(beCanceledTag.fadeOutPercentage, foundTag.fadeInPercentage), foundTag.startFromPercentage));
+                Mathf.Min(beCanceledTag.fadeOutPercentage, foundTag.fadeInPercentage), foundTag.startFromPercentage, 0, foundTag.startFromFrameIndex));
             }
         }
         //if (preorderActionList.Count == 0 ||)
@@ -78,6 +87,8 @@ public class ActionController
 
         _wasPercentage = _pec;
 
+        mLastFrameIndex = mCurrentFrameIndex;
+
         if (preorderActionList.Count > 0)
         {
             preorderActionList.Sort((action1, action2) => action1.Priority > action2.Priority ? -1 : 1);
@@ -87,7 +98,7 @@ public class ActionController
             }
             else
             {
-                ChangeAction(preorderActionList[0].ActionId, preorderActionList[0].TransitionNormalized, preorderActionList[0].FromNormalized);
+                ChangeAction(preorderActionList[0].ActionId, preorderActionList[0].TransitionNormalized, preorderActionList[0].FromNormalized, preorderActionList[0].FromFrameIndex);
             }
         }
 
@@ -103,7 +114,9 @@ public class ActionController
             bool tagFit = false;
             foreach (string bcTagName in bcTagInfo.cancelTag)
             {
-                if (!(_wasPercentage <= bcTagInfo.range.max && curPercent >= bcTagInfo.range.min)) continue;
+                //if (!(_wasPercentage <= bcTagInfo.range.max && curPercent >= bcTagInfo.range.min)) continue;
+                //Log.SimpleLog.Info("CanActionCancelCurrentAction:", mLastFrameIndex, mCurrentFrameIndex);
+                if (!(mCurrentFrameIndex <= bcTagInfo.frameIndexRange.max && mCurrentFrameIndex >= bcTagInfo.frameIndexRange.min)) continue;
                 foreach (CancelTag cTag in actionInfo.mCancelTagList)
                 {
                     if (bcTagName == cTag.tag)
@@ -139,15 +152,19 @@ public class ActionController
         if (currentNormalized >= 1)
         {
             animator.CrossFade(CurAction.mAnimation, 0, 0, 0);
+            if (mCurrentFrameIndex > CurAction.mTotalFrameCount)
+            {
+                mCurrentFrameIndex = 0;
+            }
         }
     }
 
-    void ChangeAction(string actionName, float normalizedTransitionDuration, float normalizedTimeOffset)
+    void ChangeAction(string actionName, float normalizedTransitionDuration, float normalizedTimeOffset, uint fromFrameIndex)
     {
         CharacterAction action = GetActionById(actionName);
         if (action != null)
         {
-            Log.SimpleLog.Log("ChangeAction: ", actionName);
+            Log.SimpleLog.Log("ChangeAction: ", actionName, fromFrameIndex);
             //
             _onChangeAction?.Invoke(CurAction, action);
             animator.CrossFade(action.mAnimation, normalizedTransitionDuration, 0, normalizedTimeOffset);
@@ -161,6 +178,14 @@ public class ActionController
 
             ActiveAttackBoxTurnOnInfoList.Clear();
             ActiveAttackBoxTurnOnInfoTagList.Clear();
+
+            mCurrentFrameIndex = fromFrameIndex;
+            mLastFrameIndex    = fromFrameIndex;
+        }
+        else
+        {
+            mCurrentFrameIndex = 0;
+            mLastFrameIndex    = 0;
         }
     }
 

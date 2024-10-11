@@ -242,6 +242,11 @@ public class Character : MonoBehaviour
         //fsm.Update();
         //CHController.Move(curMovement * speed * Time.deltaTime);
         //MoveDir();
+        //inputToCommand.Tick();
+    }
+
+    void FixedUpdate()
+    {
         inputToCommand.Tick();
         actionCtrl.Tick();
     }

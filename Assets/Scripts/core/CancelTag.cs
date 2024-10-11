@@ -10,6 +10,8 @@ public struct CancelTag
     /// 这个动作会从normalized多少的地方开始播放
     /// </summary>
     public float startFromPercentage;
+
+    public uint startFromFrameIndex;
     
     /// <summary>
     /// 动画融合进来的百分比时间长度
@@ -33,11 +35,21 @@ public struct BeCanceledTag
 
     public PercentageRange range;
 
+    public FrameIndexRange frameIndexRange;
+
     public static BeCanceledTag FromTemp(TempBeCancelledTag tag, float fromPercentage) => new BeCanceledTag
     {
         cancelTag = tag.cancelTag,
         priority  = tag.increasePriority,
         range     = new PercentageRange(fromPercentage, fromPercentage + tag.percentage)
+    };
+
+    public static BeCanceledTag FromTemp(TempBeCancelledTag tag, uint fromFrameIndex) => new BeCanceledTag
+    {
+        cancelTag = tag.cancelTag,
+        priority  = tag.increasePriority,
+        range     = new PercentageRange(0, 0),
+        frameIndexRange = new FrameIndexRange(fromFrameIndex, fromFrameIndex + tag.frameCount)
     };
 }
 
@@ -54,6 +66,12 @@ public struct TempBeCancelledTag
     /// 从开启的时间往后算
     /// </summary>
     public float percentage;
+
+    /// <summary>
+    /// 在当前动作中，有多少帧是开启的
+    /// 从开启的帧往后算
+    /// </summary>
+    public uint frameCount;
     
     /// <summary>
     /// 可以Cancel的CancelTag

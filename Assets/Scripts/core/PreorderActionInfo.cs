@@ -35,14 +35,17 @@ public struct PreorderActionInfo
     /// </summary>
     public float FreezingAfterChangeAction;
 
+    public uint FromFrameIndex;
+
     public PreorderActionInfo(string actionId, int priority = 0, float transitionNormalized = 0,
-        float fromNormalized = 0, float freezingAfterChangeAction = 0)
+        float fromNormalized = 0, float freezingAfterChangeAction = 0, uint fromFrameIndex = 0)
     {
         ActionId = actionId;
         Priority = priority;
         TransitionNormalized = transitionNormalized;
         FromNormalized = fromNormalized;
         FreezingAfterChangeAction = freezingAfterChangeAction;
+        FromFrameIndex = fromFrameIndex;
     }
 
 }
