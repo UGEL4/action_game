@@ -11,8 +11,8 @@ public class InputReader : ScriptableObject, IPlayerActions
 {
     public UnityAction<Vector2, InputActionPhase> Move = delegate {};
     public UnityAction<Vector2> Look = delegate {};
-    public UnityAction AttackA = delegate {};
-    public UnityAction AttackB = delegate {};
+    public UnityAction<InputActionPhase> AttackA = delegate {};
+    public UnityAction<InputActionPhase> AttackB = delegate {};
 
     PlayerInput input;
     public Vector3 Direction => input.Player.Move.ReadValue<Vector2>();
@@ -32,11 +32,11 @@ public class InputReader : ScriptableObject, IPlayerActions
 
     public void OnAttackA(InputAction.CallbackContext context)
     {
-        AttackA.Invoke();
+        AttackA.Invoke(context.phase);
     }
     public void OnAttackB(InputAction.CallbackContext context)
     {
-        AttackB.Invoke();
+        AttackB.Invoke(context.phase);
     }
 
     private void OnEnable()

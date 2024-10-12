@@ -156,13 +156,19 @@ public class PlayerController : MonoBehaviour
         return flatten * input;
     }
 
-    void OnAttackA()
+    void OnAttackA(InputActionPhase phase)
     {
-        owner.AddActionCommand(KeyMap.ButtonX);
+        if (phase == InputActionPhase.Started)
+        {
+            owner.AddActionCommand(KeyMap.ButtonX);
+        }
     }
 
-    void OnAttackB()
+    void OnAttackB(InputActionPhase phase)
     {
-        owner.AddActionCommand(KeyMap.ButtonY);
+        if (phase == InputActionPhase.Started)
+        {
+            owner.AddActionCommand(KeyMap.ButtonY);
+        }
     }
 }
