@@ -8,34 +8,11 @@ using UnityEngine.Timeline;
 [TrackClipType(typeof(ActionEditorTrackTimeLineClip))]
 public class ActionEditorTrack : TrackAsset
 {
-    public override Playable CreateTrackMixer(PlayableGraph graph, GameObject owner, int inputCount)
-    {
-        return ScriptPlayable<ActionEditorMixer>.Create(graph, inputCount);
-    }
+    // public override Playable CreateTrackMixer(PlayableGraph graph, GameObject owner, int inputCount)
+    // {
+    //     return ScriptPlayable<ActionEditorMixer>.Create(graph, inputCount);
+    // }
 }
-
-[System.Serializable]
-public class ActionEditorTrackTimeLineClip : PlayableAsset, ITimelineClipAsset
-{
-    private ActionEditorPlayableBehaviour template = new ActionEditorPlayableBehaviour();
-    //public ExposedReference<GameObject> gameObjectReference;
-
-    public AnimationClip animationClip;
-    public ClipCaps clipCaps
-    {
-        get { return ClipCaps.None; }
-    }
-
-    public override Playable CreatePlayable(PlayableGraph graph, GameObject owner)
-    {
-        var playable = ScriptPlayable<ActionEditorPlayableBehaviour>.Create(graph, template);
-        // 设置clip相关的参数
-        ActionEditorPlayableBehaviour clone = playable.GetBehaviour();
-        clone.animationClip = animationClip;
-        return playable;
-    }
-}
-
 // Clip的行为类
 public class ActionEditorPlayableBehaviour : PlayableBehaviour
 {
@@ -43,7 +20,21 @@ public class ActionEditorPlayableBehaviour : PlayableBehaviour
     public AnimationClip animationClip;
 }
 
+[System.Serializable]
 public class ActionEditorMixer : PlayableBehaviour
 {
+    public override void OnPlayableCreate(Playable playable)
+    {
+        base.OnPlayableCreate(playable);
+    }
 
+    public override void ProcessFrame(Playable playable, FrameData info, object playerData)
+    {
+        base.ProcessFrame(playable, info, playerData);
+    }
+
+    public override void OnBehaviourPause(Playable playable, FrameData info)
+    {
+        base.OnBehaviourPause(playable, info);
+    }
 }
