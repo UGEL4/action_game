@@ -2,51 +2,108 @@ Shader "Custom/Wireframe"
 {
     Properties
     {
-        _MainTex ("Texture", 2D) = "white" {}
+        _Color("Color",Color) = (1.0,1.0,1.0,1.0)
+        _EdgeColor("Edge Color",Color) = (1.0,1.0,1.0,1.0)
+        _Width("Width",Range(0,1)) = 0.2
     }
     SubShader
     {
-        Tags { "RenderType"="Opaque" "Queue"="Geometry" }
+        Tags{ "Queue" = "Transparent"
+              "IgnoreProjector" = "True"
+              "RenderType" = "Transparent"
+        }
         LOD 100
- 
+        Blend SrcAlpha OneMinusSrcAlpha
+        ZWrite off
+        Cull Front
         Pass
         {
-            Cull Off
- 
+
             CGPROGRAM
             #pragma vertex vert
             #pragma fragment frag
- 
             #include "UnityCG.cginc"
- 
-            struct appdata
-            {
-                float4 vertex : POSITION;
-                float2 uv : TEXCOORD0;
-            };
+
+            struct a2v {
+                 half4 uv : TEXCOORD0;
+                 half4 vertex : POSITION;
+             };
  
             struct v2f
             {
-                float2 uv : TEXCOORD0;
-                float4 vertex : SV_POSITION;
+                half4 pos : SV_POSITION;
+                half4 uv : TEXCOORD0;
             };
+
+            fixed4 _Color;
+            fixed4 _EdgeColor;
+            float _Width;
  
-            sampler2D _MainTex;
- 
-            v2f vert (appdata v)
+            v2f vert(a2v v)
             {
                 v2f o;
-                o.vertex = UnityObjectToClipPos(v.vertex);
                 o.uv = v.uv;
+                o.pos = UnityObjectToClipPos(v.vertex);
                 return o;
             }
  
-            fixed4 frag (v2f i) : SV_Target
+            fixed4 frag(v2f i) : COLOR
             {
-                // Sample the texture
-                fixed4 col = tex2D(_MainTex, i.uv);
-                // Just return the outline color
-                return fixed4(0,0,0,1); // Set outline color here
+                fixed4 col;
+                float lx = step(_Width, i.uv.x);
+                float ly = step(_Width, i.uv.y);
+                float hx = step(i.uv.x, 1.0 - _Width);
+                float hy = step(i.uv.y, 1.0 - _Width);
+                col = lerp(_EdgeColor, _Color, lx * ly * hx * hy);
+                return col;
+            }
+            ENDCG
+        }
+
+        Blend SrcAlpha OneMinusSrcAlpha
+        LOD 100
+        Cull Front
+        ZWrite off
+        Pass
+        {
+            CGPROGRAM
+            #pragma vertex vert
+            #pragma fragment frag
+            #include "UnityCG.cginc"
+
+            struct a2v
+            {
+                half4 uv : TEXCOORD0;
+                half4 vertex : POSITION;
+            };
+
+            struct v2f
+            {
+                half4 pos : SV_POSITION;
+                half4 uv : TEXCOORD0;
+            };
+
+            fixed4 _Color;
+            fixed4 _EdgeColor;
+            float _Width;
+
+            v2f vert(a2v v)
+            {
+                v2f o;
+                o.uv  = v.uv;
+                o.pos = UnityObjectToClipPos(v.vertex);
+                return o;
+            }
+
+            fixed4 frag(v2f i) : COLOR
+            {
+                fixed4 col;
+                float lx = step(_Width, i.uv.x);
+                float ly = step(_Width, i.uv.y);
+                float hx = step(i.uv.x, 1.0 - _Width);
+                float hy = step(i.uv.y, 1.0 - _Width);
+                col      = lerp(_EdgeColor, _Color, lx * ly * hx * hy);
+                return col;
             }
             ENDCG
         }
