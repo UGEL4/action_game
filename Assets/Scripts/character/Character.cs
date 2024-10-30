@@ -239,6 +239,7 @@ public class Character : MonoBehaviour
     }
     void Update()
     {
+        int a = 0;
         //fsm.Update();
         //CHController.Move(curMovement * speed * Time.deltaTime);
         //MoveDir();
