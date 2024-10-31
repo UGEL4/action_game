@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -8,8 +9,14 @@ using UnityEngine.Timeline;
 [TrackClipType(typeof(ActionEditActionClip))]
 public class ActionEditActionTrack : TrackAsset
 {
-    public override Playable CreateTrackMixer(PlayableGraph graph, GameObject owner, int inputCount)
+    public ExposedReference<GameObject> target;
+    protected override void OnCreateClip(TimelineClip clip)
     {
-        return ScriptPlayable<ActionEditorMixer>.Create(graph, inputCount);
+        ActionEditActionClip c = clip.asset as ActionEditActionClip;
+        if (c != null)
+        {
+            c.target = target;
+        }
     }
 }
+
