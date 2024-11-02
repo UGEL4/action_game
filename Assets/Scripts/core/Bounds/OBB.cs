@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [Serializable]
-public class OBB
+public struct OBB
 {
     public Vector3 Center { get; set; }
     public Vector3 Size;

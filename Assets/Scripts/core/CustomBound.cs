@@ -35,7 +35,7 @@ public class CustomBounds : MonoBehaviour
 #if UNITY_EDITOR
     void OnDrawGizmos()
     {
-        if (bounds != null)
+        //if (bounds != null)
         {
             Gizmos.color = Color.red;
 

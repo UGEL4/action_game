@@ -15,7 +15,7 @@ public class ActionEditActionTrack : TrackAsset
         ActionEditActionClip c = clip.asset as ActionEditActionClip;
         if (c != null)
         {
-            c.target = target;
+            c.OnCreateClip(target);
         }
     }
 }
