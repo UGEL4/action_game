@@ -1143,7 +1143,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   bounds:
     Size: {x: 0.2, y: 0.06, z: 1}
-  position: {x: 0.6942048, y: 0.4334935, z: -0.31190628}
+  position: {x: -0.90995705, y: 0.4069668, z: -0.042576157}
 --- !u!1 &677085083
 GameObject:
   m_ObjectHideFlags: 0
@@ -1760,11 +1760,10 @@ PlayableDirector:
   m_SceneBindings:
   - key: {fileID: -837408916891354805, guid: 9df6df2836b3f0249959d25540df1567, type: 2}
     value: {fileID: 1375345266}
-  - key: {fileID: -8369011585200849683, guid: 9df6df2836b3f0249959d25540df1567, type: 2}
-    value: {fileID: 1375345268}
   m_ExposedReferences:
     m_References:
     - c9355cf506714c345a53c5e2d50ab238: {fileID: 1375345268}
+    - b66d37083ef095e4bae480c485abff71: {fileID: 1375345268}
     - 8ed3e619ad6ef0a42849de882801e74b: {fileID: 1375345268}
     - bb26762c8059cf64ebb34c211d0a309f: {fileID: 1375345268}
     - abd11a87d6bea1f4489981d534444089: {fileID: 1375345268}
