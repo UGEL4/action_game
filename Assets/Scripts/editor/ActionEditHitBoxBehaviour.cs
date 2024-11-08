@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using Log;
 using UnityEngine;
 using UnityEngine.Playables;
-
+using Action;
 public class ActionEditHitBoxBehaviour : PlayableBehaviour
 {
     public ActionEditHitBoxClip Asset;
@@ -53,7 +53,7 @@ public class ActionEditHitBoxBehaviour : PlayableBehaviour
                         boxData.rotation    = boxList[i].transform.localRotation;
                         boxData.scale       = boxList[i].transform.localScale;
                         boxData.bounds      = bounds.bounds;
-                        boxData.name        = boxList[i].name;
+                        //boxData.name        = boxList[i].name;
                         if (isNull)
                         {
                             frameData.boxDataList.Add(boxData);
@@ -78,7 +78,7 @@ public class ActionEditHitBoxBehaviour : PlayableBehaviour
                         boxData.scale       = boxList[i].transform.localScale;
                         CustomBounds bounds = boxList[i].GetComponent<CustomBounds>();
                         boxData.bounds      = bounds.bounds;
-                        boxData.name        = boxList[i].name;
+                        //boxData.name        = boxList[i].name;
                         newFrameData.boxDataList.Add(boxData);
                     }
                     keyFrames.Add(curFrame, newFrameData);

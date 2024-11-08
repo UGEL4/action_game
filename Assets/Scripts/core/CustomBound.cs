@@ -6,7 +6,7 @@ using UnityEngine;
 public class CustomBounds : MonoBehaviour
 {
     [SerializeField]
-    public OBB bounds;
+    public OBB bounds = new OBB();
 
     #if UNITY_EDITOR
     public Vector3 position;
@@ -14,10 +14,10 @@ public class CustomBounds : MonoBehaviour
 
     void Awake()
     {
-        Vector3 center = transform.position;
-        Vector3 size = new Vector3(1, 1, 1);
-        Quaternion rotation = transform.rotation;
-        bounds = new OBB(center, size, rotation);
+        // Vector3 center = transform.position;
+        // Vector3 size = new Vector3(1, 1, 1);
+        // Quaternion rotation = transform.rotation;
+        // bounds = new OBB(center, size, rotation);
     }
 
     void Update()

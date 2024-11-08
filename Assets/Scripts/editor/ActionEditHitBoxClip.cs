@@ -1,28 +1,13 @@
 using System;
 using System.Collections.Generic;
+using System.Text;
 using Log;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.Playables;
-
-
-[Serializable]
-public struct BoxData
-{
-    //transform
-    public Vector3 position;
-    public Quaternion rotation;
-    public Vector3 scale;
-    public OBB bounds;
-    public string name;
-}
-
-[Serializable]
-public struct KeyFrameData
-{
-    public int frame;
-    public List<BoxData> boxDataList;
-}
+using Action;
+using System.IO;
+using Unity.VisualScripting;
 
 [Serializable]
 public class ActionEditHitBoxClip : PlayableAsset
@@ -107,6 +92,84 @@ public class ActionEditHitBoxClip : PlayableAsset
     {
         target = data;
     }
+
+    public void Save(bool is_game_res)
+    {
+        if (is_game_res)
+        {
+            var boxList = mBoxManager.boxObjects;
+            for (int i = 0; i < boxList.Count; ++i)
+            {
+                var go = boxList[i];
+                Matrix4x4 localToWorld = go.transform.localToWorldMatrix;
+                if (go.transform.parent != null && go.transform.parent != mTargetGameObject)
+                {
+                    var partentGo = go.transform.parent.gameObject;
+                    var parentTransform = go.transform;
+                    while (true)
+                    {
+                        //localToWorld = parent.localToWorldMatrix * localToWorld;
+                    }
+                }
+                
+                if (go.transform.parent != null)
+                {
+                    //var parent = go.transform.parent;
+                    //while (parent.parent != null)
+                    {
+
+                    }
+                }
+                var parent = go.transform.parent;
+                while (parent != null)
+                {
+                    localToWorld = parent.localToWorldMatrix * localToWorld;
+                    parent       = parent.parent;
+                }
+            }
+            return;
+        }
+        StringBuilder json = new StringBuilder("{\"data\":[");
+        int count = 0;
+        foreach (var kv in mKeyFrames)
+        {
+            var key   = kv.Key;
+            var value = kv.Value;
+            //json.Append(JsonUtility.ToJson(key));
+            json.Append(JsonUtility.ToJson(value));
+            if (count < mKeyFrames.Count)
+            {
+                json.Append(",");
+            }
+            count++;
+        }
+        // for (int i = 0; i < Actions.Count; i++)
+        // {
+        //     json.Append(JsonUtility.ToJson(Actions[i]));
+        //     if (i != Actions.Count - 1) json.Append(",");
+        // }
+        json.Append("]}");
+        if (!Directory.Exists(Application.dataPath + "/Resources/GameData"))
+        {
+            Directory.CreateDirectory(Application.dataPath + "/Resources/GameData");
+        }
+        string path = Application.dataPath + "/Resources/GameData/test_box.json";
+        File.WriteAllText(path, json.ToString());
+    }
+
+    public void Load()
+    {
+        if (mBoxManager == null) return;
+        TextAsset ta = Resources.Load<TextAsset>("GameData/test_box");
+        if (ta)
+        {
+            KeyFrameDataContainer temp = JsonUtility.FromJson<KeyFrameDataContainer>(ta.text);
+            foreach (var v in temp.data)
+            {
+                mKeyFrames.Add(v.frame, v);
+            }
+        }
+    }
 }
 
 [CustomEditor(typeof(ActionEditHitBoxClip))]
@@ -121,6 +184,27 @@ public class ActionEditHitBoxBehaviourInspector : Editor
         if (GUILayout.Button("clear record frame data list"))
         {
             obj.ClearFrameDataList();
+        }
+        EditorGUILayout.EndHorizontal();
+
+        EditorGUILayout.BeginHorizontal();
+        if (GUILayout.Button("save"))
+        {
+            obj.Save(false);
+        }
+        EditorGUILayout.EndHorizontal();
+
+        EditorGUILayout.BeginHorizontal();
+        if (GUILayout.Button("load"))
+        {
+            obj.Load();
+        }
+        EditorGUILayout.EndHorizontal();
+
+        EditorGUILayout.BeginHorizontal();
+        if (GUILayout.Button("save_game"))
+        {
+            obj.Save(true);
         }
         EditorGUILayout.EndHorizontal();
     }
