@@ -8,6 +8,7 @@ using UnityEngine.Playables;
 using Action;
 using System.IO;
 using Unity.VisualScripting;
+using System.Drawing.Drawing2D;
 
 [Serializable]
 public class ActionEditHitBoxClip : PlayableAsset
@@ -15,7 +16,7 @@ public class ActionEditHitBoxClip : PlayableAsset
     public ExposedReference<GameObject> target;
 
     private GameObject mTargetGameObject;
-    
+
     [SerializeField]
     public bool Record = false;
     [SerializeField]
@@ -23,13 +24,28 @@ public class ActionEditHitBoxClip : PlayableAsset
 
 #region KeyFrameDatas
     private BoxManager mBoxManager;
-    public BoxManager BoxMgr { get { return mBoxManager; } }
-    
+    public BoxManager BoxMgr
+    {
+        get {
+            return mBoxManager;
+        }
+    }
+
     private Dictionary<int, KeyFrameData> mKeyFrames = new();
-    public Dictionary<int, KeyFrameData> KeyFrames { get { return mKeyFrames;}}
+    public Dictionary<int, KeyFrameData> KeyFrames
+    {
+        get {
+            return mKeyFrames;
+        }
+    }
 
     private List<BoxData> mDefaultBoxDataList;
-    public List<BoxData> DefaultBoxDataList { get { return mDefaultBoxDataList;}}
+    public List<BoxData> DefaultBoxDataList
+    {
+        get {
+            return mDefaultBoxDataList;
+        }
+    }
 #endregion
 
     public override Playable CreatePlayable(PlayableGraph graph, GameObject owner)
@@ -75,10 +91,10 @@ public class ActionEditHitBoxClip : PlayableAsset
         mDefaultBoxDataList = new List<BoxData>(boxList.Count);
         for (int i = 0; i < boxList.Count; ++i)
         {
-            var boxData      = new BoxData();
-            boxData.position = boxList[i].transform.localPosition;
-            boxData.rotation = boxList[i].transform.localRotation;
-            boxData.scale    = boxList[i].transform.localScale;
+            var boxData         = new BoxData();
+            boxData.position    = boxList[i].transform.localPosition;
+            boxData.rotation    = boxList[i].transform.localRotation;
+            boxData.scale       = boxList[i].transform.localScale;
             CustomBounds bounds = boxList[i].GetComponent<CustomBounds>();
             if (bounds != null)
             {
@@ -95,71 +111,100 @@ public class ActionEditHitBoxClip : PlayableAsset
 
     public void Save(bool is_game_res)
     {
+        StringBuilder json = new StringBuilder("{\"data\":[");
+        int count          = 0;
         if (is_game_res)
         {
-            var boxList = mBoxManager.boxObjects;
-            for (int i = 0; i < boxList.Count; ++i)
+            var boxList       = mBoxManager.boxObjects;
+            var rootTransform = mTargetGameObject.transform;
+            foreach (var kv in mKeyFrames)
             {
-                var go = boxList[i];
-                Matrix4x4 localToWorld = go.transform.localToWorldMatrix;
-                if (go.transform.parent != null && go.transform.parent != mTargetGameObject)
+                var value          = kv.Value;
+                var boxDataList    = value.boxDataList;
+                var newBoxDataList = new List<BoxData>(boxDataList.Count);
+                for (int i = 0; i < boxDataList.Count; ++i)
                 {
-                    var partentGo = go.transform.parent.gameObject;
-                    var parentTransform = go.transform;
-                    while (true)
+                    if (i < boxList.Count)
                     {
-                        //localToWorld = parent.localToWorldMatrix * localToWorld;
-                    }
-                }
-                
-                if (go.transform.parent != null)
-                {
-                    //var parent = go.transform.parent;
-                    //while (parent.parent != null)
-                    {
+                        var go          = boxList[i];
+                        var goTransform = go.transform;
+                        if (rootTransform != null)
+                        {
+                            // var pos        = rootTransform.InverseTransformPoint(goTransform.position);
+                            // var dir        = rootTransform.InverseTransformDirection(goTransform.forward);
+                            // Quaternion rot = Quaternion.LookRotation(dir, rootTransform.up);
 
+                            BoxData newBoxData = new BoxData {
+                                position = boxDataList[i].worldPosition,
+                                rotation = boxDataList[i].worldRotation,
+                                scale    = goTransform.localScale,
+                                bounds   = boxDataList[i].bounds
+                            };
+                            newBoxDataList.Add(newBoxData);
+                        }
+                        else
+                        {
+                            newBoxDataList.Add(boxDataList[i]);
+                        }
                     }
                 }
-                var parent = go.transform.parent;
-                while (parent != null)
+                KeyFrameData frameData = new KeyFrameData {
+                    frame       = value.frame,
+                    boxDataList = newBoxDataList
+                };
+
+                json.Append(JsonUtility.ToJson(frameData));
+                if (count < mKeyFrames.Count - 1)
                 {
-                    localToWorld = parent.localToWorldMatrix * localToWorld;
-                    parent       = parent.parent;
+                    json.Append(",");
                 }
+                count++;
             }
-            return;
         }
-        StringBuilder json = new StringBuilder("{\"data\":[");
-        int count = 0;
-        foreach (var kv in mKeyFrames)
+        else
         {
-            var key   = kv.Key;
-            var value = kv.Value;
-            //json.Append(JsonUtility.ToJson(key));
-            json.Append(JsonUtility.ToJson(value));
-            if (count < mKeyFrames.Count)
+            foreach (var kv in mKeyFrames)
             {
-                json.Append(",");
+                var key   = kv.Key;
+                var value = kv.Value;
+                json.Append(JsonUtility.ToJson(value));
+                if (count < mKeyFrames.Count - 1)
+                {
+                    json.Append(",");
+                }
+                count++;
             }
-            count++;
         }
-        // for (int i = 0; i < Actions.Count; i++)
-        // {
-        //     json.Append(JsonUtility.ToJson(Actions[i]));
-        //     if (i != Actions.Count - 1) json.Append(",");
-        // }
         json.Append("]}");
         if (!Directory.Exists(Application.dataPath + "/Resources/GameData"))
         {
             Directory.CreateDirectory(Application.dataPath + "/Resources/GameData");
         }
-        string path = Application.dataPath + "/Resources/GameData/test_box.json";
+        string path;
+        if (is_game_res)
+        {
+            path = Application.dataPath + "/Resources/GameData/test_box_game.json";
+        }
+        else
+        {
+            path = Application.dataPath + "/Resources/GameData/test_box.json";
+        }
         File.WriteAllText(path, json.ToString());
     }
 
     public void Load()
     {
-        if (mBoxManager == null) return;
+        if (mBoxManager == null)
+        {
+            var trasnform     = mTargetGameObject.transform.Find("box_root");
+            if (trasnform != null)
+            {
+                var childGo = trasnform.gameObject;
+                mBoxManager = childGo.GetComponent<BoxManager>();
+            }
+            if (mBoxManager == null) return;
+        }
+        mKeyFrames.Clear();
         TextAsset ta = Resources.Load<TextAsset>("GameData/test_box");
         if (ta)
         {
@@ -209,4 +254,3 @@ public class ActionEditHitBoxBehaviourInspector : Editor
         EditorGUILayout.EndHorizontal();
     }
 }
-

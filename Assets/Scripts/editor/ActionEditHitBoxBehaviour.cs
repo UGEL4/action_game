@@ -52,8 +52,14 @@ public class ActionEditHitBoxBehaviour : PlayableBehaviour
                         boxData.position    = boxList[i].transform.localPosition;
                         boxData.rotation    = boxList[i].transform.localRotation;
                         boxData.scale       = boxList[i].transform.localScale;
+                        boxData.worldPosition = boxList[i].transform.position;
+                        boxData.worldRotation = boxList[i].transform.rotation;
                         boxData.bounds      = bounds.bounds;
                         //boxData.name        = boxList[i].name;
+                        boxData.worldPosition = target.transform.InverseTransformPoint(boxList[i].transform.position);
+                        //Vector3 dir = target.transform.InverseTransformDirection(boxList[i].transform.forward);
+                        //boxData.worldRotation = Quaternion.LookRotation(dir, boxList[i].transform.up);
+                        boxData.worldRotation = Quaternion.Inverse(target.transform.rotation) * boxList[i].transform.rotation;
                         if (isNull)
                         {
                             frameData.boxDataList.Add(boxData);
@@ -76,9 +82,15 @@ public class ActionEditHitBoxBehaviour : PlayableBehaviour
                         boxData.position    = boxList[i].transform.localPosition;
                         boxData.rotation    = boxList[i].transform.localRotation;
                         boxData.scale       = boxList[i].transform.localScale;
+                        boxData.worldPosition = boxList[i].transform.position;
+                        boxData.worldRotation = boxList[i].transform.rotation;
                         CustomBounds bounds = boxList[i].GetComponent<CustomBounds>();
                         boxData.bounds      = bounds.bounds;
                         //boxData.name        = boxList[i].name;
+                        boxData.worldPosition = target.transform.InverseTransformPoint(boxList[i].transform.position);
+                        //Vector3 dir = target.transform.InverseTransformDirection(boxList[i].transform.forward);
+                        //boxData.worldRotation = Quaternion.LookRotation(dir, target.transform.up);
+                        boxData.worldRotation = Quaternion.Inverse(target.transform.rotation) * boxList[i].transform.rotation;
                         newFrameData.boxDataList.Add(boxData);
                     }
                     keyFrames.Add(curFrame, newFrameData);

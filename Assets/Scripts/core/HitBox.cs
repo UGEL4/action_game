@@ -20,6 +20,9 @@ namespace Action
         public Vector3 position;
         public Quaternion rotation;
         public Vector3 scale;
+        public Vector3 worldPosition;
+        public Quaternion worldRotation;
+        public Vector3 localScale;
         public OBB bounds;
     }
 

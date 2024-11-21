@@ -19,7 +19,7 @@ public class TestHitBox : MonoBehaviour
 
     private void Load()
     {
-        TextAsset ta = Resources.Load<TextAsset>("GameData/test_box");
+        TextAsset ta = Resources.Load<TextAsset>("GameData/test_box_game");
         if (ta)
         {
             Action.KeyFrameDataContainer temp = JsonUtility.FromJson<Action.KeyFrameDataContainer>(ta.text);
@@ -28,7 +28,7 @@ public class TestHitBox : MonoBehaviour
                 //mKeyFrames.Add(v.frame, v);
                 if (v.frame == 8)
                 {
-                    
+
                     GameObject go = new GameObject("box");
                     go.transform.SetParent(transform);
                     CustomBounds b = go.AddComponent<CustomBounds>();
