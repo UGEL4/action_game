@@ -1,5 +1,12 @@
 using UnityEngine;
 using UnityEditor;
+using System.Threading;
+using System.Collections.Generic;
+using Unity.Mathematics;
+using Action;
+using System.Text;
+using System.IO;
+using System;
 
 public class AnimationPreviewWindow : EditorWindow
 {
@@ -12,6 +19,8 @@ public class AnimationPreviewWindow : EditorWindow
     private bool isPlaying = false; // 动画播放状态
     private float playbackTime = 0f; // 播放时间
     private float sliderValue = 0f;
+
+    public GameObject sampleObj;
 
     [MenuItem("Window/Animation Preview")]
     public static void ShowWindow()
@@ -70,6 +79,22 @@ public class AnimationPreviewWindow : EditorWindow
                 //AnimationCurve
                 animationClip.SampleAnimation(previewObject, sliderValue);
             }
+
+            //sampleObj = (GameObject)EditorGUILayout.ObjectField("GameObject", sampleObj, typeof(GameObject), true);
+            if (GUILayout.Button("Export BoxCollider"))
+            {
+                // Transform bone = previewObject.transform.Find("Bip001/Bip001 Pelvis").transform;
+                // var pos = previewObject.transform.Find("Bip001/Bip001 Pelvis").transform.position;
+                // animationClip.SampleAnimation(previewObject, 1);
+                // pos = previewObject.transform.Find("Bip001/Bip001 Pelvis").transform.position;
+                // Vector3 position = previewObject.transform.InverseTransformPoint(pos);
+                // Quaternion rotation = Quaternion.Inverse(previewObject.transform.rotation) * bone.rotation;
+                // if (sampleObj != null)
+                // {
+                //     sampleObj.transform.SetLocalPositionAndRotation(position, rotation);
+                // }
+                ExportBox();
+            }
         }
         else
         {
@@ -116,8 +141,114 @@ public class AnimationPreviewWindow : EditorWindow
         }
     }
 
+    [Serializable]
+    struct BoxColliderData
+    {
+        public Vector3 position;
+        public Vector3 center;
+        public Vector3 size;
+        public Quaternion rotation;
+        public string name;
+    };
+
+    [Serializable]
+    struct BoxColliderDataSerializeStruct
+    {
+        public Dictionary<string, List<BoxColliderData>> allBoxColliderDataMap;
+    };
+    
     private void ExportBox()
     {
-        //animationClip.length;
+        float frameRate = 1 / 30.0f;
+        float totalTime = animationClip.length;
+        int totalFrame = (int)math.floor(totalTime / frameRate);
+        float sampleTime = 0.0f;
+        Transform rootBone = previewObject.transform.Find("Bip001");
+        Transform[] allChildBone = rootBone.GetComponentsInChildren<Transform>(true);
+        List<Transform> boxTransforms = new List<Transform>();
+        for (int i = 0; i < allChildBone.Length; ++i)
+        {
+            if (allChildBone[i].GetComponent<BoxCollider>() != null)
+            {
+                boxTransforms.Add(allChildBone[i]);
+            }
+        }
+        Dictionary<string, List<BoxColliderData>> allBoxColliderDataMap = new();
+        while (true)
+        {
+            animationClip.SampleAnimation(previewObject, sampleTime);
+            for (int i = 0; i < boxTransforms.Count; ++i)
+            {
+                if (!allBoxColliderDataMap.ContainsKey(boxTransforms[i].name))
+                {
+                    List<BoxColliderData> boxColliderDatas = new List<BoxColliderData>(totalFrame);
+                    allBoxColliderDataMap.Add(boxTransforms[i].name, boxColliderDatas);
+                }
+                BoxColliderData boxColliderData = new BoxColliderData();
+                boxColliderData.position        = previewObject.transform.InverseTransformPoint(boxTransforms[i].position);
+                boxColliderData.rotation        = Quaternion.Inverse(previewObject.transform.rotation) * boxTransforms[i].rotation;
+                BoxCollider collider            = boxTransforms[i].GetComponent<BoxCollider>();
+                boxColliderData.center          = collider.center;
+                boxColliderData.size            = collider.size;
+                boxColliderData.name            = boxTransforms[i].name;
+                allBoxColliderDataMap[boxTransforms[i].name].Add(boxColliderData);
+            }
+
+            sampleTime = sampleTime + frameRate;
+            if (sampleTime >= totalTime)
+            {
+                break;
+
+            }
+        }
+
+        BoxColliderDataSerializeStruct se = new BoxColliderDataSerializeStruct();
+        se.allBoxColliderDataMap = allBoxColliderDataMap;
+        StringBuilder json = new StringBuilder("{\"data\":[");
+        // int count          = 0;
+        // foreach (var kv in mKeyFrames)
+        //     {
+        //         var key   = kv.Key;
+        //         var value = kv.Value;
+        //         json.Append(JsonUtility.ToJson(value));
+        //         if (count < mKeyFrames.Count - 1)
+        //         {
+        //             json.Append(",");
+        //         }
+        //         count++;
+        //     }
+        string jsonString = JsonHelper<List<BoxColliderData>>.ToJson(se.allBoxColliderDataMap);
+        jsonString = JsonUtility.ToJson(new ListWrapper<BoxColliderData>(){items = se.allBoxColliderDataMap["Bip001 Pelvis"]});
+        json.Append(jsonString);
+            json.Append("]}");
+        if (!Directory.Exists(Application.dataPath + "/Resources/GameData"))
+        {
+            Directory.CreateDirectory(Application.dataPath + "/Resources/GameData");
+        }
+        string path = Application.dataPath + "/Resources/GameData/test_box_colliders.json";
+        File.WriteAllText(path, json.ToString());
+    }
+}
+
+[Serializable]
+class ListWrapper<T>
+{
+    public List<T> items; // 包含 List 的字段
+}
+
+public class JsonHelper<T>
+{
+    [System.Serializable]
+    private class Wrapper
+    {
+        public T[] Items;
+    }
+
+    public static string ToJson(Dictionary<string, T> dictionary)
+    {
+        Wrapper wrapper = new Wrapper();
+        wrapper.Items = new T[dictionary.Count];
+        dictionary.Values.CopyTo(wrapper.Items, 0);
+        return JsonUtility.ToJson(wrapper);
     }
 }
