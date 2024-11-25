@@ -297,12 +297,12 @@ public class Character : MonoBehaviour
     public bool CanAttackTargetNow(out AttackInfo attackPhase)
     {
         attackPhase = new AttackInfo();
-        if (actionCtrl.ActiveAttackBoxTurnOnInfoList.Count > 0)
-        {
-            int phase = actionCtrl.ActiveAttackBoxTurnOnInfoList[0].attackPhase;
-            if (phase >= 0 && actionCtrl.CurAction.attackInfoList.Length > phase) attackPhase = actionCtrl.CurAction.attackInfoList[phase];
-            return true;
-        }
+        // if (actionCtrl.ActiveAttackBoxTurnOnInfoList.Count > 0)
+        // {
+        //     int phase = actionCtrl.ActiveAttackBoxTurnOnInfoList[0].attackPhase;
+        //     if (phase >= 0 && actionCtrl.CurAction.attackInfoList.Length > phase) attackPhase = actionCtrl.CurAction.attackInfoList[phase];
+        //     return true;
+        // }
 
         return false;
     }

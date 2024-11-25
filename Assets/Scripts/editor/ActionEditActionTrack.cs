@@ -5,5 +5,6 @@ using UnityEngine.Timeline;
 [TrackClipType(typeof(ActionEditActionClip))]
 public class ActionEditActionTrack : TrackAsset
 {
+    public ExposedReference<GameObject> RootBone;
 }
 

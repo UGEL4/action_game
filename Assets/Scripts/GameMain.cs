@@ -18,9 +18,9 @@ public class GameMain : MonoBehaviour
     void DoAttack(AttackInfo attackPhase)
     {
         //CancelTag开启
-        foreach (string cTag in attackPhase.tempBeCancelledTagTurnOn)
-        {
-            player.GetActionController().AddTempBeCanceledTag(cTag);
-        }
+        // foreach (string cTag in attackPhase.tempBeCancelledTagTurnOn)
+        // {
+        //     player.GetActionController().AddTempBeCanceledTag(cTag);
+        // }
     }
 }

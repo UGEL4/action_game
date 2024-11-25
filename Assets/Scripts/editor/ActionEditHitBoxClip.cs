@@ -17,6 +17,7 @@ public class ActionEditHitBoxClip : PlayableAsset
 
     private GameObject mTargetGameObject;
 
+    [Tooltip("勾选后，播放到下一帧时，会记录上一帧的数据")]
     [SerializeField]
     public bool Record = false;
     [SerializeField]

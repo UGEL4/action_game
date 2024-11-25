@@ -28,6 +28,7 @@ public class CharacterAction
 
     public AttackInfo[] attackInfoList;
     public AttackBoxTurnOnInfo[] attackPhaseList;
+    public BeHitBoxTurnOnInfo[] defensePhases;
 
     /// <summary>
     /// 这里是保持移动方向的倍率，根据游戏不同、精度不同所需要的参数不同

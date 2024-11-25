@@ -30,27 +30,19 @@ public class TestEditorCurveBinding : MonoBehaviour
     {
         if (animationClip != null)
         {
-            //var binds = AnimationUtility.GetAnimatableBindings(go, root);
-            var binds = AnimationUtility.GetObjectReferenceCurveBindings(animationClip);
-            if (binds.Length > 0)
-            {
-                Debug.Log("bind path: " + binds[0].path);
-                //var curves = AnimationUtility.GetEditorCurve(animationClip, binds[0]);
-                //var keyFrames = curves.keys;
-            }
-            var allCurves = AnimationUtility.GetCurveBindings(animationClip);
-            if (allCurves.Length > 0)
-            {
-                //Debug.Log("curve path: " + allCurves[0].path);
-                //GameObject animatedObj = AnimationUtility.GetAnimatedObject(go, allCurves[0]) as GameObject;
-                //var curves = AnimationUtility.GetEditorCurve(animationClip, allCurves[0]);
-                //var keyFrames = curves.keys;
-                var pos = go.transform.Find("Bip001/Bip001 Pelvis").transform.position;
-                animationClip.SampleAnimation(go, 1);
-                pos = go.transform.Find("Bip001/Bip001 Pelvis").transform.position;
-                int a = 0;
-            }
-            Debug.Log("rootBone path: " + rootBone.name);
+            // var allCurves = AnimationUtility.GetCurveBindings(animationClip);
+            // if (allCurves.Length > 0)
+            // {
+            //     //Debug.Log("curve path: " + allCurves[0].path);
+            //     //GameObject animatedObj = AnimationUtility.GetAnimatedObject(go, allCurves[0]) as GameObject;
+            //     //var curves = AnimationUtility.GetEditorCurve(animationClip, allCurves[0]);
+            //     //var keyFrames = curves.keys;
+            //     var pos = go.transform.Find("Bip001/Bip001 Pelvis").transform.position;
+            //     animationClip.SampleAnimation(go, 1);
+            //     pos = go.transform.Find("Bip001/Bip001 Pelvis").transform.position;
+            //     int a = 0;
+            // }
+            //Debug.Log("rootBone path: " + rootBone.name);
         }
     }
 }

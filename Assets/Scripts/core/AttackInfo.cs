@@ -3,22 +3,22 @@ using System;
 [Serializable]
 public struct AttackInfo
 {
-    public int attackPhase;
+    public int AttackPhase;
     //攻击倍数
-    public float attackPower;
+    public float AttackPower;
     //攻击能打中同一个对象的次数
-    public int canHitSameTarget;
-    public float hitSameTargetDelay;
-    public float hitStun;
+    public int CanHitSameTarget;
+    public float HitSameTargetDelay;
+    public float HitStun;
 
     //攻击的推力
-    public MoveInfo pushPower;
+    public MoveInfo PushPower;
 
     //卡帧
-    public float freeze;
+    public float Freeze;
 
-    public ActionChangeInfo selfActionChangeInfo;
-    public ActionChangeInfo targetActionChangeInfo;
+    public ActionChangeInfo SelfActionChangeInfo;
+    public ActionChangeInfo TargetActionChangeInfo;
 
-    public string[] tempBeCancelledTagTurnOn;
+    public string[] TempTurnOnBeCanceledTags;
 }

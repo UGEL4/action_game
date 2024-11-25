@@ -239,23 +239,23 @@ public class ActionController
         foreach (AttackBoxTurnOnInfo info in CurAction.attackPhaseList)
         {
             bool open = false;
-            foreach (PercentageRange range in info.turnOnRangeList)
-            {
-                if (pec >= range.min && wasPec <= range.max)
-                {
-                    open = true;
-                    break;
-                }
-            }
-            if (open)
-            {
-                //Log.SimpleLog.Info("range: ", range.min, range.max, wasPec, pec);
-                foreach (string tag in info.attackBoxTag)
-                {
-                    if (!ActiveAttackBoxTurnOnInfoTagList.Contains(tag)) ActiveAttackBoxTurnOnInfoTagList.Add(tag);
-                }
-                ActiveAttackBoxTurnOnInfoList.Add(info);
-            }
+            // foreach (PercentageRange range in info.turnOnRangeList)
+            // {
+            //     if (pec >= range.min && wasPec <= range.max)
+            //     {
+            //         open = true;
+            //         break;
+            //     }
+            // }
+            // if (open)
+            // {
+            //     //Log.SimpleLog.Info("range: ", range.min, range.max, wasPec, pec);
+            //     foreach (string tag in info.attackBoxTag)
+            //     {
+            //         if (!ActiveAttackBoxTurnOnInfoTagList.Contains(tag)) ActiveAttackBoxTurnOnInfoTagList.Add(tag);
+            //     }
+            //     ActiveAttackBoxTurnOnInfoList.Add(info);
+            // }
         }
     }
 }

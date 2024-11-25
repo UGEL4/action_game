@@ -148,7 +148,6 @@ public class AnimationPreviewWindow : EditorWindow
         public Vector3 center;
         public Vector3 size;
         public Quaternion rotation;
-        public string name;
     };
 
     [Serializable]
@@ -190,7 +189,6 @@ public class AnimationPreviewWindow : EditorWindow
                 BoxCollider collider            = boxTransforms[i].GetComponent<BoxCollider>();
                 boxColliderData.center          = collider.center;
                 boxColliderData.size            = collider.size;
-                boxColliderData.name            = boxTransforms[i].name;
                 allBoxColliderDataMap[boxTransforms[i].name].Add(boxColliderData);
             }
 
@@ -202,25 +200,34 @@ public class AnimationPreviewWindow : EditorWindow
             }
         }
 
-        BoxColliderDataSerializeStruct se = new BoxColliderDataSerializeStruct();
-        se.allBoxColliderDataMap = allBoxColliderDataMap;
         StringBuilder json = new StringBuilder("{\"data\":[");
-        // int count          = 0;
-        // foreach (var kv in mKeyFrames)
-        //     {
-        //         var key   = kv.Key;
-        //         var value = kv.Value;
-        //         json.Append(JsonUtility.ToJson(value));
-        //         if (count < mKeyFrames.Count - 1)
-        //         {
-        //             json.Append(",");
-        //         }
-        //         count++;
-        //     }
-        string jsonString = JsonHelper<List<BoxColliderData>>.ToJson(se.allBoxColliderDataMap);
-        jsonString = JsonUtility.ToJson(new ListWrapper<BoxColliderData>(){items = se.allBoxColliderDataMap["Bip001 Pelvis"]});
-        json.Append(jsonString);
-            json.Append("]}");
+        int count          = 0;
+        foreach (var kv in allBoxColliderDataMap)
+        {
+            var key   = kv.Key;
+            var value = kv.Value;
+            json.Append("{\"name\":\"" + key + "\",");
+            json.Append("\"frameData\":[");
+            for (int i = 0; i < value.Count; ++i)
+            {
+                json.Append(JsonUtility.ToJson(value[i]));
+                if (i < value.Count - 1)
+                {
+                    json.Append(",");
+                }
+            }
+            json.Append("]");
+            if (count < allBoxColliderDataMap.Count - 1)
+            {
+                json.Append("},");
+            }
+            else
+            {
+                json.Append("}");
+            }
+            count++;
+        }
+        json.Append("]}");
         if (!Directory.Exists(Application.dataPath + "/Resources/GameData"))
         {
             Directory.CreateDirectory(Application.dataPath + "/Resources/GameData");
