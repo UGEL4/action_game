@@ -2541,7 +2541,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &898324031
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2942,7 +2942,41 @@ PlayableDirector:
   m_WrapMode: 1
   m_DirectorUpdateMode: 1
   m_InitialTime: 0
-  m_SceneBindings: []
+  m_SceneBindings:
+  - key: {fileID: 720079743}
+    value: {fileID: 0}
+  - key: {fileID: 1919056255}
+    value: {fileID: 0}
+  - key: {fileID: 1417324069}
+    value: {fileID: 0}
+  - key: {fileID: 1485561382}
+    value: {fileID: 0}
+  - key: {fileID: 1789166090}
+    value: {fileID: 0}
+  - key: {fileID: 24352551}
+    value: {fileID: 0}
+  - key: {fileID: 609678043}
+    value: {fileID: 0}
+  - key: {fileID: 654016497}
+    value: {fileID: 0}
+  - key: {fileID: 1641919395}
+    value: {fileID: 0}
+  - key: {fileID: 480741110}
+    value: {fileID: 0}
+  - key: {fileID: 594915673}
+    value: {fileID: 0}
+  - key: {fileID: 6375512}
+    value: {fileID: 0}
+  - key: {fileID: 332021247}
+    value: {fileID: 0}
+  - key: {fileID: 2057509208}
+    value: {fileID: 0}
+  - key: {fileID: 1033075378}
+    value: {fileID: 0}
+  - key: {fileID: 1763514335}
+    value: {fileID: 0}
+  - key: {fileID: 556954993}
+    value: {fileID: 0}
   m_ExposedReferences:
     m_References: []
 --- !u!4 &1112719999
@@ -3031,7 +3065,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1244981562}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 7.62, y: 0, z: 1.500429}
+  m_LocalPosition: {x: 7.706, y: 0.947, z: 1.500429}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -5324,11 +5358,6 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 2560303170740195062, guid: e58d17e2e5a21e7439206d8a689d3e38,
-        type: 3}
-      propertyPath: m_Enabled
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 4625243321584932810, guid: e58d17e2e5a21e7439206d8a689d3e38,
         type: 3}
       propertyPath: m_Name
@@ -5389,47 +5418,6 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 8823785141663986003, guid: e58d17e2e5a21e7439206d8a689d3e38,
-        type: 3}
-      propertyPath: m_SceneBindings.Array.size
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 8823785141663986003, guid: e58d17e2e5a21e7439206d8a689d3e38,
-        type: 3}
-      propertyPath: m_SceneBindings.Array.data[0].key
-      value: 
-      objectReference: {fileID: 3874745098225062438, guid: f04cdd7760c4d2843a49f72f52b1414c,
-        type: 2}
-    - target: {fileID: 8823785141663986003, guid: e58d17e2e5a21e7439206d8a689d3e38,
-        type: 3}
-      propertyPath: m_SceneBindings.Array.data[0].value
-      value: 
-      objectReference: {fileID: 1949323925}
-    - target: {fileID: 8823785141663986003, guid: e58d17e2e5a21e7439206d8a689d3e38,
-        type: 3}
-      propertyPath: m_ExposedReferences.m_References.Array.size
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 8823785141663986003, guid: e58d17e2e5a21e7439206d8a689d3e38,
-        type: 3}
-      propertyPath: m_ExposedReferences.m_References.Array.data[0].first
-      value: af375230dd6c7844ebe747234fea8ba5
-      objectReference: {fileID: 0}
-    - target: {fileID: 8823785141663986003, guid: e58d17e2e5a21e7439206d8a689d3e38,
-        type: 3}
-      propertyPath: m_ExposedReferences.m_References.Array.data[1].first
-      value: 2db5266ec68f5e847975503dbd8400fa
-      objectReference: {fileID: 0}
-    - target: {fileID: 8823785141663986003, guid: e58d17e2e5a21e7439206d8a689d3e38,
-        type: 3}
-      propertyPath: m_ExposedReferences.m_References.Array.data[0].second
-      value: 
-      objectReference: {fileID: 0}
-    - target: {fileID: 8823785141663986003, guid: e58d17e2e5a21e7439206d8a689d3e38,
-        type: 3}
-      propertyPath: m_ExposedReferences.m_References.Array.data[1].second
-      value: 
-      objectReference: {fileID: 541909856}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -5813,7 +5801,9 @@ PlayableDirector:
   m_WrapMode: 1
   m_DirectorUpdateMode: 1
   m_InitialTime: 0
-  m_SceneBindings: []
+  m_SceneBindings:
+  - key: {fileID: 1655175362}
+    value: {fileID: 0}
   m_ExposedReferences:
     m_References: []
 --- !u!4 &1830217749
@@ -6132,12 +6122,6 @@ MonoBehaviour:
   m_Loop: 0
   m_Version: 1
   m_Rotation: {x: 0, y: 0, z: 0, w: 1}
---- !u!95 &1949323925 stripped
-Animator:
-  m_CorrespondingSourceObject: {fileID: 2560303170740195062, guid: e58d17e2e5a21e7439206d8a689d3e38,
-    type: 3}
-  m_PrefabInstance: {fileID: 1741296727}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &2038184423
 PrefabInstance:
   m_ObjectHideFlags: 0

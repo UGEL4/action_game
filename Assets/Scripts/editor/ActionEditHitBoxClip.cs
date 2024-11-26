@@ -1,14 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
-using Log;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.Playables;
 using Action;
 using System.IO;
-using Unity.VisualScripting;
-using System.Drawing.Drawing2D;
 
 [Serializable]
 public class ActionEditHitBoxClip : PlayableAsset
@@ -47,6 +44,18 @@ public class ActionEditHitBoxClip : PlayableAsset
             return mDefaultBoxDataList;
         }
     }
+
+    /// <summary>
+    /// 一个攻击框数据
+    /// </summary>
+    [Serializable]
+    public class HitBoxData
+    {
+        public GameObject visualGameobject;
+        public string tag;
+        public FrameIndexRange activeFrameRange;
+    }
+    public List<HitBoxData> hitBoxDataList;
 #endregion
 
     public override Playable CreatePlayable(PlayableGraph graph, GameObject owner)
