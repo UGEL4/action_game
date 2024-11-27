@@ -104,63 +104,93 @@ public class ActionEditHitBoxBehaviour : PlayableBehaviour
         var maxFrameNum = (int)(director.playableAsset.duration / frameTime);
         bool firstFrame = lastFrame == -1;
         curFrame        = (int)(director.time / frameTime); // 计算帧号
-        if (lastFrame == curFrame && !firstFrame)
+
+        /////
         {
-            return;
-        }
-        lastFrame = curFrame; // 计算帧号
-        if (curFrame == maxFrameNum || (!firstFrame && curFrame == 0))
-        {
-            curFrame     = 0;
-            lastFrame    = -1;
-            isFirstFrame = true;
-            SimpleLog.Info("FirstFrame:", curFrame, lastFrame);
-            return;
-        }
-        //SimpleLog.Info("CurrentFrame:", curFrame, lastFrame);
-        // SimpleLog.Info("frameNumer:", curFrame, lastFrame);
-        var boxManager = Asset.BoxMgr;
-        var keyFrames  = Asset.KeyFrames;
-        KeyFrameData frameData;
-        if (keyFrames.TryGetValue(curFrame, out frameData))
-        {
-            var boxList = boxManager.boxObjects;
-            for (int i = 0; i < boxList.Count; ++i)
+            FrameIndexRange frameIndexRange = Asset.activeFrameRange;
+            if (curFrame >= frameIndexRange.min && curFrame < frameIndexRange.max)
             {
-                if (i < frameData.boxDataList.Count)
+                SimpleColliderBox box = Asset.box;
+                if(target != null)
                 {
-                    var boxData                     = frameData.boxDataList[i];
-                    boxList[i].transform.localPosition   = boxData.position;
-                    boxList[i].transform.localRotation   = boxData.rotation;
-                    boxList[i].transform.localScale = boxData.scale;
-                    CustomBounds bounds             = boxList[i].GetComponent<CustomBounds>();
-                    if (bounds != null)
+                    target.SetActive(true);
+                    Transform transform = target.transform;
+                    //transform.SetLocalPositionAndRotation(box.Position, box.Rotation);
+                    transform.SetPositionAndRotation(box.Position, Quaternion.Euler(box.Rotation));
+                    BoxCollider collider = target.GetComponent<BoxCollider>();
+                    if (collider != null)
                     {
-                        bounds.bounds = boxData.bounds;
+                        collider.size   = box.Size;
+                        collider.center = box.Center;
                     }
                 }
             }
-        }
-        else
-        {
-            var defaultBoxDataList = Asset.DefaultBoxDataList;
-            var boxList            = boxManager.boxObjects;
-            for (int i = 0; i < boxList.Count; ++i)
+            else
             {
-                if (i < defaultBoxDataList.Count)
-                {
-                    var boxData                        = defaultBoxDataList[i];
-                    boxList[i].transform.localPosition = boxData.position;
-                    boxList[i].transform.localRotation = boxData.rotation;
-                    boxList[i].transform.localScale    = boxData.scale;
-                    CustomBounds bounds                = boxList[i].GetComponent<CustomBounds>();
-                    if (bounds != null)
-                    {
-                        bounds.bounds = boxData.bounds;
-                    }
-                }
+                target?.SetActive(false);
             }
         }
+        //SimpleLog.Info("CurrentFrame:", curFrame);
+        /////
+
+
+        // if (lastFrame == curFrame && !firstFrame)
+        // {
+        //     return;
+        // }
+        // lastFrame = curFrame; // 计算帧号
+        // if (curFrame == maxFrameNum || (!firstFrame && curFrame == 0))
+        // {
+        //     curFrame     = 0;
+        //     lastFrame    = -1;
+        //     isFirstFrame = true;
+        //     SimpleLog.Info("FirstFrame:", curFrame, lastFrame);
+        //     return;
+        // }
+        // //SimpleLog.Info("CurrentFrame:", curFrame, lastFrame);
+        // // SimpleLog.Info("frameNumer:", curFrame, lastFrame);
+        // var boxManager = Asset.BoxMgr;
+        // var keyFrames  = Asset.KeyFrames;
+        // KeyFrameData frameData;
+        // if (keyFrames.TryGetValue(curFrame, out frameData))
+        // {
+        //     var boxList = boxManager.boxObjects;
+        //     for (int i = 0; i < boxList.Count; ++i)
+        //     {
+        //         if (i < frameData.boxDataList.Count)
+        //         {
+        //             var boxData                     = frameData.boxDataList[i];
+        //             boxList[i].transform.localPosition   = boxData.position;
+        //             boxList[i].transform.localRotation   = boxData.rotation;
+        //             boxList[i].transform.localScale = boxData.scale;
+        //             CustomBounds bounds             = boxList[i].GetComponent<CustomBounds>();
+        //             if (bounds != null)
+        //             {
+        //                 bounds.bounds = boxData.bounds;
+        //             }
+        //         }
+        //     }
+        // }
+        // else
+        // {
+        //     var defaultBoxDataList = Asset.DefaultBoxDataList;
+        //     // var boxList            = boxManager.boxObjects;
+        //     // for (int i = 0; i < boxList.Count; ++i)
+        //     // {
+        //     //     if (i < defaultBoxDataList.Count)
+        //     //     {
+        //     //         var boxData                        = defaultBoxDataList[i];
+        //     //         boxList[i].transform.localPosition = boxData.position;
+        //     //         boxList[i].transform.localRotation = boxData.rotation;
+        //     //         boxList[i].transform.localScale    = boxData.scale;
+        //     //         CustomBounds bounds                = boxList[i].GetComponent<CustomBounds>();
+        //     //         if (bounds != null)
+        //     //         {
+        //     //             bounds.bounds = boxData.bounds;
+        //     //         }
+        //     //     }
+        //     // }
+        // }
     }
 
     public override void OnBehaviourPause(Playable playable, FrameData info)
@@ -183,6 +213,7 @@ public class ActionEditHitBoxBehaviour : PlayableBehaviour
         curFrame     = 0;
         lastFrame    = -1;
         isFirstFrame = true;
+        target?.SetActive(false);
         SimpleLog.Info("OnGraphStop:", curFrame, lastFrame);
     }
 }

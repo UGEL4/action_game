@@ -3,6 +3,7 @@ using UnityEngine;
 [RequireComponent(typeof(BoxCollider))]
 public class BoxColliderGizmo : MonoBehaviour
 {
+    public bool useParentScale = false;
     private void OnDrawGizmos()
     {
         // 获取 BoxCollider 组件
@@ -14,6 +15,13 @@ public class BoxColliderGizmo : MonoBehaviour
             // 获取 BoxCollider 的中心和大小
             Vector3 center = transform.TransformPoint(boxCollider.center);
             Vector3 size = boxCollider.size;
+            if (useParentScale)
+            {
+                Vector3 scale = transform.lossyScale;
+                size.x *= scale.x;
+                size.y *= scale.y;
+                size.z *= scale.z;
+            }
 
             // 计算边框的八个顶点
             Vector3[] corners = new Vector3[8];

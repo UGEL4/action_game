@@ -14,6 +14,9 @@ public class ActionEditHitBoxClip : PlayableAsset
 
     private GameObject mTargetGameObject;
 
+    public SimpleColliderBox box;
+    public FrameIndexRange activeFrameRange;
+
     [Tooltip("勾选后，播放到下一帧时，会记录上一帧的数据")]
     [SerializeField]
     public bool Record = false;
@@ -56,6 +59,8 @@ public class ActionEditHitBoxClip : PlayableAsset
         public FrameIndexRange activeFrameRange;
     }
     public List<HitBoxData> hitBoxDataList;
+
+    public Vector3 position;
 #endregion
 
     public override Playable CreatePlayable(PlayableGraph graph, GameObject owner)
@@ -97,21 +102,21 @@ public class ActionEditHitBoxClip : PlayableAsset
 
     private void InitDefaultData()
     {
-        var boxList         = BoxMgr.boxObjects;
-        mDefaultBoxDataList = new List<BoxData>(boxList.Count);
-        for (int i = 0; i < boxList.Count; ++i)
-        {
-            var boxData         = new BoxData();
-            boxData.position    = boxList[i].transform.localPosition;
-            boxData.rotation    = boxList[i].transform.localRotation;
-            boxData.scale       = boxList[i].transform.localScale;
-            CustomBounds bounds = boxList[i].GetComponent<CustomBounds>();
-            if (bounds != null)
-            {
-                boxData.bounds = bounds.bounds;
-            }
-            DefaultBoxDataList.Add(boxData);
-        }
+        // var boxList         = BoxMgr.boxObjects;
+        // mDefaultBoxDataList = new List<BoxData>(boxList.Count);
+        // for (int i = 0; i < boxList.Count; ++i)
+        // {
+        //     var boxData         = new BoxData();
+        //     boxData.position    = boxList[i].transform.localPosition;
+        //     boxData.rotation    = boxList[i].transform.localRotation;
+        //     boxData.scale       = boxList[i].transform.localScale;
+        //     CustomBounds bounds = boxList[i].GetComponent<CustomBounds>();
+        //     if (bounds != null)
+        //     {
+        //         boxData.bounds = bounds.bounds;
+        //     }
+        //     DefaultBoxDataList.Add(boxData);
+        // }
     }
 
     public void OnCreateClip(ExposedReference<GameObject> data)
