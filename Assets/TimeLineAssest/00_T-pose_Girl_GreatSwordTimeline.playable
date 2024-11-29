@@ -233,6 +233,9 @@ MonoBehaviour:
   weapon:
     exposedName: da49affcb8bddb04799d91b8965a1bd9
     defaultValue: {fileID: 0}
+  characterRoot:
+    exposedName: 
+    defaultValue: {fileID: 0}
   activeFrameRange:
     min: 15
     max: 22
@@ -253,6 +256,7 @@ MonoBehaviour:
   - {fileID: 3874745098225062438}
   - {fileID: 6749216349447243685}
   - {fileID: -7709695667731223998}
+  - {fileID: 3139160710313008059}
   m_FixedDuration: 0
   m_EditorSettings:
     m_Framerate: 30
@@ -311,6 +315,98 @@ MonoBehaviour:
   Record: 0
   hitBoxDataList: []
   position: {x: 0, y: 0, z: 0}
+--- !u!114 &3139160710313008059
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d83a14487a387cd4ba12437926b4978c, type: 3}
+  m_Name: Action Editor Action Data Track
+  m_EditorClassIdentifier: 
+  m_Version: 3
+  m_AnimClip: {fileID: 0}
+  m_Locked: 0
+  m_Muted: 0
+  m_CustomPlayableFullTypename: 
+  m_Curves: {fileID: 0}
+  m_Parent: {fileID: 11400000}
+  m_Children: []
+  m_Clips:
+  - m_Version: 1
+    m_Start: 0
+    m_ClipIn: 0
+    m_Asset: {fileID: 7815525293445006088}
+    m_Duration: 2.3333333333333335
+    m_TimeScale: 1
+    m_ParentTrack: {fileID: 3139160710313008059}
+    m_EaseInDuration: 0
+    m_EaseOutDuration: 0
+    m_BlendInDuration: -1
+    m_BlendOutDuration: -1
+    m_MixInCurve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 0
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      - serializedVersion: 3
+        time: 1
+        value: 1
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    m_MixOutCurve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 1
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      - serializedVersion: 3
+        time: 1
+        value: 0
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    m_BlendInCurveMode: 0
+    m_BlendOutCurveMode: 0
+    m_ExposedParameterNames: []
+    m_AnimationCurves: {fileID: 0}
+    m_Recordable: 0
+    m_PostExtrapolationMode: 0
+    m_PreExtrapolationMode: 0
+    m_PostExtrapolationTime: 0
+    m_PreExtrapolationTime: 0
+    m_DisplayName: ActionEditorActionDataClip
+  m_Markers:
+    m_Objects: []
 --- !u!114 &3874745098225062438
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -858,3 +954,39 @@ MonoBehaviour:
     m_DisplayName: ActionEditHitBoxClip
   m_Markers:
     m_Objects: []
+--- !u!114 &7815525293445006088
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 544a163f9454fe14383503b72a4ebeb3, type: 3}
+  m_Name: ActionEditorActionDataClip
+  m_EditorClassIdentifier: 
+  action:
+    mActionName: Attack_01
+    mAnimation: Attack_01
+    mPriority: 100
+    mAutoNextActionName: Idle
+    mAutoTerminate: 0
+    keepPlayingAnim: 0
+    mTotalFrameCount: 70
+    mCancelTagList:
+    - tag: InitAction
+      priority: 0
+      startFromPercentage: 0
+      startFromFrameIndex: 0
+      fadeInPercentage: 0
+    mBeCanceledTagList: []
+    mTempBeCanceledTagList: []
+    mCommandList:
+    - keySequences: 07000000
+      validInSecond: 0
+      validInFrameCount: 2
+    attackInfoList: []
+    attackPhaseList: []
+    defensePhases: []
+    moveInputAcceptance: []

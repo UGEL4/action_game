@@ -161,8 +161,7 @@ public class ActionController
 
     void ChangeAction(string actionName, float normalizedTransitionDuration, float normalizedTimeOffset, uint fromFrameIndex)
     {
-        CharacterAction action = GetActionById(actionName);
-        if (action != null)
+        if (GetActionById(actionName, out CharacterAction action))
         {
             Log.SimpleLog.Log("ChangeAction: ", actionName, fromFrameIndex);
             //
@@ -189,13 +188,18 @@ public class ActionController
         }
     }
 
-    CharacterAction GetActionById(string actionId)
+    bool GetActionById(string actionId, out CharacterAction action)
     {
+        action = new CharacterAction();
         for (int i = 0; i < AllActions.Count; i++)
         {
-            if (actionId == AllActions[i].mActionName) return AllActions[i];
+            if (actionId == AllActions[i].mActionName)
+            {
+                action = AllActions[i];
+                return true;
+            }
         }
-        return null;
+        return false;
     }
 
     public void CalculateInputAcceptance(float wasPec, float pec)

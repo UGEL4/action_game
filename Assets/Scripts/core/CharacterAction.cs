@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using Action;
 
 [Serializable]
-public class CharacterAction
+public struct CharacterAction
 {
     // 动作名
     public string mActionName;

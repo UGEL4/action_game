@@ -8,7 +8,7 @@ public class ActionEditorSerializer : MonoBehaviour
 {
     public TimelineAsset timelineAsset;
 
-    void Start()
+    public void Save()
     {
         if (timelineAsset != null)
         {
