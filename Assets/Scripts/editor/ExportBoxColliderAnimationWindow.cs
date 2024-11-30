@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
@@ -7,6 +8,8 @@ using ACTTools;
 using Unity.Mathematics;
 using UnityEditor;
 using UnityEngine;
+using YamlDotNet.Serialization;
+using YamlDotNet.Serialization.NamingConventions;
 
 public class ExportBoxColliderAnimationWindow : EditorWindow
 {
@@ -21,6 +24,7 @@ public class ExportBoxColliderAnimationWindow : EditorWindow
     private GameObject PreviewObj;
     private GameObject RootBone;
     private int FrameCount;
+    private bool PrettyPrint = false;
     void OnGUI()
     {
         FileName   = EditorGUILayout.TextField("文件名", FileName);
@@ -28,6 +32,7 @@ public class ExportBoxColliderAnimationWindow : EditorWindow
         Animation  = (AnimationClip)EditorGUILayout.ObjectField("动画", Animation, typeof(AnimationClip), false);
         PreviewObj = (GameObject)EditorGUILayout.ObjectField("预览对象", PreviewObj, typeof(GameObject), true);
         RootBone   = (GameObject)EditorGUILayout.ObjectField("根骨骼", RootBone, typeof(GameObject), true);
+        PrettyPrint = EditorGUILayout.Toggle("格式化输出", PrettyPrint);
         if (PreviewObj != null && RootBone != null)
         {
             if (Animation != null)
@@ -45,6 +50,12 @@ public class ExportBoxColliderAnimationWindow : EditorWindow
                 }
             }
         }
+    }
+
+    [Serializable]
+    public class Warpper
+    {
+        public List<CharacterBoneBox> data;
     }
 
     void Export()
@@ -101,6 +112,8 @@ public class ExportBoxColliderAnimationWindow : EditorWindow
 
         StringBuilder json = new StringBuilder("{\"data\":[");
         int count          = 0;
+        Warpper wdata = new();
+        wdata.data = new List<CharacterBoneBox>();
         foreach (var kv in allBoxColliderDataMap)
         {
             var key   = kv.Key;
@@ -110,9 +123,10 @@ public class ExportBoxColliderAnimationWindow : EditorWindow
                 BoxName = key,
                 FrameData = value
             };
+            wdata.data.Add(data);
             // json.Append("{\"name\":\"" + key + "\",");
             // json.Append("\"frameData\":");
-            json.Append(JsonUtility.ToJson(data));
+            json.Append(JsonUtility.ToJson(data, PrettyPrint));
             if (count < allBoxColliderDataMap.Count - 1)
             {
                 json.Append(",");
@@ -130,6 +144,11 @@ public class ExportBoxColliderAnimationWindow : EditorWindow
         }
         string path = Application.dataPath + "/Resources/GameData/ActionBoneColliderAnimation/" + FileName + ".json";
         File.WriteAllText(path, json.ToString());
+
+        // var sr = new SerializerBuilder().WithNamingConvention(PascalCaseNamingConvention.Instance).Build();
+        // var yaml = sr.Serialize(wdata);
+        // path = Application.dataPath + "/Resources/GameData/ActionBoneColliderAnimation/" + FileName + ".yaml";
+        // File.WriteAllText(path, yaml);
     }
 
     Transform FindChild(Transform root, string name)
