@@ -12,8 +12,7 @@ public class ActionEditorHitRayCastClip : PlayableAsset
 
     public ExposedReference<GameObject> weapon;
     public ExposedReference<GameObject> characterRoot;
-
-    public FrameIndexRange activeFrameRange;
+    public AttackBoxTurnOnInfo attackBoxTurnOnInfo;
 
     public Dictionary<int, List<SerializableTransformNoScale>> rayCastPointsTransformPerFrame = new();
 
@@ -57,7 +56,7 @@ public class ActionEditorHitRayCastClip : PlayableAsset
         behaviour.weapon           = weaponObj;
         var characterRootObj       = characterRoot.Resolve(graph.GetResolver());
         behaviour.characterRoot    = characterRootObj;
-        behaviour.activeFrameRange = activeFrameRange;
+        behaviour.activeFrameRange = attackBoxTurnOnInfo.FrameIndexRange;
         behaviour.clipAsset        = this;
         behaviour.director         = owner.GetComponent<PlayableDirector>();
         behaviour.OnPlayableCreateOverride();

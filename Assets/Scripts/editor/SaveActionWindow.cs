@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 using ACTTools;
 using UnityEditor;
@@ -44,11 +45,15 @@ public class SaveActionWindow : EditorWindow
             {
                 GetActionData(track, out characterAction);
             }
+            if (track.GetType() == typeof(ActionEditorHitBoxTrack))
+            {
+                GetHitBoxTurnOnInfo(track, out characterAction.defensePhases);
+            }
         }
 
         characterAction.attackPhaseList = allTurnOnInfo;
         StringBuilder json              = new StringBuilder("{\"data\":");
-        json.Append(JsonUtility.ToJson(characterAction));
+        json.Append(JsonUtility.ToJson(characterAction, true));
         if (!Directory.Exists(Application.dataPath + "/Resources/GameData"))
         {
             Directory.CreateDirectory(Application.dataPath + "/Resources/GameData");
@@ -60,29 +65,24 @@ public class SaveActionWindow : EditorWindow
 
     void GetRayCastPointTurnOnInfo(TrackAsset track, out AttackBoxTurnOnInfo[] allTurnOnInfo)
     {
-        string trackName = track.name;
-        ActionEditorHitRayCastClip clipAsset = null;
-        foreach (var clip in track.GetClips())
+        var clips     = track.GetClips();
+        allTurnOnInfo = new AttackBoxTurnOnInfo[clips.Count()];
+        int c         = 0;
+        foreach (var clip in clips)
         {
-            clipAsset = clip.asset as ActionEditorHitRayCastClip;
-            break;
-        }
-        if (clipAsset == null)
-        {
-            allTurnOnInfo = new AttackBoxTurnOnInfo[0];
-            return;
-        }
-        {
-            var map        = clipAsset.rayCastPointsTransformPerFrame;
-            int rayCount   = map[(int)clipAsset.activeFrameRange.min].Count;
-            int frameCount = map.Count;
-            allTurnOnInfo  = new AttackBoxTurnOnInfo[rayCount];
+            ActionEditorHitRayCastClip clipAsset = clip.asset as ActionEditorHitRayCastClip;
+
+            var map                  = clipAsset.rayCastPointsTransformPerFrame;
+            AttackBoxTurnOnInfo info = clipAsset.attackBoxTurnOnInfo;
+            int rayCount             = map[(int)info.FrameIndexRange.min].Count;
+            info.RayPointDataList    = new AttackRayPointData[rayCount];
+            info.AttackPhase         = c;
+            int frameCount           = map.Count;
             for (int i = 0; i < rayCount; ++i)
             {
-                AttackBoxTurnOnInfo info = new AttackBoxTurnOnInfo();
-                info.FrameIndexRange     = clipAsset.activeFrameRange;
-                info.RayPointTransforms  = new PositionRotationData[frameCount];
-                int start = (int)clipAsset.activeFrameRange.min;
+                AttackRayPointData pointData = new AttackRayPointData();
+                pointData.RayPointTransforms = new PositionRotationData[frameCount];
+                int start                    = (int)info.FrameIndexRange.min;
                 for (int j = 0; j < frameCount; ++j)
                 {
                     var trans = map[j + start];
@@ -90,10 +90,11 @@ public class SaveActionWindow : EditorWindow
                         Position = trans[i].Position,
                         Rotation = trans[i].Rotation
                     };
-                    info.RayPointTransforms[j] = data;
+                    pointData.RayPointTransforms[j] = data;
                 }
-                allTurnOnInfo[i] = info;
+                info.RayPointDataList[i] = pointData;
             }
+            allTurnOnInfo[c++] = info;
         }
     }
 
@@ -109,6 +110,30 @@ public class SaveActionWindow : EditorWindow
         if (clipAsset != null)
         {
             action = clipAsset.action;
+        }
+    }
+
+    void GetHitBoxTurnOnInfo(TrackAsset track, out BeHitBoxTurnOnInfo[] hitBoxTurnOnInfo)
+    {
+        var clips        = track.GetClips();
+        hitBoxTurnOnInfo = new BeHitBoxTurnOnInfo[clips.Count()];
+        int i            = 0;
+        foreach (var clip in clips)
+        {
+            ActionEditorHitBoxClip clipAsset = clip.asset as ActionEditorHitBoxClip;
+            BeHitBoxTurnOnInfo info          = clipAsset.turnOnInfo;
+            List<string> tempList            = new();
+            foreach (var boxInfo in clipAsset.boxList)
+            {
+                if (boxInfo.active && boxInfo.Bone != null)
+                {
+                    tempList.Add(boxInfo.Bone.name);
+                }
+            }
+            info.Tags = new string[tempList.Count];
+            tempList.CopyTo(info.Tags);
+
+            hitBoxTurnOnInfo[i++] = info;
         }
     }
 }

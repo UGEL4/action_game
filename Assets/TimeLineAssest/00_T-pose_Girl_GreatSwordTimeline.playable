@@ -236,9 +236,14 @@ MonoBehaviour:
   characterRoot:
     exposedName: 
     defaultValue: {fileID: 0}
-  activeFrameRange:
-    min: 15
-    max: 22
+  attackBoxTurnOnInfo:
+    FrameIndexRange:
+      min: 15
+      max: 22
+    RayPointDataList: []
+    AttackBoxes: []
+    AttackPhase: 0
+    Priority: 0
 --- !u!114 &-1397271026460527141
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -368,18 +373,55 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0fdac1f89656f08438fcf46a6d3083be, type: 3}
   m_Name: ActionEditorHitBoxClip
   m_EditorClassIdentifier: 
-  tempList:
-  - active: 0
+  RootBone:
+    exposedName: e9a0d0dc2f0287942bfe89b9ca49c799
+    defaultValue: {fileID: 0}
+  turnOnInfo:
+    FrameIndexRange:
+      min: 0
+      max: 70
+    Tags: []
+    TempTurnOnBeCancelTags: []
+    Priority: 0
+    SelfActionChangeInfo:
+      changeType: 0
+      param: 
+      priority: 0
+      fromNormalized: 0
+      transNormalized: 0
+    TargetActionChangeInfo:
+      changeType: 0
+      param: 
+      priority: 0
+      fromNormalized: 0
+      transNormalized: 0
+  boxList:
+  - active: 1
     Bone: {fileID: 0}
-  weapon:
-    exposedName: 
-    defaultValue: {fileID: 0}
-  characterRoot:
-    exposedName: 
-    defaultValue: {fileID: 0}
-  activeFrameRange:
-    min: 0
-    max: 0
+  - active: 1
+    Bone: {fileID: 0}
+  - active: 1
+    Bone: {fileID: 0}
+  - active: 1
+    Bone: {fileID: 0}
+  - active: 1
+    Bone: {fileID: 0}
+  - active: 1
+    Bone: {fileID: 0}
+  - active: 1
+    Bone: {fileID: 0}
+  - active: 1
+    Bone: {fileID: 0}
+  - active: 1
+    Bone: {fileID: 0}
+  - active: 1
+    Bone: {fileID: 0}
+  - active: 1
+    Bone: {fileID: 0}
+  - active: 1
+    Bone: {fileID: 0}
+  - active: 1
+    Bone: {fileID: 0}
 --- !u!114 &1997693612859867172
 MonoBehaviour:
   m_ObjectHideFlags: 1

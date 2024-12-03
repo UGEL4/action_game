@@ -1,76 +1,76 @@
 using System;
 using System.Collections.Generic;
-using ACTTools;
+using System.ComponentModel;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.Playables;
-using UnityEngine.Rendering;
 
-[Serializable]
+//每个clip就是一个防御阶段(BeHitBoxTurnOnInfo)
 public class ActionEditorHitBoxClip : PlayableAsset
 {
+    [Header("骨骼根节点")]
+    public ExposedReference<GameObject> RootBone;
+    private GameObject mRootBoneObj;
+
     [Serializable]
     public struct ActiveHitBoxInfo
     {
         public bool active;
         public GameObject Bone;
     }
-    public List<ActiveHitBoxInfo> tempList;
+
+    [Header("碰撞盒信息")]
+    public BeHitBoxTurnOnInfo turnOnInfo;
+    [Header("激活的碰撞盒列表")]
+    public List<ActiveHitBoxInfo> boxList = new();
+
+    // [Serializable]
+    // public struct PhaseActiveHitBoxInfo
+    // {
+    //     [Tooltip("碰撞盒信息")]
+    //     public BeHitBoxTurnOnInfo turnOnInfo;
+
+    //     [Tooltip("激活的碰撞盒列表")]
+    //     public List<ActiveHitBoxInfo> boxList;
+    // }
+
+    // [Tooltip("防御阶段列表")]
+    // public List<PhaseActiveHitBoxInfo> phaseBoxList = new();
+
+    private List<GameObject> mCacheBoneList = new List<GameObject>();
 
     public ActionEditorHitBoxBehaviour template = new ActionEditorHitBoxBehaviour();
 
-    public ExposedReference<GameObject> weapon;
-    public ExposedReference<GameObject> characterRoot;
-
-    public FrameIndexRange activeFrameRange;
-
-    public Dictionary<int, List<SerializableTransformNoScale>> rayCastPointsTransformPerFrame = new();
-
-    public void RecordPointTransform(int frameIndex, List<SerializableTransformNoScale> transforms)
-    {
-        if (rayCastPointsTransformPerFrame.TryGetValue(frameIndex, out List<SerializableTransformNoScale> list))
-        {
-            if (list.Count != transforms.Count)
-            {
-                List<SerializableTransformNoScale> newList = new(transforms.Count);
-                for (int i = 0; i < transforms.Count; i++)
-                {
-                    newList.Add(transforms[i]);
-                }
-                list = newList;
-            }
-            else
-            {
-                for (int i = 0; i < transforms.Count; i++)
-                {
-                    list[i] = transforms[i];
-                }
-            }
-        }
-        else
-        {
-            List<SerializableTransformNoScale> newList = new(transforms.Count);
-            for (int i = 0; i < transforms.Count; i++)
-            {
-                newList.Add( transforms[i]);
-            }
-            rayCastPointsTransformPerFrame.Add(frameIndex, newList);
-        }
-    }
-
     public override Playable CreatePlayable(PlayableGraph graph, GameObject owner)
     {
-        var playable               = ScriptPlayable<ActionEditorHitBoxBehaviour>.Create(graph, template);
-        var behaviour              = playable.GetBehaviour();
-        var weaponObj              = weapon.Resolve(graph.GetResolver());
-        behaviour.weapon           = weaponObj;
-        var characterRootObj       = characterRoot.Resolve(graph.GetResolver());
-        behaviour.characterRoot    = characterRootObj;
-        behaviour.activeFrameRange = activeFrameRange;
-        behaviour.clipAsset        = this;
-        behaviour.director         = owner.GetComponent<PlayableDirector>();
-        behaviour.OnPlayableCreateOverride();
+        var playable = ScriptPlayable<ActionEditorHitBoxBehaviour>.Create(graph, template);
+        GameObject rootBoneObj = RootBone.Resolve(graph.GetResolver());
+        if (rootBoneObj != null && mRootBoneObj != rootBoneObj)
+        {
+            mRootBoneObj = rootBoneObj;
+            boxList.Clear();
+            TraverseChildren(rootBoneObj.transform, boxList);
+        }
         return playable;
+    }
+
+    void TraverseChildren(Transform parent, List<ActiveHitBoxInfo> outList)
+    {
+        // 遍历当前 GameObject 的所有子节点
+        foreach (Transform child in parent)
+        {
+            if (child.GetComponent<BoxCollider>() != null)
+            {
+                ActiveHitBoxInfo info = new ActiveHitBoxInfo()
+                {
+                    active = true,
+                    Bone   = child.gameObject
+                };
+                outList.Add(info);
+            }
+            // 递归调用，遍历子节点的子节点
+            TraverseChildren(child, outList);
+        }
     }
 }
 
@@ -79,44 +79,50 @@ public class ActiveHitBoxInfoDrawer : PropertyDrawer
 {
     public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
     {
-        EditorGUILayout.LabelField(label, EditorStyles.boldLabel);
-        EditorGUILayout.BeginVertical();
-        EditorGUILayout.PropertyField(property.FindPropertyRelative("active"), new GUIContent("是否激活"));
-        EditorGUILayout.PropertyField(property.FindPropertyRelative("Bone"), new GUIContent("碰撞盒骨骼"));
-        EditorGUILayout.EndVertical();
+        var depth = property.depth;
+        EditorGUI.BeginProperty(position, label, property);
+        //EditorGUI.indentLevel += depth + 1;
+        EditorGUI.PropertyField(position, property, new GUIContent(property.FindPropertyRelative("Bone").objectReferenceValue.name));
+        if (property.isExpanded)
+        {
+            EditorGUI.indentLevel++;
+
+            EditorGUILayout.BeginVertical();
+            // 绘制字段
+            // 获取子属性
+            SerializedProperty activeProperty = property.FindPropertyRelative("active");
+            SerializedProperty boneProperty   = property.FindPropertyRelative("Bone");
+            EditorGUILayout.PropertyField(activeProperty, new GUIContent("是否激活"));
+            EditorGUILayout.PropertyField(boneProperty, new GUIContent("碰撞盒骨骼"));
+            EditorGUILayout.EndVertical();
+
+            EditorGUI.indentLevel--;
+        }
+        //EditorGUI.indentLevel -= depth + 1;
+        EditorGUI.EndProperty();
     }
 }
 
-[AttributeUsage(AttributeTargets.Field, AllowMultiple = false, Inherited = true)]
-public class SelectActiveHidBoxPropertyAttribute : PropertyAttribute
+public class ActionEditorHitBoxClipCustomDrawProperty : PropertyAttribute
 {
-    public string CustomInfo { get; set; }
-    public SelectActiveHidBoxPropertyAttribute(string customInfo)
-    {
-        CustomInfo = customInfo;
-    }
+
 }
 
-[CustomPropertyDrawer(typeof(SelectActiveHidBoxPropertyAttribute))]
-public class SelectActiveHidBoxPropertyDrawer : PropertyDrawer
+[CustomPropertyDrawer(typeof(ActionEditorHitBoxClipCustomDrawProperty))]
+public class ActionEditorHitBoxClipCustomDrawPropertyDrawer : PropertyDrawer
 {
     public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
     {
-        // 获取自定义属性的实例
-        SelectActiveHidBoxPropertyAttribute customAttribute = (SelectActiveHidBoxPropertyAttribute)attribute;
-
-        // 显示自定义信息
-        //EditorGUILayout.Toggle(customAttribute.Active);
-        //EditorGUILayout.ObjectField(customAttribute.go, typeof(GameObject), true);
-        EditorGUI.LabelField(new Rect(position.x, position.y, position.width, EditorGUIUtility.singleLineHeight), customAttribute.CustomInfo);
-
-        // 显示属性字段
-        EditorGUI.PropertyField(new Rect(position.x, position.y + EditorGUIUtility.singleLineHeight, position.width, EditorGUIUtility.singleLineHeight), property);
-    }
-
-    public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
-    {
-        // 自定义属性需要额外的空间来显示信息
-        return EditorGUIUtility.singleLineHeight * 2;
+        EditorGUI.PropertyField (position, property, label);
+        if (property.isExpanded)
+        {
+            EditorGUI.indentLevel++;
+            EditorGUILayout.BeginVertical();
+            // 绘制字段
+            SerializedProperty data = property.FindPropertyRelative("FrameIndexRange");
+            EditorGUILayout.PropertyField(data, new GUIContent("FrameIndexRange"), true);
+            EditorGUILayout.EndVertical();
+            EditorGUI.indentLevel--;
+        }
     }
 }
