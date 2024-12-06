@@ -112,8 +112,8 @@ public class ExportBoxColliderAnimationWindow : EditorWindow
 
         StringBuilder json = new StringBuilder("{\"data\":[");
         int count          = 0;
-        Warpper wdata = new();
-        wdata.data = new List<CharacterBoneBox>();
+        //Warpper wdata = new();
+        //wdata.data = new List<CharacterBoneBox>();
         foreach (var kv in allBoxColliderDataMap)
         {
             var key   = kv.Key;
@@ -123,7 +123,7 @@ public class ExportBoxColliderAnimationWindow : EditorWindow
                 BoxName = key,
                 FrameData = value
             };
-            wdata.data.Add(data);
+            //wdata.data.Add(data);
             // json.Append("{\"name\":\"" + key + "\",");
             // json.Append("\"frameData\":");
             json.Append(JsonUtility.ToJson(data, PrettyPrint));
