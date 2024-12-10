@@ -67,13 +67,20 @@ public class HitBoxUpdateSystem
                     if (data.TryGetValue(tag, out var boxList))
                     {
                         //射线检测
+                        for (int n = 0; n < boxList.Count; ++n)
+                        {
+                            if (IsHit(attackBoxInfo, mPlayers[i], boxList[n], enemy, frame))
+                            {
+
+                            }
+                        }
                     }
                 }
             }
         }
     }
 
-    void Hit(AttackBoxTurnOnInfo attackBoxInfo, Character attacker, BoxColliderData defenseBoxInfo, Character target, int frame)
+    bool IsHit(AttackBoxTurnOnInfo attackBoxInfo, Character attacker, BoxColliderData defenseBoxInfo, Character target, int frame)
     {
         for (int i = 0; i < attackBoxInfo.RayPointDataList.Length; ++i)
         {
@@ -85,52 +92,57 @@ public class HitBoxUpdateSystem
                 var oldPointTrans = point.RayPointTransforms[lastFrame];
                 var worldPos = attacker.transform.localToWorldMatrix * new Vector4(pointTrans.Position.x, pointTrans.Position.y, pointTrans.Position.z, 1);
                 var worldPosOld = attacker.transform.localToWorldMatrix * new Vector4(oldPointTrans.Position.x, oldPointTrans.Position.y, oldPointTrans.Position.z, 1);
-
-                Ray ray = new Ray(worldPos, worldPosOld - worldPos);
-                //Matrix4x4 localMatrix = Matrix4x4.TRS(defenseBoxInfo.position, Quaternion.Euler(defenseBoxInfo.rotation), new Vector3(1, 1, 1));
-                GetWorldBoxColliderData(defenseBoxInfo, target.transform, out Vector3[] boxWorldPos);
+                if (IsHitBox(worldPos, worldPosOld, defenseBoxInfo, target.transform))
+                {
+                    return true;
+                }
             }
         }
+        return false;
     }
 
-    void GetWorldBoxColliderData(BoxColliderData localData, Transform rootTransform, 
-        out Vector3[] worldPoint)
+    bool IsHitBox(Vector3 startPos, Vector3 endPos, BoxColliderData boxInfo, Transform rootTransform)
     {
-        // // 将本地旋转转换为四元数
-        // Quaternion localQuaternion = Quaternion.Euler(localData.rotation);
-        
-        // // 计算世界位置
-        // Vector3 localCenter = localData.position + localData.center; // 本地中心位置
-        // worldPosition = parentTransform.TransformPoint(localCenter);
-        
-        // // 计算世界旋转
-        // worldRotation = parentTransform.rotation * localQuaternion;
-        
-        // // 计算世界大小（如果需要考虑缩放的话）
-        // worldSize = Vector3.Scale(localData.size, parentTransform.lossyScale);
-
-        var boxMatrix        = Matrix4x4.TRS(localData.position, Quaternion.Euler(localData.rotation), new Vector3(1, 1, 1));
-        var rootLocalToWorld = rootTransform.localToWorldMatrix;
-        var localToWorld     = rootLocalToWorld * boxMatrix;
-        worldPoint           = new Vector3[8];
-        //下面4个点
-        worldPoint[0] = localToWorld * (localData.center + new Vector3(-localData.size.x, -localData.size.y, -localData.size.z) * 0.5f);
-        worldPoint[1] = localToWorld * (localData.center + new Vector3(localData.size.x, -localData.size.y, -localData.size.z) * 0.5f);
-        worldPoint[2] = localToWorld * (localData.center + new Vector3(localData.size.x, -localData.size.y, localData.size.z) * 0.5f);
-        worldPoint[3] = localToWorld * (localData.center + new Vector3(-localData.size.x, -localData.size.y, localData.size.z) * 0.5f);
-        //上面4个点
-        worldPoint[4] = localToWorld * (localData.center + new Vector3(-localData.size.x, localData.size.y, -localData.size.z) * 0.5f);
-        worldPoint[5] = localToWorld * (localData.center + new Vector3(localData.size.x, localData.size.y, -localData.size.z) * 0.5f);
-        worldPoint[6] = localToWorld * (localData.center + new Vector3(localData.size.x, localData.size.y, localData.size.z) * 0.5f);
-        worldPoint[7] = localToWorld * (localData.center + new Vector3(-localData.size.x, localData.size.y, localData.size.z) * 0.5f);
+        var boxMatrix    = Matrix4x4.TRS(boxInfo.position, Quaternion.Euler(boxInfo.rotation), new Vector3(1, 1, 1));
+        var worldToLocal = (rootTransform.localToWorldMatrix * boxMatrix).inverse;
+        startPos         = worldToLocal.MultiplyPoint3x4(startPos);
+        endPos           = worldToLocal.MultiplyPoint3x4(endPos);
+        Ray ray          = new Ray(startPos, endPos - startPos);
+        bool hit         = RayIntersectsAABB(ray, boxInfo.center, boxInfo.size, out float tNear, out float tFar);
+        return hit;
     }
 
-    void GetWorldBoxColliderData(BoxColliderData localData, Transform rootTransform, out BoxColliderData worldData)
+    bool RayIntersectsAABB(Ray ray, Vector3 center, Vector3 size, out float tNear, out float tFar)
     {
-        worldData = new BoxColliderData();
-        var boxMatrix        = Matrix4x4.TRS(localData.position, Quaternion.Euler(localData.rotation), new Vector3(1, 1, 1));
-        var rootLocalToWorld = rootTransform.localToWorldMatrix;
-        var localToWorld     = rootLocalToWorld * boxMatrix;
-        worldData.center = localToWorld * localData.center;//world center
+        // 计算AABB的最小点和最大点
+        Vector3 aabbMin = center - size * 0.5f; // AABB的最小点
+        Vector3 aabbMax = center + size * 0.5f; // AABB的最大点
+
+        tNear = float.NegativeInfinity;
+        tFar  = float.PositiveInfinity;
+
+        for (int i = 0; i < 3; i++)
+        {
+            float invD = 1.0f / (i == 0 ? ray.direction.x : (i == 1 ? ray.direction.y : ray.direction.z));
+            float t0   = (i == 0 ? aabbMin.x : (i == 1 ? aabbMin.y : aabbMin.z) - (i == 0 ? ray.origin.x : (i == 1 ? ray.origin.y : ray.origin.z))) * invD;
+            float t1   = (i == 0 ? aabbMax.x : (i == 1 ? aabbMax.y : aabbMax.z) - (i == 0 ? ray.origin.x : (i == 1 ? ray.origin.y : ray.origin.z))) * invD;
+
+            if (invD < 0.0f)
+            {
+                // 交换 t0 和 t1
+                float temp = t0;
+                t0         = t1;
+                t1         = temp;
+            }
+
+            tNear = Mathf.Max(tNear, t0);
+            tFar  = Mathf.Min(tFar, t1);
+
+            if (tNear > tFar)
+                return false;
+        }
+
+        return tNear <= tFar;
     }
+
 }
