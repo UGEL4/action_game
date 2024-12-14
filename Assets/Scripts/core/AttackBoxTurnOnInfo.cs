@@ -8,13 +8,19 @@ public struct AttackRayPointData
 }
 
 [Serializable]
+public struct AttackRayPointGroup
+{
+    public AttackRayPointData[] Points; //所有射线点的数据
+}
+
+[Serializable]
 public struct AttackBoxTurnOnInfo
 {
     /// <summary>
     /// 开启的时间段, 第几帧到第几帧之间开启
     /// </summary>
-    public FrameIndexRange FrameIndexRange;
-    public AttackRayPointData[] RayPointDataList; // 所有射线点的数据
+    public FrameIndexRange[] FrameIndexRange; //每组射线的开启帧
+    public AttackRayPointGroup[] RayPointGroupList; // 所有射线组的数据
     public SimpleColliderBox[] AttackBoxes; // 攻击盒在开启时所有帧的数据
     //public string[] AttackBoxTag; //碰撞盒在开启时所有帧的数据
 

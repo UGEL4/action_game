@@ -74,26 +74,26 @@ public class SaveActionWindow : EditorWindow
 
             var map                  = clipAsset.rayCastPointsTransformPerFrame;
             AttackBoxTurnOnInfo info = clipAsset.attackBoxTurnOnInfo;
-            int rayCount             = map[(int)info.FrameIndexRange.min].Count;
-            info.RayPointDataList    = new AttackRayPointData[rayCount];
-            info.AttackPhase         = c;
-            int frameCount           = map.Count;
-            for (int i = 0; i < rayCount; ++i)
-            {
-                AttackRayPointData pointData = new AttackRayPointData();
-                pointData.RayPointTransforms = new PositionRotationData[frameCount];
-                int start                    = (int)info.FrameIndexRange.min;
-                for (int j = 0; j < frameCount; ++j)
-                {
-                    var trans = map[j + start];
-                    var data  = new PositionRotationData() {
-                        Position = trans[i].Position,
-                        Rotation = trans[i].Rotation
-                    };
-                    pointData.RayPointTransforms[j] = data;
-                }
-                info.RayPointDataList[i] = pointData;
-            }
+            // int rayCount             = map[(int)info.FrameIndexRange.min].Count;
+            // info.RayPointDataList    = new AttackRayPointData[rayCount];
+            // info.AttackPhase         = c;
+            // int frameCount           = map.Count;
+            // for (int i = 0; i < rayCount; ++i)
+            // {
+            //     AttackRayPointData pointData = new AttackRayPointData();
+            //     pointData.RayPointTransforms = new PositionRotationData[frameCount];
+            //     int start                    = (int)info.FrameIndexRange.min;
+            //     for (int j = 0; j < frameCount; ++j)
+            //     {
+            //         var trans = map[j + start];
+            //         var data  = new PositionRotationData() {
+            //             Position = trans[i].Position,
+            //             Rotation = trans[i].Rotation
+            //         };
+            //         pointData.RayPointTransforms[j] = data;
+            //     }
+            //     info.RayPointDataList[i] = pointData;
+            // }
             allTurnOnInfo[c++] = info;
         }
     }

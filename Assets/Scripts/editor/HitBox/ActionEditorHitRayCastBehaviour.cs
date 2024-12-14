@@ -14,21 +14,44 @@ public class ActionEditorHitRayCastBehaviour : PlayableBehaviour
     public ActionEditorHitRayCastClip clipAsset;
     public PlayableDirector director;
 
+    public List<ActionEditorHitRayCastClip.AttackRayTurnOnInfo> AttackRayTurnOnInfoList;
+
     public List<GameObject> rayPoints = new List<GameObject>();
+    private Dictionary<string, Transform> mRayPointTransformMap = new();
     public List<Vector3> lastFrameRayPoints = new List<Vector3>();
+    private Dictionary<string, Vector3> mLastFramePointPosMap = new();
     private int mCurrentFrameIndex = 0;
     private int mLastFrameIndex = 0;
 
     public void OnPlayableCreateOverride()
     {
-        if (weapon != null)
+        // if (weapon != null)
+        // {
+        //     foreach (Transform child in weapon.transform)
+        //     {
+        //         if (child.CompareTag("ActionEditorRayCastPoint"))
+        //         {
+        //             //rayPoints.Add(child.gameObject);
+        //             //lastFrameRayPoints.Add(child.position);
+
+        //             mRayPointTransformMap.Add(child.name, child);
+        //             mLastFramePointPosMap.Add(child.name, child.position);
+        //         }
+        //     }
+        // }
+        mLastFramePointPosMap.Clear();
+        if (director != null)
         {
-            foreach (Transform child in weapon.transform)
+            for (int i = 0; i < AttackRayTurnOnInfoList.Count; i++)
             {
-                if (child.CompareTag("ActionEditorRayCastPoint"))
+                for (int j = 0; j < AttackRayTurnOnInfoList[i].Points.Count; j++)
                 {
-                    rayPoints.Add(child.gameObject);
-                    lastFrameRayPoints.Add(child.transform.position);
+                    GameObject go = AttackRayTurnOnInfoList[i].Points[j].data.Resolve(director);
+                    //mRayPointTransformMap.Add(go.name, go.transform);
+                    if (go != null)
+                    {
+                        mLastFramePointPosMap[go.name] = go.transform.position;
+                    }
                 }
             }
         }
@@ -77,33 +100,65 @@ public class ActionEditorHitRayCastBehaviour : PlayableBehaviour
         //if (temp > mCurrentFrameIndex) return;
         if (mCurrentFrameIndex >= activeFrameRange.min && mCurrentFrameIndex <= activeFrameRange.max)
         {
-            DebugDrawRay();
-            DebugDrawRayQuad();
-            //记录当前帧的变换
-            for (int i = 0; i < rayPoints.Count; ++i)
-            {
-                lastFrameRayPoints[i] = rayPoints[i].transform.position;
-            }
+            // DebugDrawRay();
+            // DebugDrawRayQuad();
+            // //记录当前帧的变换
+            // for (int i = 0; i < rayPoints.Count; ++i)
+            // {
+            //     lastFrameRayPoints[i] = rayPoints[i].transform.position;
+            // }
         }
         if (temp < mCurrentFrameIndex)
         {
-            List<SerializableTransformNoScale> list = new(rayPoints.Count);
-            for (int i = 0; i < rayPoints.Count; ++i)
+            // List<SerializableTransformNoScale> list = new(rayPoints.Count);
+            // for (int i = 0; i < rayPoints.Count; ++i)
+            // {
+            //     SerializableTransformNoScale tmp = new();
+            //     if (characterRoot != null) //记录在根节点下的变换
+            //     {
+            //         tmp.Position = characterRoot.transform.InverseTransformPoint(rayPoints[i].transform.position);
+            //         tmp.Rotation = (Quaternion.Inverse(characterRoot.transform.rotation) * rayPoints[i].transform.rotation).eulerAngles;
+            //     }
+            //     else
+            //     {
+            //         tmp.Position = rayPoints[i].transform.position;
+            //         tmp.Rotation = rayPoints[i].transform.rotation.eulerAngles;
+            //     }
+            //     list.Add(tmp);
+            // }
+            // clipAsset.RecordPointTransform(mCurrentFrameIndex, list);
+            for (int i = 0; i < AttackRayTurnOnInfoList.Count; i++)
             {
-                SerializableTransformNoScale tmp = new();
-                if (characterRoot != null) //记录在根节点下的变换
+                if (mCurrentFrameIndex >= (int)AttackRayTurnOnInfoList[i].ActiveFrame.min &&
+                mCurrentFrameIndex <= (int)AttackRayTurnOnInfoList[i].ActiveFrame.max)
                 {
-                    tmp.Position = characterRoot.transform.InverseTransformPoint(rayPoints[i].transform.position);
-                    tmp.Rotation = (Quaternion.Inverse(characterRoot.transform.rotation) * rayPoints[i].transform.rotation).eulerAngles;
+                    List<SerializableTransformNoScale> list = new(rayPoints.Count);
+                    for (int j = 0; j < AttackRayTurnOnInfoList[i].Points.Count; j++)
+                    {
+                        SerializableTransformNoScale tmp = new();
+                        GameObject go = AttackRayTurnOnInfoList[i].Points[j].data.Resolve(director);
+                        if (characterRoot != null) // 记录在根节点下的变换
+                        {
+                            tmp.Position = characterRoot.transform.InverseTransformPoint(go.transform.position);
+                            tmp.Rotation = (Quaternion.Inverse(characterRoot.transform.rotation) * go.transform.rotation).eulerAngles;
+                        }
+                        else
+                        {
+                            tmp.Position = go.transform.position;
+                            tmp.Rotation = go.transform.rotation.eulerAngles;
+                        }
+                        list.Add(tmp);
+
+                        //
+                        if (mCurrentFrameIndex > (int)AttackRayTurnOnInfoList[i].ActiveFrame.min)
+                        {
+                            Debug.DrawLine(go.transform.position, mLastFramePointPosMap[go.name], Color.blue, 1.0f);
+                        }
+                        mLastFramePointPosMap[go.name] = go.transform.position;
+                    }
+                    clipAsset.RecordPointTransform(i, mCurrentFrameIndex, list);
                 }
-                else
-                {
-                    tmp.Position = rayPoints[i].transform.position;
-                    tmp.Rotation = rayPoints[i].transform.rotation.eulerAngles;
-                }
-                list.Add(tmp);
             }
-            clipAsset.RecordPointTransform(mCurrentFrameIndex, list);
         }
     }
 
