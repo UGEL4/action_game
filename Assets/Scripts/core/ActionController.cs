@@ -31,6 +31,8 @@ public class ActionController
 
     public float MoveInputAcceptance {get; private set;}
 
+    private Dictionary<string, List<BeHitBoxTurnOnInfo>> mBoxHits = new();
+
     public void SetChangeActinCallback(Action<CharacterAction, CharacterAction> cb)
     {
         _onChangeAction = cb;
@@ -260,6 +262,31 @@ public class ActionController
             //     }
             //     ActiveAttackBoxTurnOnInfoList.Add(info);
             // }
+        }
+    }
+
+    public void OnAttackBoxHit(string tag, BeHitBoxTurnOnInfo target)
+    {
+        if (!mBoxHits.ContainsKey(tag))
+        {
+            mBoxHits.Add(tag, new List<BeHitBoxTurnOnInfo>());
+        }
+        if (mBoxHits[tag].Contains(target))
+        {
+            mBoxHits[tag].Add(target);
+        }
+        for (int i = 0; i < mBoxHits[tag].Count; i++)
+        {
+            for (int j = 0; j < target.Tags.Length; j++)
+            {
+                for (int k = 0; k < mBoxHits[tag][i].Tags.Length; k++)
+                {
+                    if (target.Tags[j] == mBoxHits[tag][i].Tags[k])
+                    {
+                    
+                    }
+                }
+            }
         }
     }
 }

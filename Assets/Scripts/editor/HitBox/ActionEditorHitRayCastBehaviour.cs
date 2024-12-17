@@ -8,6 +8,7 @@ using UnityEngine.Timeline;
 public class ActionEditorHitRayCastBehaviour : PlayableBehaviour
 {
     //private readonly double frameTime = 0.03333333;
+    public bool Record = false;
     public GameObject weapon;
     public GameObject characterRoot;
     public FrameIndexRange activeFrameRange;
@@ -40,17 +41,20 @@ public class ActionEditorHitRayCastBehaviour : PlayableBehaviour
         //     }
         // }
         mLastFramePointPosMap.Clear();
+        mRayPointTransformMap.Clear();
         if (director != null)
         {
             for (int i = 0; i < AttackRayTurnOnInfoList.Count; i++)
             {
-                for (int j = 0; j < AttackRayTurnOnInfoList[i].Points.Count; j++)
+                for (int j = 0; j < AttackRayTurnOnInfoList[i].PointNameList.Count; j++)
                 {
-                    GameObject go = AttackRayTurnOnInfoList[i].Points[j].data.Resolve(director);
+                    string name  = AttackRayTurnOnInfoList[i].PointNameList[j];
+                    Transform go = weapon.transform.Find(name);
                     //mRayPointTransformMap.Add(go.name, go.transform);
+                    mRayPointTransformMap.Add(name, go);
                     if (go != null)
                     {
-                        mLastFramePointPosMap[go.name] = go.transform.position;
+                        mLastFramePointPosMap[go.name] = go.position;
                     }
                 }
             }
@@ -97,57 +101,42 @@ public class ActionEditorHitRayCastBehaviour : PlayableBehaviour
         mCurrentFrameIndex = (int)(director.time * frameRate);
         int temp = mLastFrameIndex;
         mLastFrameIndex = mCurrentFrameIndex;
-        //if (temp > mCurrentFrameIndex) return;
-        if (mCurrentFrameIndex >= activeFrameRange.min && mCurrentFrameIndex <= activeFrameRange.max)
-        {
-            // DebugDrawRay();
-            // DebugDrawRayQuad();
-            // //记录当前帧的变换
-            // for (int i = 0; i < rayPoints.Count; ++i)
-            // {
-            //     lastFrameRayPoints[i] = rayPoints[i].transform.position;
-            // }
-        }
         if (temp < mCurrentFrameIndex)
         {
-            // List<SerializableTransformNoScale> list = new(rayPoints.Count);
-            // for (int i = 0; i < rayPoints.Count; ++i)
-            // {
-            //     SerializableTransformNoScale tmp = new();
-            //     if (characterRoot != null) //记录在根节点下的变换
-            //     {
-            //         tmp.Position = characterRoot.transform.InverseTransformPoint(rayPoints[i].transform.position);
-            //         tmp.Rotation = (Quaternion.Inverse(characterRoot.transform.rotation) * rayPoints[i].transform.rotation).eulerAngles;
-            //     }
-            //     else
-            //     {
-            //         tmp.Position = rayPoints[i].transform.position;
-            //         tmp.Rotation = rayPoints[i].transform.rotation.eulerAngles;
-            //     }
-            //     list.Add(tmp);
-            // }
-            // clipAsset.RecordPointTransform(mCurrentFrameIndex, list);
+            //SimpleLog.Info("mCurrentFrameIndex: ", mCurrentFrameIndex);
             for (int i = 0; i < AttackRayTurnOnInfoList.Count; i++)
             {
                 if (mCurrentFrameIndex >= (int)AttackRayTurnOnInfoList[i].ActiveFrame.min &&
                 mCurrentFrameIndex <= (int)AttackRayTurnOnInfoList[i].ActiveFrame.max)
                 {
-                    List<SerializableTransformNoScale> list = new(rayPoints.Count);
-                    for (int j = 0; j < AttackRayTurnOnInfoList[i].Points.Count; j++)
+                    List<ActionEditorHitRayCastClip.RayPointInfoPreFrame> list = new(rayPoints.Count);
+                    for (int j = 0; j < AttackRayTurnOnInfoList[i].PointNameList.Count; j++)
                     {
                         SerializableTransformNoScale tmp = new();
-                        GameObject go = AttackRayTurnOnInfoList[i].Points[j].data.Resolve(director);
-                        if (characterRoot != null) // 记录在根节点下的变换
+                        string name = AttackRayTurnOnInfoList[i].PointNameList[j];
+                        //Transform go = weapon.transform.Find(name);
+                        Transform go = mRayPointTransformMap[name];
+                        if (go == null)
                         {
-                            tmp.Position = characterRoot.transform.InverseTransformPoint(go.transform.position);
-                            tmp.Rotation = (Quaternion.Inverse(characterRoot.transform.rotation) * go.transform.rotation).eulerAngles;
+                            continue;
                         }
-                        else
+                        if (Record)
                         {
-                            tmp.Position = go.transform.position;
-                            tmp.Rotation = go.transform.rotation.eulerAngles;
+                            ActionEditorHitRayCastClip.RayPointInfoPreFrame pointInfo = new();
+                            pointInfo.Name = name;
+                            if (characterRoot != null) // 记录在根节点下的变换
+                            {
+                                tmp.Position = characterRoot.transform.InverseTransformPoint(go.position);
+                                tmp.Rotation = (Quaternion.Inverse(characterRoot.transform.rotation) * go.rotation).eulerAngles;
+                            }
+                            else
+                            {
+                                tmp.Position = go.position;
+                                tmp.Rotation = go.rotation.eulerAngles;
+                            }
+                            pointInfo.transform = tmp;
+                            list.Add(pointInfo);
                         }
-                        list.Add(tmp);
 
                         //
                         if (mCurrentFrameIndex > (int)AttackRayTurnOnInfoList[i].ActiveFrame.min)
@@ -156,7 +145,20 @@ public class ActionEditorHitRayCastBehaviour : PlayableBehaviour
                         }
                         mLastFramePointPosMap[go.name] = go.transform.position;
                     }
-                    clipAsset.RecordPointTransform(i, mCurrentFrameIndex, list);
+                    if (mCurrentFrameIndex >= (int)AttackRayTurnOnInfoList[i].ActiveFrame.min)
+                    {
+                        string name0  = AttackRayTurnOnInfoList[i].PointNameList[0];
+                        Transform go0 = mRayPointTransformMap[name0];
+                        string name1  = AttackRayTurnOnInfoList[i].PointNameList[AttackRayTurnOnInfoList[i].PointNameList.Count - 1];
+                        Transform go1 = mRayPointTransformMap[name1];
+                        Debug.DrawLine(go0.transform.position, go1.transform.position, Color.red, 1.0f);
+                    }
+                    if (Record)
+                    {
+                        //int frameIndex = mCurrentFrameIndex - (int)AttackRayTurnOnInfoList[i].ActiveFrame.min;
+                        //SimpleLog.Info("frameIndex: ", frameIndex, mCurrentFrameIndex);
+                        clipAsset.RecordPointTransform(i, mCurrentFrameIndex - (int)AttackRayTurnOnInfoList[i].ActiveFrame.min, list);
+                    }
                 }
             }
         }
@@ -166,12 +168,14 @@ public class ActionEditorHitRayCastBehaviour : PlayableBehaviour
     {
         mCurrentFrameIndex = 0;
         mLastFrameIndex    = 0;
+        Application.targetFrameRate = 30;
     }
 
     public override void OnGraphStop(Playable playable)
     {
         mCurrentFrameIndex = 0;
         mLastFrameIndex    = 0;
+        Application.targetFrameRate = 60;
     }
 
 }

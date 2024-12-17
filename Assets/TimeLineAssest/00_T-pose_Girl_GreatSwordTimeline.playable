@@ -675,22 +675,15 @@ MonoBehaviour:
     AttackPhase: 0
     Priority: 0
   AttackRayTurnOnInfoList:
-  - Points:
-    - data:
-        exposedName: 
-        defaultValue: {fileID: 0}
-      a: 1
-    - data:
-        exposedName: 
-        defaultValue: {fileID: 0}
-      a: 2
-    - data:
-        exposedName: ff523cfb4e6c23a46aedf484af1981ce
-        defaultValue: {fileID: 0}
-      a: 3
+  - Tag: group0
+    PointNameList:
+    - Point1
+    - Point2
+    - Point3
     ActiveFrame:
-      min: 0
-      max: 0
+      min: 15
+      max: 22
+  Record: 0
 --- !u!114 &6749216349447243685
 MonoBehaviour:
   m_ObjectHideFlags: 1

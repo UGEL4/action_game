@@ -10,6 +10,7 @@ public struct AttackRayPointData
 [Serializable]
 public struct AttackRayPointGroup
 {
+    public string Tag; //用于查找，相当于id
     public AttackRayPointData[] Points; //所有射线点的数据
 }
 

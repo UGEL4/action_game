@@ -72,28 +72,40 @@ public class SaveActionWindow : EditorWindow
         {
             ActionEditorHitRayCastClip clipAsset = clip.asset as ActionEditorHitRayCastClip;
 
-            var map                  = clipAsset.rayCastPointsTransformPerFrame;
-            AttackBoxTurnOnInfo info = clipAsset.attackBoxTurnOnInfo;
-            // int rayCount             = map[(int)info.FrameIndexRange.min].Count;
-            // info.RayPointDataList    = new AttackRayPointData[rayCount];
-            // info.AttackPhase         = c;
-            // int frameCount           = map.Count;
-            // for (int i = 0; i < rayCount; ++i)
-            // {
-            //     AttackRayPointData pointData = new AttackRayPointData();
-            //     pointData.RayPointTransforms = new PositionRotationData[frameCount];
-            //     int start                    = (int)info.FrameIndexRange.min;
-            //     for (int j = 0; j < frameCount; ++j)
-            //     {
-            //         var trans = map[j + start];
-            //         var data  = new PositionRotationData() {
-            //             Position = trans[i].Position,
-            //             Rotation = trans[i].Rotation
-            //         };
-            //         pointData.RayPointTransforms[j] = data;
-            //     }
-            //     info.RayPointDataList[i] = pointData;
-            // }
+            AttackBoxTurnOnInfo info = new();
+            info.AttackPhase         = c;
+
+            var AllRayCastPointsTransformPerFrame = clipAsset.AllRayCastPointsTransformPerFrame;
+            int groupCount                        = AllRayCastPointsTransformPerFrame.Count;
+            info.FrameIndexRange                  = new FrameIndexRange[groupCount];
+            for (int i = 0; i < clipAsset.AttackRayTurnOnInfoList.Count; i++)
+            {
+                //name
+                //List<string> nameList = clipAsset.AttackRayTurnOnInfoList[i].PointNameList;
+                //
+                info.FrameIndexRange[i] = clipAsset.AttackRayTurnOnInfoList[i].ActiveFrame;
+            }
+
+            info.RayPointGroupList = new AttackRayPointGroup[groupCount];
+            foreach (var data in AllRayCastPointsTransformPerFrame)
+            {
+                int group                      = data.Key;
+                AttackRayPointGroup pointGroup = new();
+                pointGroup.Points              = new AttackRayPointData[data.Value.Count];
+                pointGroup.Tag                 = clipAsset.AttackRayTurnOnInfoList[group].Tag;
+                int pointCount                 = 0;
+                foreach (var pointInfoPair in data.Value)
+                {
+                    pointGroup.Points[pointCount].RayPointTransforms = new PositionRotationData[pointInfoPair.Value.transforms.Length];
+                    for (int j = 0; j < pointInfoPair.Value.transforms.Length; j++)
+                    {
+                        pointGroup.Points[pointCount].RayPointTransforms[j].Position = pointInfoPair.Value.transforms[j].Position;
+                        pointGroup.Points[pointCount].RayPointTransforms[j].Rotation = pointInfoPair.Value.transforms[j].Rotation;
+                    }
+                    pointCount++;
+                }
+                info.RayPointGroupList[group] = pointGroup;
+            }
             allTurnOnInfo[c++] = info;
         }
     }
