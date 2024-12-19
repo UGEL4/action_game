@@ -1,5 +1,6 @@
 using System;
 using Cinemachine;
+using Log;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -158,6 +159,7 @@ public class PlayerController : MonoBehaviour
 
     void OnAttackA(InputActionPhase phase)
     {
+        SimpleLog.Info("OnAttackA: ", phase);
         if (phase == InputActionPhase.Started)
         {
             owner.AddActionCommand(KeyMap.ButtonX);

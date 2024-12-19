@@ -18,6 +18,8 @@ public class Character : MonoBehaviour
     public PlayerController controller {get; private set;}
     private InputToCommand inputToCommand;
 
+    public HitRecordComponent HitRecordComponent {get; private set;}
+
     void Awake()
     {
         /* Move.Enable();
@@ -31,12 +33,17 @@ public class Character : MonoBehaviour
 
     void Start()
     {
-        animator = GetComponent<Animator>();
-        //fsm.Start();
-        //animator.SetFloat("Speed", 1.0f);
+        // animator = GetComponent<Animator>();
+        // //fsm.Start();
+        // //animator.SetFloat("Speed", 1.0f);
 
-        inputToCommand = new InputToCommand(this);
-        actionCtrl     = new ActionController(this, inputToCommand);
+        // inputToCommand = new InputToCommand(this);
+        // actionCtrl     = new ActionController(this, inputToCommand);
+        // HitRecordComponent = new HitRecordComponent();
+        // GameInstance.Instance.HitRecordSys.Register(HitRecordComponent);
+        // actionCtrl.SetChangeActinCallback((lastAction, newAction)=>{
+        //     HitRecordComponent.Clear();
+        // });
         //actionCtrl.command = inputToCommand;
         {
             // List<CharacterAction> actions = new List<CharacterAction>();
@@ -234,9 +241,25 @@ public class Character : MonoBehaviour
             // sprintAction.mAnimation      = "Sprint_60fps";
             // actions.Add(sprintAction); */
             // actionCtrl.SetAllAction(actions, "Idle");
-            LoadActions();
+            //LoadActions();
         }
     }
+
+    public void Init()
+    {
+        animator = GetComponent<Animator>();
+        //fsm.Start();
+        //animator.SetFloat("Speed", 1.0f);
+
+        inputToCommand = new InputToCommand(this);
+        actionCtrl     = new ActionController(this, inputToCommand);
+        HitRecordComponent = new HitRecordComponent();
+        GameInstance.Instance.HitRecordSys.Register(HitRecordComponent);
+        actionCtrl.SetChangeActinCallback((lastAction, newAction)=>{
+            HitRecordComponent.Clear();
+        });
+    }
+
     void Update()
     {
         //fsm.Update();
@@ -245,7 +268,13 @@ public class Character : MonoBehaviour
         //inputToCommand.Tick();
     }
 
-    void FixedUpdate()
+    // void FixedUpdate()
+    // {
+    //     inputToCommand.Tick();
+    //     actionCtrl.Tick();
+    // }
+
+    public void UpdateLogic(ulong frameIndex)
     {
         inputToCommand.Tick();
         actionCtrl.Tick();
@@ -294,9 +323,9 @@ public class Character : MonoBehaviour
         inputToCommand?.AddInput(key);
     }
 
-    public bool CanAttackTargetNow(out AttackInfo attackPhase)
+    public bool CanAttackTargetNow(Character target, out AttackInfo attackPhase, out BeHitBoxTurnOnInfo defensePhase)
     {
-        attackPhase = new AttackInfo();
+        //attackPhase = new AttackInfo();
         // if (actionCtrl.ActiveAttackBoxTurnOnInfoList.Count > 0)
         // {
         //     int phase = actionCtrl.ActiveAttackBoxTurnOnInfoList[0].attackPhase;
@@ -304,7 +333,70 @@ public class Character : MonoBehaviour
         //     return true;
         // }
 
+        attackPhase  = new AttackInfo();
+        defensePhase = new BeHitBoxTurnOnInfo();
+        if (!target)
+        {
+            return false;
+        }
+
+        foreach (var pair in actionCtrl.BoxHits)
+        {
+            //命中的最有价值的受击框才行
+            //BeHitBox best = null;
+            int bestPriority = 0;
+            bool foundBest = false;
+            AttackBoxTurnOnInfo attackBox = GetAttackBoxTurnOnInfo(pair.Key);
+            if (attackBox.FrameIndexRange.Length == 0) continue;
+            for (int i = 0; i < pair.Value.Count; i++)
+            {
+                int thisBestPriority = pair.Value[i].Priority;
+                if (thisBestPriority > bestPriority)
+                {
+                    bestPriority = thisBestPriority;
+                    defensePhase = pair.Value[i];
+                    foundBest    = true;
+                }
+            }
+            if (!foundBest) continue;
+
+            if (attackBox.AttackPhase >= 0 && attackBox.AttackPhase < actionCtrl.CurAction.attackInfoList.Length)
+            {
+                attackPhase = actionCtrl.CurAction.attackInfoList[attackBox.AttackPhase];
+            }
+            return true;
+        }
+
         return false;
+    }
+
+    public HitRecord GetHitRecord(Character target, int phase)
+    {
+        var hitRecordList = HitRecordComponent.HitRecordList;
+        int uid = target.gameObject.GetInstanceID();
+        for (int i = 0; i < hitRecordList.Count; i++)
+        {
+            if (uid == hitRecordList[i].Id && phase == hitRecordList[i].Phase)
+            {
+                return hitRecordList[i];
+            }
+        }
+        return null;
+    }
+
+    private AttackBoxTurnOnInfo GetAttackBoxTurnOnInfo(string tagName)
+    {
+        for (int i = 0; i < actionCtrl.CurAction.attackPhaseList.Length; i++)
+        {
+            for (int j = 0; i < actionCtrl.CurAction.attackPhaseList[i].RayPointGroupList.Length; j++)
+            {
+                if (tagName == actionCtrl.CurAction.attackPhaseList[i].RayPointGroupList[j].Tag)
+                {
+                    return actionCtrl.CurAction.attackPhaseList[i];
+                }
+            }
+        }
+        return new AttackBoxTurnOnInfo();
     }
 
     public ActionController GetActionController()
@@ -312,19 +404,27 @@ public class Character : MonoBehaviour
         return actionCtrl;
     }
 
-    void LoadActions()
+    public List<string> DebugActionList = new();
+    public void LoadActions()
     {
-        TextAsset ta = Resources.Load<TextAsset>("GameData/ch01_actions");
-        if (ta)
+        List<CharacterAction> actions = new List<CharacterAction>();
+        for (int i = 0; i < DebugActionList.Count; i++)
         {
-            List<CharacterAction> actions = new List<CharacterAction>();
-            ActionInfoContainer aic = JsonUtility.FromJson<ActionInfoContainer>(ta.text);
-            foreach (CharacterAction info in aic.data)
+            TextAsset ta = Resources.Load<TextAsset>("GameData/" + DebugActionList[i]);
+            if (ta)
             {
-                actions.Add(info);
+                ActionInfoContainer aic = JsonUtility.FromJson<ActionInfoContainer>(ta.text);
+                //if (aic.data == null) continue;
+                //foreach (CharacterAction info in aic.data)
+                {
+                    actions.Add(aic.data);
+                    GameInstance.Instance.HitBoxDataPool.LoadHitBoxData(aic.data.mActionName);
+                }
             }
-
-            actionCtrl.SetAllAction(actions, "Idle");
+        }
+        if (DebugActionList.Count > 0)
+        {
+            actionCtrl.SetAllAction(actions, DebugActionList[0]);
         }
     }
 }
@@ -332,5 +432,5 @@ public class Character : MonoBehaviour
 [Serializable]
 public struct ActionInfoContainer
 {
-    public CharacterAction[] data;
+    public CharacterAction data;
 }

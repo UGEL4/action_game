@@ -11,6 +11,7 @@ using UnityEngine.Timeline;
 public class SaveActionWindow : EditorWindow
 {
     private TimelineAsset timelineAsset;
+    private string fileName;
 
     [MenuItem("Window/SaveAction")]
     public static void ShowWindow()
@@ -22,10 +23,15 @@ public class SaveActionWindow : EditorWindow
     {
         GUILayout.Label("timelineAsset", EditorStyles.boldLabel);
         timelineAsset = (TimelineAsset)EditorGUILayout.ObjectField("timelineAsset", timelineAsset, typeof(TimelineAsset), false);
+        fileName = EditorGUILayout.TextField("fileName", fileName);
         if (timelineAsset != null)
         {
             if (GUILayout.Button("Save"))
             {
+                if (fileName == null || fileName == string.Empty)
+                {
+                    return;
+                }
                 Save();
             }
         }
@@ -59,7 +65,7 @@ public class SaveActionWindow : EditorWindow
             Directory.CreateDirectory(Application.dataPath + "/Resources/GameData");
         }
         json.Append("}");
-        string path = Application.dataPath + "/Resources/GameData/test_action.json";
+        string path = Application.dataPath + "/Resources/GameData/" + fileName + ".json";
         File.WriteAllText(path, json.ToString());
     }
 

@@ -1,82 +1,131 @@
-using System.Collections;
+using System;
 using System.Collections.Generic;
-using System.Linq;
 using ACTTools;
 using UnityEngine;
-using UnityEngine.SocialPlatforms;
 
 public class HitBoxUpdateSystem
 {
-    private List<Character> mPlayers = new();
+    private List<Character> mPlayers    = new();
     private List<Character> mAllEnemies = new();
-    public void Update(int frame)
+
+    private Dictionary<Character, List<HitBoxDataPoolSystem.HitBoxData>> mCharacterCurrentActionHitBoxData = new();
+
+    public void Init()
     {
-        var pool = GameInstance.Instance.HitBoxDataPool;
-        //获取当前帧的数据
+
+    }
+
+    public void Destory()
+    {
+        mAllEnemies.Clear();
+        mAllEnemies = null;
+        mPlayers.Clear();
+        mPlayers = null;
+    }
+
+    public void OnChangeAction(Character ch, string actionName)
+    {
+        var hitBoxDataMap = GameInstance.Instance.HitBoxDataPool.GetActionHitBoxData(actionName);
+        if (!mCharacterCurrentActionHitBoxData.ContainsKey(ch))
+        {
+            mCharacterCurrentActionHitBoxData.Add(ch, new List<HitBoxDataPoolSystem.HitBoxData>());
+        }
+        else
+        {
+            // 清理上一个动作的数据
+            mCharacterCurrentActionHitBoxData[ch].Clear();
+        }
+        foreach (var pair in hitBoxDataMap)
+        {
+            HitBoxDataPoolSystem.HitBoxData data = new();
+            data.BoxName                         = pair.Key;
+            data.AllFrameData                    = pair.Value;
+            mCharacterCurrentActionHitBoxData[ch].Add(data);
+        }
+    }
+
+    public void Update(ulong frame)
+    {
+        // 获取当前帧的数据
         for (int i = 0; i < mPlayers.Count; ++i)
         {
-            var actionController = mPlayers[i].GetActionController();
+            var actionController    = mPlayers[i].GetActionController();
             var playerCurrentAction = actionController.CurAction;
 
             int attackPhase = -1;
-            for (int j = 0; j < playerCurrentAction.attackPhaseList.Length; ++j)
+            uint playerFrameIndex = actionController.CurrentFrameIndex;
+            for (int j = 0; j < playerCurrentAction.attackPhaseList.Length; j++)
             {
                 for (int k = 0; k < playerCurrentAction.attackPhaseList[j].FrameIndexRange.Length; k++)
                 {
-                    if (frame <=playerCurrentAction.attackPhaseList[j].FrameIndexRange[k].min
-                    || frame > playerCurrentAction.attackPhaseList[j].FrameIndexRange[k].max)
+                    if (playerFrameIndex <= playerCurrentAction.attackPhaseList[j].FrameIndexRange[k].min || playerFrameIndex > playerCurrentAction.attackPhaseList[j].FrameIndexRange[k].max)
                     {
                         continue;
                     }
+                    attackPhase = j;
+                    break;
                 }
-                attackPhase = j;
-                break;
+                if (attackPhase != -1)
+                {
+                    break;
+                }
             }
             if (attackPhase == -1)
             {
-                //当前帧，没有攻击框开启
+                // 当前帧，没有攻击框开启
                 continue;
             }
             AttackBoxTurnOnInfo attackBoxInfo = playerCurrentAction.attackPhaseList[attackPhase];
 
             for (int e = 0; e < mAllEnemies.Count; ++e)
             {
-                var enemy = mAllEnemies[e];
-                var enemyActionController = enemy.GetActionController();
+                var enemy                    = mAllEnemies[e];
+                var enemyActionController    = enemy.GetActionController();
                 var enemyplayerCurrentAction = enemyActionController.CurAction;
                 // 找到当前动作对应的碰撞盒数据
                 int defensePhases = -1;
-                var data          = pool.GetActionHitBoxData(enemyplayerCurrentAction.mActionName);
-                if (data.Count > 0)
+                if (!mCharacterCurrentActionHitBoxData.ContainsKey(enemy))
                 {
-                    for (int j = 0; j < enemyplayerCurrentAction.defensePhases.Length; ++j)
+                    continue;
+                }
+                var frameDataList = mCharacterCurrentActionHitBoxData[enemy];
+                uint enemyFrameIndex = enemyActionController.CurrentFrameIndex;
+                for (int j = 0; j < enemyplayerCurrentAction.defensePhases.Length; ++j)
+                {
+                    if (enemyFrameIndex < enemyplayerCurrentAction.defensePhases[j].FrameIndexRange.min || enemyFrameIndex >= enemyplayerCurrentAction.defensePhases[j].FrameIndexRange.max)
                     {
-                        if (frame < enemyplayerCurrentAction.defensePhases[j].FrameIndexRange.min || frame >= enemyplayerCurrentAction.defensePhases[j].FrameIndexRange.max)
-                        {
-                            continue;
-                        }
-                        defensePhases = j;
-                        break;
+                        continue;
                     }
+                    defensePhases = j;
+                    break;
                 }
                 if (defensePhases == -1)
                 {
-                    //当前帧，没有防御框开启
+                    // 当前帧，没有防御框开启
                     continue;
                 }
 
                 for (int k = 0; k < enemyplayerCurrentAction.defensePhases[defensePhases].Tags.Length; ++k)
                 {
                     string tag = playerCurrentAction.defensePhases[defensePhases].Tags[k];
-                    if (data.TryGetValue(tag, out var boxList))
+                    for (int n = 0; n < frameDataList.Count; n++)
                     {
-                        //射线检测
-                        for (int n = 0; n < boxList.Count; ++n)
+                        if (tag == frameDataList[n].BoxName)
                         {
-                            if (IsHit(attackBoxInfo, mPlayers[i], boxList[n], enemy, frame))
+                            int index = (int)(enemyFrameIndex - enemyplayerCurrentAction.defensePhases[defensePhases].FrameIndexRange.min);
+                            if (index < 0)
                             {
-
+                                break;
                             }
+                            if (index >= frameDataList[n].AllFrameData.Count)
+                            {
+                                index = frameDataList[n].AllFrameData.Count - 1;
+                            }
+                            if (IsHit(attackBoxInfo, mPlayers[i], frameDataList[n].AllFrameData[index], enemy, (int)playerFrameIndex, out string gropuTag))
+                            {
+                                actionController.OnAttackBoxHit(gropuTag, enemyplayerCurrentAction.defensePhases[defensePhases]);
+                            }
+                            break;
                         }
                     }
                 }
@@ -84,7 +133,7 @@ public class HitBoxUpdateSystem
         }
     }
 
-    bool IsHit(AttackBoxTurnOnInfo attackBoxInfo, Character attacker, BoxColliderData defenseBoxInfo, Character target, int frame)
+    bool IsHit(AttackBoxTurnOnInfo attackBoxInfo, Character attacker, BoxColliderData defenseBoxInfo, Character target, int frame, out string gropuTag)
     {
         for (int i = 0; i < attackBoxInfo.FrameIndexRange.Length; ++i)
         {
@@ -93,12 +142,12 @@ public class HitBoxUpdateSystem
                 continue;
             }
 
-            frame        = frame - (int)attackBoxInfo.FrameIndexRange[i].min; //frame不是从0开始，需要得到数组下标
+            frame        = frame - (int)attackBoxInfo.FrameIndexRange[i].min; // frame不是从0开始，需要得到数组下标
             var rayGroup = attackBoxInfo.RayPointGroupList[i];
             for (int j = 0; j < rayGroup.Points.Length; j++)
             {
-                var point = rayGroup.Points[j];
-                int lastFrame = frame -1;
+                var point     = rayGroup.Points[j];
+                int lastFrame = frame - 1;
                 if (frame < point.RayPointTransforms.Length && lastFrame >= 0 && lastFrame < point.RayPointTransforms.Length)
                 {
                     var pointTrans    = point.RayPointTransforms[frame];
@@ -107,11 +156,13 @@ public class HitBoxUpdateSystem
                     var worldPosOld   = attacker.transform.localToWorldMatrix * new Vector4(oldPointTrans.Position.x, oldPointTrans.Position.y, oldPointTrans.Position.z, 1);
                     if (IsHitBox(worldPos, worldPosOld, defenseBoxInfo, target.transform))
                     {
+                        gropuTag = rayGroup.Tag;
                         return true;
                     }
                 }
             }
         }
+        gropuTag = string.Empty;
         return false;
     }
 
@@ -158,5 +209,4 @@ public class HitBoxUpdateSystem
 
         return tNear <= tFar;
     }
-
 }

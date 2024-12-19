@@ -28,10 +28,12 @@ public class ActionController
 
     private uint mLastFrameIndex = 0;
     private uint mCurrentFrameIndex = 0;
+    public uint CurrentFrameIndex => mCurrentFrameIndex;
 
     public float MoveInputAcceptance {get; private set;}
 
     private Dictionary<string, List<BeHitBoxTurnOnInfo>> mBoxHits = new();
+    public Dictionary<string, List<BeHitBoxTurnOnInfo>> BoxHits => mBoxHits;
 
     public void SetChangeActinCallback(Action<CharacterAction, CharacterAction> cb)
     {
@@ -68,13 +70,13 @@ public class ActionController
             mCurrentFrameIndex = 0;
         }
 
-        CalculateBoxInfo(_wasPercentage, _pec);
+        ////CalculateBoxInfo(_wasPercentage, _pec);
         //计算移动接受输入
-        CalculateInputAcceptance(_wasPercentage, _pec);
+        //CalculateInputAcceptance(_wasPercentage, _pec);
         
         foreach (CharacterAction ac in AllActions)
         {
-            if (CanActionCancelCurrentAction(ac, _pec, true, out CancelTag foundTag, out BeCanceledTag beCanceledTag))
+            if (CanActionCancelCurrentAction(ac, true, out CancelTag foundTag, out BeCanceledTag beCanceledTag))
             {
                 //Log.SimpleLog.Info("CanActionCancelCurrentAction:", CurAction.mActionName, ac.mActionName, foundTag.startFromFrameIndex);
                 preorderActionList.Add(new PreorderActionInfo(ac.mActionName, ac.mPriority + foundTag.priority + beCanceledTag.priority,
@@ -82,7 +84,8 @@ public class ActionController
             }
         }
         //if (preorderActionList.Count == 0 ||)
-        if (preorderActionList.Count == 0 && (_pec >= 1 || CurAction.mAutoTerminate))
+        //if (preorderActionList.Count == 0 && (_pec >= 1 || CurAction.mAutoTerminate))
+        if (preorderActionList.Count == 0 && (mCurrentFrameIndex == 0 || CurAction.mAutoTerminate))
         {
             preorderActionList.Add(new PreorderActionInfo(CurAction.mAutoNextActionName));
         }
@@ -107,7 +110,7 @@ public class ActionController
         preorderActionList.Clear();
     }
 
-    bool CanActionCancelCurrentAction(CharacterAction actionInfo, float curPercent, bool checkCommand, out CancelTag foundTag, out BeCanceledTag beCabceledTag)
+    bool CanActionCancelCurrentAction(CharacterAction actionInfo, bool checkCommand, out CancelTag foundTag, out BeCanceledTag beCabceledTag)
     {
         foundTag = new CancelTag();
         beCabceledTag = new BeCanceledTag();
@@ -182,6 +185,8 @@ public class ActionController
 
             mCurrentFrameIndex = fromFrameIndex;
             mLastFrameIndex    = fromFrameIndex;
+            //mOwner.HitRecordComponent.Clear();
+            GameInstance.Instance.HitBoxUpdate.OnChangeAction(mOwner, actionName);
         }
         else
         {
@@ -271,10 +276,7 @@ public class ActionController
         {
             mBoxHits.Add(tag, new List<BeHitBoxTurnOnInfo>());
         }
-        if (mBoxHits[tag].Contains(target))
-        {
-            mBoxHits[tag].Add(target);
-        }
+        bool found = false;
         for (int i = 0; i < mBoxHits[tag].Count; i++)
         {
             for (int j = 0; j < target.Tags.Length; j++)
@@ -283,10 +285,17 @@ public class ActionController
                 {
                     if (target.Tags[j] == mBoxHits[tag][i].Tags[k])
                     {
-                    
+                        found = true;
+                        break;
                     }
                 }
+                if (found) break;
             }
+            if (found) break;
+        }
+        if (! found)
+        {
+            mBoxHits[tag].Add(target);
         }
     }
 }

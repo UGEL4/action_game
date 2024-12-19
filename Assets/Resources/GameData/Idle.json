@@ -1,0 +1,41 @@
+{"data":{
+    "mActionName": "Idle",
+    "mAnimation": "Idle_60fps",
+    "mPriority": 0,
+    "mAutoNextActionName": "Idle",
+    "mAutoTerminate": false,
+    "keepPlayingAnim": true,
+    "mTotalFrameCount": 60,
+    "mCancelTagList": [],
+    "mBeCanceledTagList": [
+        {
+            "cancelTag": [
+                "InitAction"
+            ],
+            "fadeOutPercentage": 0.10000000149011612,
+            "priority": 0,
+            "range": {
+                "min": 0.0,
+                "max": 1.0
+            },
+            "frameIndexRange": {
+                "min": 0,
+                "max": 60
+            }
+        }
+    ],
+    "mTempBeCanceledTagList": [],
+    "mCommandList": [],
+    "attackInfoList": [],
+    "attackPhaseList": [],
+    "defensePhases": [],
+    "moveInputAcceptance": [
+        {
+            "range": {
+                "min": 0.0,
+                "max": 1.0
+            },
+            "rate": 0.0
+        }
+    ]
+}}
