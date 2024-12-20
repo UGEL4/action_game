@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Log;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -33,6 +34,7 @@ public class Character : MonoBehaviour
 
     void Start()
     {
+        SimpleLog.Info("Start: ", gameObject.name);
         // animator = GetComponent<Animator>();
         // //fsm.Start();
         // //animator.SetFloat("Speed", 1.0f);
@@ -344,7 +346,7 @@ public class Character : MonoBehaviour
         {
             //命中的最有价值的受击框才行
             //BeHitBox best = null;
-            int bestPriority = 0;
+            int bestPriority = -1;
             bool foundBest = false;
             AttackBoxTurnOnInfo attackBox = GetAttackBoxTurnOnInfo(pair.Key);
             if (attackBox.FrameIndexRange.Length == 0) continue;
@@ -425,6 +427,30 @@ public class Character : MonoBehaviour
         if (DebugActionList.Count > 0)
         {
             actionCtrl.SetAllAction(actions, DebugActionList[0]);
+        }
+        SimpleLog.Info(gameObject.name, " LoadActions, ", "actions:", actions.Count);
+    }
+
+    /// <summary>
+    /// 添加命中记录
+    /// </summary>
+    /// <param name="target">谁被命中</param>
+    /// <param name="attackPhase">算是第几阶段的攻击命中的</param>
+    /// <returns></returns>
+    public void AddHitRecord(Character target, int attackPhase)
+    {
+        //int idx = action.IndexOfAttack(attackPhase);
+        //if (idx < 0) return;    //没有这个伤害阶段，结束
+        
+        HitRecord rec = GetHitRecord(target, attackPhase);
+        if (rec == null)
+        {
+            HitRecordComponent.AddHitRecord(new HitRecord(target, attackPhase, 0, 0));
+        }
+        else
+        {
+            rec.CooldownFrame = 0;
+            rec.CanHitCount  -= 1;
         }
     }
 }

@@ -28,7 +28,45 @@
     "mCommandList": [],
     "attackInfoList": [],
     "attackPhaseList": [],
-    "defensePhases": [],
+    "defensePhases": [
+        {
+            "FrameIndexRange": {
+                "min": 0,
+                "max": 60
+            },
+            "Tags": [
+                "Bip001 Pelvis",
+                "Bip001 L Thigh",
+                "Bip001 L Calf",
+                "Bip001 R Thigh",
+                "Bip001 R Calf",
+                "Bip001 Spine",
+                "Bip001 Spine1",
+                "Bip001 Spine2",
+                "Bip001 L UpperArm",
+                "Bip001 L Forearm",
+                "Bip001 Head",
+                "Bip001 R UpperArm",
+                "Bip001 R Forearm"
+            ],
+            "TempTurnOnBeCancelTags": [],
+            "Priority": 0,
+            "SelfActionChangeInfo": {
+                "changeType": 0,
+                "param": "",
+                "priority": 0,
+                "fromNormalized": 0.0,
+                "transNormalized": 0.0
+            },
+            "TargetActionChangeInfo": {
+                "changeType": 0,
+                "param": "",
+                "priority": 0,
+                "fromNormalized": 0.0,
+                "transNormalized": 0.0
+            }
+        }
+    ],
     "moveInputAcceptance": [
         {
             "range": {

@@ -22,6 +22,22 @@ public class HitBoxUpdateSystem
         mPlayers.Clear();
         mPlayers = null;
     }
+    
+    public void AddPlayer(Character player)
+    {
+        if (!mPlayers.Contains(player))
+        {
+            mPlayers.Add(player);
+        }
+    }
+
+    public void AddEnemy(Character enemy)
+    {
+        if (!mAllEnemies.Contains(enemy))
+        {
+            mAllEnemies.Add(enemy);
+        }
+    }
 
     public void OnChangeAction(Character ch, string actionName)
     {
@@ -65,7 +81,7 @@ public class HitBoxUpdateSystem
                     attackPhase = j;
                     break;
                 }
-                if (attackPhase != -1)
+                if (attackPhase == -1)
                 {
                     break;
                 }
@@ -107,7 +123,7 @@ public class HitBoxUpdateSystem
 
                 for (int k = 0; k < enemyplayerCurrentAction.defensePhases[defensePhases].Tags.Length; ++k)
                 {
-                    string tag = playerCurrentAction.defensePhases[defensePhases].Tags[k];
+                    string tag = enemyplayerCurrentAction.defensePhases[defensePhases].Tags[k];
                     for (int n = 0; n < frameDataList.Count; n++)
                     {
                         if (tag == frameDataList[n].BoxName)

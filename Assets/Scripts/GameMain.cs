@@ -5,17 +5,30 @@ using UnityEngine;
 public class GameMain : MonoBehaviour
 {
     private ulong mLogicFrameIndex;
-    public GameObject player;
+    public List<GameObject> players = new();
+    public List<GameObject> enemies = new();
     void Start()
     {
         mLogicFrameIndex = 0;
         GameInstance.Instance.Init();
-        if (player != null)
+        for (int i = 0; i < players.Count; i++)
         {
-            Character ch = player.GetComponent<Character>();
+            Character ch = players[i].GetComponent<Character>();
             if (ch != null)
             {
                 GameInstance.Instance.AddPlayer(ch);
+                GameInstance.Instance.HitBoxUpdate.AddPlayer(ch);
+                ch.Init();
+                ch.LoadActions();
+            }
+        }
+        for (int i = 0; i < enemies.Count; i++)
+        {
+            Character ch = enemies[i].GetComponent<Character>();
+            if (ch != null)
+            {
+                GameInstance.Instance.AddEnemy(ch);
+                GameInstance.Instance.HitBoxUpdate.AddEnemy(ch);
                 ch.Init();
                 ch.LoadActions();
             }
@@ -72,7 +85,7 @@ public class GameMain : MonoBehaviour
                     HitRecord record = player.GetHitRecord(enemy, playerAttackPhase.AttackPhase);
                     if (record == null || (record.CooldownFrame <= 0 && record.CanHitCount > 0))
                     {
-                        DoAttack(playerAttackPhase, "player");
+                        DoAttack(player, enemy, playerAttackPhase, "player");
                     }
                 }
 
@@ -81,14 +94,14 @@ public class GameMain : MonoBehaviour
                     HitRecord record = enemy.GetHitRecord(player, enemyAttackPhase.AttackPhase);
                     if (record == null || (record.CooldownFrame <= 0 && record.CanHitCount > 0))
                     {
-                        DoAttack(enemyAttackPhase, "enemy");
+                        DoAttack(enemy, player,enemyAttackPhase, "enemy");
                     }
                 }
             }
         } 
     }
 
-    void DoAttack(AttackInfo attackPhase, string debug)
+    void DoAttack(Character attacker, Character target,AttackInfo attackPhase, string debug)
     {
         SimpleLog.Info("DoAttack: ", debug);
         //CancelTag开启
@@ -96,5 +109,6 @@ public class GameMain : MonoBehaviour
         // {
         //     player.GetActionController().AddTempBeCanceledTag(cTag);
         // }
+        attacker.AddHitRecord(target, attackPhase.AttackPhase);
     }
 }

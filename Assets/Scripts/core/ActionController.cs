@@ -108,6 +108,7 @@ public class ActionController
         }
 
         preorderActionList.Clear();
+        //mBoxHits.Clear();
     }
 
     bool CanActionCancelCurrentAction(CharacterAction actionInfo, bool checkCommand, out CancelTag foundTag, out BeCanceledTag beCabceledTag)
@@ -193,6 +194,7 @@ public class ActionController
             mCurrentFrameIndex = 0;
             mLastFrameIndex    = 0;
         }
+        mBoxHits.Clear();
     }
 
     bool GetActionById(string actionId, out CharacterAction action)

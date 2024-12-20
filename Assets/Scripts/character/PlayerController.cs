@@ -159,7 +159,7 @@ public class PlayerController : MonoBehaviour
 
     void OnAttackA(InputActionPhase phase)
     {
-        SimpleLog.Info("OnAttackA: ", phase);
+        //SimpleLog.Info("OnAttackA: ", phase);
         if (phase == InputActionPhase.Started)
         {
             owner.AddActionCommand(KeyMap.ButtonX);

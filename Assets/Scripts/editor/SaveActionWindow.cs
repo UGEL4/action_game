@@ -40,6 +40,7 @@ public class SaveActionWindow : EditorWindow
     void Save()
     {
         AttackBoxTurnOnInfo[] allTurnOnInfo = new AttackBoxTurnOnInfo[0];
+        BeHitBoxTurnOnInfo[] defensePhases  = new BeHitBoxTurnOnInfo[0];
         CharacterAction characterAction     = new CharacterAction();
         foreach (var track in timelineAsset.GetOutputTracks())
         {
@@ -53,11 +54,12 @@ public class SaveActionWindow : EditorWindow
             }
             if (track.GetType() == typeof(ActionEditorHitBoxTrack))
             {
-                GetHitBoxTurnOnInfo(track, out characterAction.defensePhases);
+                GetHitBoxTurnOnInfo(track, out defensePhases);
             }
         }
 
         characterAction.attackPhaseList = allTurnOnInfo;
+        characterAction.defensePhases   = defensePhases;
         StringBuilder json              = new StringBuilder("{\"data\":");
         json.Append(JsonUtility.ToJson(characterAction, true));
         if (!Directory.Exists(Application.dataPath + "/Resources/GameData"))
