@@ -1,19 +1,20 @@
-Library/Artifacts/
-Library/Bee/
-Library/BuildInstructions/
-Library/BurstCache/
-Library/Cache/
-Library/Metadata/
-Library/PlayerDataCache/
-Library/PackageCache/
-Library/ScriptAssemblies/
-Library/Search/
-Library/ShaderCache/
-Library/StateCache/
-Library/Temp/
-Library/TempArtifacts/
-Library/UIElements/
-Library/Timeline/
+# Library/Artifacts/
+# Library/Bee/
+# Library/BuildInstructions/
+# Library/BurstCache/
+# Library/Cache/
+# Library/Metadata/
+# Library/PlayerDataCache/
+# Library/PackageCache/
+# Library/ScriptAssemblies/
+# Library/Search/
+# Library/ShaderCache/
+# Library/StateCache/
+# Library/Temp/
+# Library/TempArtifacts/
+# Library/UIElements/
+# Library/Timeline/
+Library/
 Logs/
 Temp/
 *.userprefs
