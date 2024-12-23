@@ -17,6 +17,7 @@
 Library/
 Logs/
 Temp/
+UserSettings/
 *.userprefs
 *.unityproj
 *.DS_Store
