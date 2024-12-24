@@ -21,6 +21,15 @@ public class Character : MonoBehaviour
 
     public HitRecordComponent HitRecordComponent {get; private set;}
 
+    //切换动作时会清空
+    private List<BeHitBox> mBeHitBoxList = new();
+
+    public List<BeHitBox> BeHitBoxList => mBeHitBoxList;
+
+    //切换动作时会清空
+    public List<AttackHitBox> mAttackHitBoxList = new();
+    public List<AttackHitBox> AttackHitBoxList => mAttackHitBoxList;
+
     void Awake()
     {
         /* Move.Enable();
@@ -276,6 +285,13 @@ public class Character : MonoBehaviour
     //     actionCtrl.Tick();
     // }
 
+    private void OnDestroy()
+    {
+        HitRecordComponent = null;
+        actionCtrl         = null;
+        inputToCommand     = null;
+    }
+
     public void UpdateLogic(ulong frameIndex)
     {
         inputToCommand.Tick();
@@ -452,6 +468,34 @@ public class Character : MonoBehaviour
             rec.CooldownFrame = 0;
             rec.CanHitCount  -= 1;
         }
+    }
+
+    public void AddBeHitBox(BeHitBox box)
+    {
+        if (mBeHitBoxList.Contains(box))
+        {
+            return;
+        }
+        mBeHitBoxList.Add(box);
+    }
+
+    public void ClearBeHitBoxList()
+    {
+        mBeHitBoxList.Clear();
+    }
+
+    public void AddAttackHitBox(AttackHitBox box)
+    {
+        if (mAttackHitBoxList.Contains(box))
+        {
+            return;
+        }
+        mAttackHitBoxList.Add(box);
+    }
+
+    public void ClearAttackHitBoxList()
+    {
+        mAttackHitBoxList.Clear();
     }
 }
 

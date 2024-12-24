@@ -108,7 +108,7 @@ public class ActionController
         }
 
         preorderActionList.Clear();
-        //mBoxHits.Clear();
+        mBoxHits.Clear();
     }
 
     bool CanActionCancelCurrentAction(CharacterAction actionInfo, bool checkCommand, out CancelTag foundTag, out BeCanceledTag beCabceledTag)
@@ -188,6 +188,21 @@ public class ActionController
             mLastFrameIndex    = fromFrameIndex;
             //mOwner.HitRecordComponent.Clear();
             GameInstance.Instance.HitBoxUpdate.OnChangeAction(mOwner, actionName);
+            mOwner.ClearBeHitBoxList();
+            var hitBoxDataMap = GameInstance.Instance.HitBoxDataPool.GetActionHitBoxData(actionName);
+            foreach (var hitBoxData in hitBoxDataMap)
+            {
+                mOwner.AddBeHitBox(new BeHitBox(mOwner, hitBoxData.Key, false));
+            }
+            mOwner.ClearAttackHitBoxList();
+            for (int i = 0; i < CurAction.attackPhaseList.Length; i++)
+            {
+                for (int j = 0; j < CurAction.attackPhaseList[i].RayPointGroupList.Length; j++)
+                {
+                    string tag = CurAction.attackPhaseList[i].RayPointGroupList[j].Tag;
+                    mOwner.AddAttackHitBox(new AttackHitBox(mOwner, tag, AttackHitBoxType.Ray, false));
+                }
+            }
         }
         else
         {
@@ -279,13 +294,14 @@ public class ActionController
             mBoxHits.Add(tag, new List<BeHitBoxTurnOnInfo>());
         }
         bool found = false;
-        for (int i = 0; i < mBoxHits[tag].Count; i++)
+        List<BeHitBoxTurnOnInfo> list = mBoxHits[tag];
+        for (int i = 0; i < list.Count; i++)
         {
             for (int j = 0; j < target.Tags.Length; j++)
             {
-                for (int k = 0; k < mBoxHits[tag][i].Tags.Length; k++)
+                for (int k = 0; k < list[i].Tags.Length; k++)
                 {
-                    if (target.Tags[j] == mBoxHits[tag][i].Tags[k])
+                    if (target.Tags[j] == list[i].Tags[k])
                     {
                         found = true;
                         break;
@@ -297,7 +313,30 @@ public class ActionController
         }
         if (! found)
         {
-            mBoxHits[tag].Add(target);
+            list.Add(target);
+        }
+    }
+
+    public void OnAttackBoxExit(string tag, BeHitBoxTurnOnInfo target)
+    {
+        if (!mBoxHits.ContainsKey(tag))
+        {
+            return;
+        }
+        List<BeHitBoxTurnOnInfo> list = mBoxHits[tag];
+        for (int i = 0; i < list.Count; i++)
+        {
+            for (int j = 0; j < target.Tags.Length; j++)
+            {
+                for (int k = 0; k < list[i].Tags.Length; k++)
+                {
+                    if (target.Tags[j] == list[i].Tags[k])
+                    {
+                        list.RemoveAt(i);
+                        return;
+                    }
+                }
+            }
         }
     }
 }

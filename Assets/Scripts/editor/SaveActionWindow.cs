@@ -141,7 +141,11 @@ public class SaveActionWindow : EditorWindow
         foreach (var clip in clips)
         {
             ActionEditorHitBoxClip clipAsset = clip.asset as ActionEditorHitBoxClip;
-            BeHitBoxTurnOnInfo info          = clipAsset.turnOnInfo;
+            BeHitBoxTurnOnInfo info          = new();
+            info.SelfActionChangeInfo        = clipAsset.SelfActionChangeInfo;
+            info.TargetActionChangeInfo      = clipAsset.TargetActionChangeInfo;
+            info.FrameIndexRange             = clipAsset.ActiveFrameRang;
+            //BeHitBoxTurnOnInfo info          = clipAsset.turnOnInfo;
             List<string> tempList            = new();
             foreach (var boxInfo in clipAsset.boxList)
             {

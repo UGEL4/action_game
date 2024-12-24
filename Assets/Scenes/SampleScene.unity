@@ -1306,6 +1306,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   speed: 10
+  mAttackHitBoxList: []
   DebugActionList: []
 --- !u!143 &830231618
 CharacterController:
@@ -5118,9 +5119,9 @@ PlayableDirector:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1741296729}
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 3
-  m_PlayableAsset: {fileID: 11400000, guid: 227b67c47a60d1749acda6ff54129595, type: 2}
+  m_PlayableAsset: {fileID: 11400000, guid: f04cdd7760c4d2843a49f72f52b1414c, type: 2}
   m_InitialState: 1
   m_WrapMode: 2
   m_DirectorUpdateMode: 1
@@ -5129,6 +5130,8 @@ PlayableDirector:
   - key: {fileID: 3874745098225062438, guid: f04cdd7760c4d2843a49f72f52b1414c, type: 2}
     value: {fileID: 1741296732}
   - key: {fileID: 2088734359992453130, guid: 227b67c47a60d1749acda6ff54129595, type: 2}
+    value: {fileID: 1741296732}
+  - key: {fileID: -5713955672439753332, guid: 709add3d775306345a4f4e96f3e6213e, type: 2}
     value: {fileID: 1741296732}
   m_ExposedReferences:
     m_References:
@@ -5144,6 +5147,7 @@ PlayableDirector:
     - 3d90202fcddf71740966d2a72a705732: {fileID: 1714851009}
     - 10e11d09814264749ba351737bf2aaeb: {fileID: 124628754}
     - 4d2e256ed006b2f4bbb9f9dae90f0d80: {fileID: 1714851009}
+    - e9a0d0dc2f0287942bfe89b9ca49c799: {fileID: 541909856}
     - b4987e897f376c043b8f91a093e761c7: {fileID: 124628754}
     - c5afa792c27095d4f9c837c897a7780f: {fileID: 124628754}
     - 46d6c008fbb2bd649938c1e7a9e173d0: {fileID: 1714851009}
@@ -5176,6 +5180,7 @@ PlayableDirector:
     - f113c9ca3119c5e4482091753886b1c5: {fileID: 1714851009}
     - ff523cfb4e6c23a46aedf484af1981ce: {fileID: 124628754}
     - a9a27e95d43dcc344aa976b1bfddd2d9: {fileID: 1714851009}
+    - 075f9f64fefd9204eb6fe5506f0e5ea7: {fileID: 541909856}
     - 4df31fe7db9fbd64daf61bd042042fb0: {fileID: 963130370}
     - 494a149a6c7a3a041841f2152edd74b0: {fileID: 124628754}
 --- !u!1 &1741296731 stripped

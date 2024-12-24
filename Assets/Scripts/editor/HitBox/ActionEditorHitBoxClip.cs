@@ -20,24 +20,19 @@ public class ActionEditorHitBoxClip : PlayableAsset
     }
 
     [Header("碰撞盒信息")]
-    public BeHitBoxTurnOnInfo turnOnInfo;
+    //public BeHitBoxTurnOnInfo turnOnInfo;
+    public FrameIndexRange ActiveFrameRang;
+    [Header("优先级变化")]
+    public int Priority;
+
+    [Header("被攻击时的动作变化")]
+    public ActionChangeInfo SelfActionChangeInfo;
+
+    [Header("攻击方的动作变化")]
+    public ActionChangeInfo TargetActionChangeInfo;
+
     [Header("激活的碰撞盒列表")]
     public List<ActiveHitBoxInfo> boxList = new();
-
-    // [Serializable]
-    // public struct PhaseActiveHitBoxInfo
-    // {
-    //     [Tooltip("碰撞盒信息")]
-    //     public BeHitBoxTurnOnInfo turnOnInfo;
-
-    //     [Tooltip("激活的碰撞盒列表")]
-    //     public List<ActiveHitBoxInfo> boxList;
-    // }
-
-    // [Tooltip("防御阶段列表")]
-    // public List<PhaseActiveHitBoxInfo> phaseBoxList = new();
-
-    private List<GameObject> mCacheBoneList = new List<GameObject>();
 
     public ActionEditorHitBoxBehaviour template = new ActionEditorHitBoxBehaviour();
 

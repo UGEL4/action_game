@@ -4,13 +4,14 @@ using UnityEngine;
 [Serializable]
 public struct BeHitBox
 {
-    public SimpleColliderBox ColliderBox;
-    public string[] Tags;
-
-    [HideInInspector]
+    public string Tag;
     public Character Owner;
-
-    public int BasePriority;
-    public int TempPriority;
     public bool Active;
+
+    public BeHitBox(Character owner, string tag, bool active)
+    {
+        Owner  = owner;
+        Tag    = tag;
+        Active = active;
+    }
 }

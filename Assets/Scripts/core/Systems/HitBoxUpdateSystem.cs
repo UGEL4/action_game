@@ -5,14 +5,15 @@ using UnityEngine;
 
 public class HitBoxUpdateSystem
 {
-    private List<Character> mPlayers    = new();
-    private List<Character> mAllEnemies = new();
+    private List<Character> mPlayers;
+    private List<Character> mAllEnemies;
 
     private Dictionary<Character, List<HitBoxDataPoolSystem.HitBoxData>> mCharacterCurrentActionHitBoxData = new();
 
     public void Init()
     {
-
+        mPlayers    = new();
+        mAllEnemies = new();
     }
 
     public void Destory()
@@ -22,7 +23,7 @@ public class HitBoxUpdateSystem
         mPlayers.Clear();
         mPlayers = null;
     }
-    
+
     public void AddPlayer(Character player)
     {
         if (!mPlayers.Contains(player))
@@ -65,85 +66,118 @@ public class HitBoxUpdateSystem
         // 获取当前帧的数据
         for (int i = 0; i < mPlayers.Count; ++i)
         {
-            var actionController    = mPlayers[i].GetActionController();
+            var player              = mPlayers[i];
+            var actionController    = player.GetActionController();
             var playerCurrentAction = actionController.CurAction;
 
-            int attackPhase = -1;
+            // player的攻击框
             uint playerFrameIndex = actionController.CurrentFrameIndex;
-            for (int j = 0; j < playerCurrentAction.attackPhaseList.Length; j++)
-            {
-                for (int k = 0; k < playerCurrentAction.attackPhaseList[j].FrameIndexRange.Length; k++)
-                {
-                    if (playerFrameIndex <= playerCurrentAction.attackPhaseList[j].FrameIndexRange[k].min || playerFrameIndex > playerCurrentAction.attackPhaseList[j].FrameIndexRange[k].max)
-                    {
-                        continue;
-                    }
-                    attackPhase = j;
-                    break;
-                }
-                if (attackPhase == -1)
-                {
-                    break;
-                }
-            }
-            if (attackPhase == -1)
-            {
-                // 当前帧，没有攻击框开启
-                continue;
-            }
-            AttackBoxTurnOnInfo attackBoxInfo = playerCurrentAction.attackPhaseList[attackPhase];
+            int playerAttackPhase = GetAttackPhase(playerCurrentAction, (int)playerFrameIndex);
 
+            //检测player的攻击对每个enemy产生的碰撞, 同时也检测每个enemy的攻击对player产生的碰撞
             for (int e = 0; e < mAllEnemies.Count; ++e)
             {
-                var enemy                    = mAllEnemies[e];
-                var enemyActionController    = enemy.GetActionController();
-                var enemyplayerCurrentAction = enemyActionController.CurAction;
-                // 找到当前动作对应的碰撞盒数据
-                int defensePhases = -1;
-                if (!mCharacterCurrentActionHitBoxData.ContainsKey(enemy))
+                //player的攻击对enemy产生的碰撞
+                var enemy                 = mAllEnemies[e];
+                var enemyActionController = enemy.GetActionController();
+                var enemyCurrentAction    = enemyActionController.CurAction;
+                uint enemyFrameIndex      = enemyActionController.CurrentFrameIndex;
+                if (playerAttackPhase != -1)
                 {
-                    continue;
-                }
-                var frameDataList = mCharacterCurrentActionHitBoxData[enemy];
-                uint enemyFrameIndex = enemyActionController.CurrentFrameIndex;
-                for (int j = 0; j < enemyplayerCurrentAction.defensePhases.Length; ++j)
-                {
-                    if (enemyFrameIndex < enemyplayerCurrentAction.defensePhases[j].FrameIndexRange.min || enemyFrameIndex >= enemyplayerCurrentAction.defensePhases[j].FrameIndexRange.max)
+                    //找到当前动作对应的碰撞盒数据
+                    int enemyDefensePhases = GetDefensePhase(enemyCurrentAction, (int)enemyFrameIndex);
+                    if (enemyDefensePhases != -1)
                     {
-                        continue;
+                        CheckHit(player, playerCurrentAction.attackPhaseList[playerAttackPhase], (int)playerFrameIndex,
+                                 enemy, enemyCurrentAction.defensePhases[enemyDefensePhases], (int)enemyFrameIndex);
                     }
-                    defensePhases = j;
-                    break;
                 }
-                if (defensePhases == -1)
+
+                //enemy的攻击对player产生的碰撞
+                int playerDefensePhase = GetDefensePhase(playerCurrentAction, (int)playerFrameIndex);
+                if (playerDefensePhase == -1)
                 {
                     // 当前帧，没有防御框开启
                     continue;
                 }
 
-                for (int k = 0; k < enemyplayerCurrentAction.defensePhases[defensePhases].Tags.Length; ++k)
+                int enemyAttackPhase = GetAttackPhase(enemyCurrentAction, (int)enemyFrameIndex);
+                if (enemyAttackPhase == -1)
                 {
-                    string tag = enemyplayerCurrentAction.defensePhases[defensePhases].Tags[k];
-                    for (int n = 0; n < frameDataList.Count; n++)
+                    // 当前帧，没有攻击框开启
+                    continue;
+                }
+                CheckHit(enemy, enemyCurrentAction.attackPhaseList[enemyAttackPhase], (int)enemyFrameIndex, player, playerCurrentAction.defensePhases[playerDefensePhase], (int)playerFrameIndex);
+            }
+        }
+    }
+
+    int GetAttackPhase(CharacterAction action, int frameIndex)
+    {
+        int attackPhase = -1;
+        for (int j = 0; j < action.attackPhaseList.Length; j++)
+        {
+            for (int k = 0; k < action.attackPhaseList[j].FrameIndexRange.Length; k++)
+            {
+                if (frameIndex <= action.attackPhaseList[j].FrameIndexRange[k].min || frameIndex > action.attackPhaseList[j].FrameIndexRange[k].max)
+                {
+                    continue;
+                }
+                attackPhase = j;
+                break;
+            }
+            if (attackPhase != -1)
+            {
+                break;
+            }
+        }
+        return attackPhase;
+    }
+
+    int GetDefensePhase(CharacterAction action, int frameIndex)
+    {
+        int defensePhases = -1;
+        for (int j = 0; j < action.defensePhases.Length; ++j)
+        {
+            if (frameIndex < action.defensePhases[j].FrameIndexRange.min || frameIndex > action.defensePhases[j].FrameIndexRange.max)
+            {
+                continue;
+            }
+            defensePhases = j;
+            break;
+        }
+        return defensePhases;
+    }
+
+    void CheckHit(Character attacker, AttackBoxTurnOnInfo attackBoxInfo, int attackerFrameIndex, Character target, BeHitBoxTurnOnInfo defenseBoxInfo, int targetFrameIndex)
+    {
+        if (!mCharacterCurrentActionHitBoxData.ContainsKey(target))
+        {
+            return;
+        }
+        var attackActionController = attacker.GetActionController();
+        var frameDataList          = mCharacterCurrentActionHitBoxData[target];
+        for (int k = 0; k < defenseBoxInfo.Tags.Length; ++k)
+        {
+            string tag = defenseBoxInfo.Tags[k];
+            for (int n = 0; n < frameDataList.Count; n++)
+            {
+                if (tag == frameDataList[n].BoxName)
+                {
+                    int index = (int)(targetFrameIndex - defenseBoxInfo.FrameIndexRange.min);
+                    if (index < 0)
                     {
-                        if (tag == frameDataList[n].BoxName)
-                        {
-                            int index = (int)(enemyFrameIndex - enemyplayerCurrentAction.defensePhases[defensePhases].FrameIndexRange.min);
-                            if (index < 0)
-                            {
-                                break;
-                            }
-                            if (index >= frameDataList[n].AllFrameData.Count)
-                            {
-                                index = frameDataList[n].AllFrameData.Count - 1;
-                            }
-                            if (IsHit(attackBoxInfo, mPlayers[i], frameDataList[n].AllFrameData[index], enemy, (int)playerFrameIndex, out string gropuTag))
-                            {
-                                actionController.OnAttackBoxHit(gropuTag, enemyplayerCurrentAction.defensePhases[defensePhases]);
-                            }
-                            break;
-                        }
+                        break;
                     }
+                    if (index >= frameDataList[n].AllFrameData.Count)
+                    {
+                        index = frameDataList[n].AllFrameData.Count - 1;
+                    }
+                    if (IsHit(attackBoxInfo, attacker, frameDataList[n].AllFrameData[index], target, attackerFrameIndex, out string gropuTag))
+                    {
+                        attackActionController.OnAttackBoxHit(gropuTag, defenseBoxInfo);
+                    }
+                    break;
                 }
             }
         }
@@ -158,7 +192,7 @@ public class HitBoxUpdateSystem
                 continue;
             }
 
-            frame        = frame - (int)attackBoxInfo.FrameIndexRange[i].min; // frame不是从0开始，需要得到数组下标
+            frame        -= (int)attackBoxInfo.FrameIndexRange[i].min; // frame不是从0开始，需要得到数组下标
             var rayGroup = attackBoxInfo.RayPointGroupList[i];
             for (int j = 0; j < rayGroup.Points.Length; j++)
             {

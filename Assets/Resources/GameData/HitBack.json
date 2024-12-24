@@ -1,29 +1,21 @@
 {"data":{
-    "mActionName": "Idle",
-    "mAnimation": "Idle_60fps",
-    "mPriority": 0,
+    "mActionName": "HitBack",
+    "mAnimation": "hit_head_back",
+    "mPriority": 1,
     "mAutoNextActionName": "Idle",
     "mAutoTerminate": false,
-    "keepPlayingAnim": true,
-    "mTotalFrameCount": 60,
-    "mCancelTagList": [],
-    "mBeCanceledTagList": [
+    "keepPlayingAnim": false,
+    "mTotalFrameCount": 12,
+    "mCancelTagList": [
         {
-            "cancelTag": [
-                "InitAction"
-            ],
-            "fadeOutPercentage": 0.10000000149011612,
-            "priority": 0,
-            "range": {
-                "min": 0.0,
-                "max": 1.0
-            },
-            "frameIndexRange": {
-                "min": 0,
-                "max": 60
-            }
+            "tag": "InitAction",
+            "priority": 1,
+            "startFromPercentage": 0.0,
+            "startFromFrameIndex": 0,
+            "fadeInPercentage": 0.0
         }
     ],
+    "mBeCanceledTagList": [],
     "mTempBeCanceledTagList": [],
     "mCommandList": [],
     "attackInfoList": [],
@@ -32,7 +24,7 @@
         {
             "FrameIndexRange": {
                 "min": 0,
-                "max": 59
+                "max": 12
             },
             "Tags": [
                 "Bip001 Pelvis",
@@ -52,9 +44,9 @@
             "TempTurnOnBeCancelTags": [],
             "Priority": 0,
             "SelfActionChangeInfo": {
-                "changeType": 1,
-                "param": "HitBack",
-                "priority": 1,
+                "changeType": 0,
+                "param": "",
+                "priority": 0,
                 "fromNormalized": 0.0,
                 "transNormalized": 0.0
             },
@@ -67,13 +59,5 @@
             }
         }
     ],
-    "moveInputAcceptance": [
-        {
-            "range": {
-                "min": 0.0,
-                "max": 1.0
-            },
-            "rate": 0.0
-        }
-    ]
+    "moveInputAcceptance": []
 }}

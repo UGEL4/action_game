@@ -350,25 +350,22 @@ MonoBehaviour:
   RootBone:
     exposedName: e9a0d0dc2f0287942bfe89b9ca49c799
     defaultValue: {fileID: 0}
-  turnOnInfo:
-    FrameIndexRange:
-      min: 0
-      max: 70
-    Tags: []
-    TempTurnOnBeCancelTags: []
-    Priority: 0
-    SelfActionChangeInfo:
-      changeType: 0
-      param: 
-      priority: 0
-      fromNormalized: 0
-      transNormalized: 0
-    TargetActionChangeInfo:
-      changeType: 0
-      param: 
-      priority: 0
-      fromNormalized: 0
-      transNormalized: 0
+  ActiveFrameRang:
+    min: 0
+    max: 70
+  Priority: 0
+  SelfActionChangeInfo:
+    changeType: 0
+    param: 
+    priority: 0
+    fromNormalized: 0
+    transNormalized: 0
+  TargetActionChangeInfo:
+    changeType: 1
+    param: HitBack
+    priority: 1
+    fromNormalized: 0
+    transNormalized: 0
   boxList:
   - active: 1
     Bone: {fileID: 0}
@@ -395,6 +392,8 @@ MonoBehaviour:
   - active: 1
     Bone: {fileID: 0}
   - active: 1
+    Bone: {fileID: 0}
+  - active: 0
     Bone: {fileID: 0}
 --- !u!114 &1997693612859867172
 MonoBehaviour:
@@ -683,7 +682,7 @@ MonoBehaviour:
     ActiveFrame:
       min: 15
       max: 22
-  Record: 0
+  Record: 1
 --- !u!114 &6749216349447243685
 MonoBehaviour:
   m_ObjectHideFlags: 1
