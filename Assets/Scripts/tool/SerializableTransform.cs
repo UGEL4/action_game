@@ -25,4 +25,12 @@ namespace ACTTools
         public Vector3 center;
         public Vector3 size;
     }
+
+    [Serializable]
+    public class ACTTransform
+    {
+        public Vector3 Position;
+        public Vector3 Scale;
+        public Quaternion Rotation;
+    }
 }

@@ -21,6 +21,9 @@ public struct ActionChangeInfo
 
     [Tooltip("融合长度"), Range(0.00f, 1.00f)]
     public float transNormalized;
+
+    // [Tooltip("从第几帧开始这个动作"), Min(0)]
+    // public int StratFromFrameIndex;
 }
 
 [Serializable]

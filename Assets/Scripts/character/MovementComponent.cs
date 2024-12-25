@@ -1,6 +1,8 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Rendering;
 
 public class MovementComponent : MonoBehaviour
 {
@@ -37,4 +39,30 @@ public class MovementComponent : MonoBehaviour
             controller.Move(moveDir);
         }
     }
+
+    /////////////////////////////logic
+    private int mSpeed = 1; //每帧位移0.2
+    private float mRenderUnit = 0.2f;
+
+    private Vector3 mPosition = Vector3.zero;
+
+    //逻辑单位到渲染单位的转换
+    public float LogicUnitToRenderUnit(int unit)
+    {
+        return unit * mRenderUnit;
+    }
+
+    public Vector3 NatureMove()
+    {
+        var adjDir  = Quaternion.AngleAxis(mCameraTransform.eulerAngles.y, Vector3.up) * playerController.CurrMoveDir;
+        if (adjDir.magnitude > 0.0f)
+        {
+            adjDir.Normalize();
+            float MoveInputAcceptance = owner.GetMoveInputAcceptance();
+            Vector3 motion = adjDir * LogicUnitToRenderUnit(mSpeed) /** MoveInputAcceptance*/;
+            controller.Move(motion);
+        }
+        return new Vector3(1, 1, 1);
+    }
+    /////////////////////////////logic
 }

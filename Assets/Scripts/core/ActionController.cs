@@ -12,8 +12,6 @@ public class ActionController
     private List<BeCanceledTag> curBeCanceledTagList = new List<BeCanceledTag>();
     private List<PreorderActionInfo> preorderActionList = new List<PreorderActionInfo>();
     private Action<CharacterAction, CharacterAction> _onChangeAction = null;
-    public List<AttackBoxTurnOnInfo> ActiveAttackBoxTurnOnInfoList { private set; get; } = new List<AttackBoxTurnOnInfo>();
-    public List<string> ActiveAttackBoxTurnOnInfoTagList { private set; get; } = new List<string>();
 
     /// <summary>
     /// 当前动画百分比，放这里方便些，其实最好放一个函数里
@@ -167,7 +165,8 @@ public class ActionController
 
     void ChangeAction(string actionName, float normalizedTransitionDuration, float normalizedTimeOffset, uint fromFrameIndex)
     {
-        if (GetActionById(actionName, out CharacterAction action))
+        CharacterAction action = GetActionById(actionName, out bool found);
+        if (found)
         {
             Log.SimpleLog.Log("ChangeAction: ", actionName, fromFrameIndex);
             //
@@ -180,9 +179,6 @@ public class ActionController
             {
                 curBeCanceledTagList.Add(tag);
             }
-
-            ActiveAttackBoxTurnOnInfoList.Clear();
-            ActiveAttackBoxTurnOnInfoTagList.Clear();
 
             mCurrentFrameIndex = fromFrameIndex;
             mLastFrameIndex    = fromFrameIndex;
@@ -212,18 +208,18 @@ public class ActionController
         mBoxHits.Clear();
     }
 
-    bool GetActionById(string actionId, out CharacterAction action)
+    CharacterAction GetActionById(string actionId, out bool found)
     {
-        action = new CharacterAction();
+        found = false;
         for (int i = 0; i < AllActions.Count; i++)
         {
             if (actionId == AllActions[i].mActionName)
             {
-                action = AllActions[i];
-                return true;
+                found = true;
+                return AllActions[i];
             }
         }
-        return false;
+        return CurAction;
     }
 
     public void CalculateInputAcceptance(float wasPec, float pec)
@@ -252,38 +248,6 @@ public class ActionController
                 AddTempBeCanceledTag(temp);
                 return;
             }
-        }
-    }
-
-    /// <summary>
-    /// 计算当前动画帧的信息
-    /// </summary>
-    /// <param name="wasPec">上一帧的百分比</param>
-    /// <param name="pec">百分比进度</param>
-    private void CalculateBoxInfo(float wasPec, float pec)
-    {
-        ActiveAttackBoxTurnOnInfoList.Clear();
-        ActiveAttackBoxTurnOnInfoTagList.Clear();
-        foreach (AttackBoxTurnOnInfo info in CurAction.attackPhaseList)
-        {
-            bool open = false;
-            // foreach (PercentageRange range in info.turnOnRangeList)
-            // {
-            //     if (pec >= range.min && wasPec <= range.max)
-            //     {
-            //         open = true;
-            //         break;
-            //     }
-            // }
-            // if (open)
-            // {
-            //     //Log.SimpleLog.Info("range: ", range.min, range.max, wasPec, pec);
-            //     foreach (string tag in info.attackBoxTag)
-            //     {
-            //         if (!ActiveAttackBoxTurnOnInfoTagList.Contains(tag)) ActiveAttackBoxTurnOnInfoTagList.Add(tag);
-            //     }
-            //     ActiveAttackBoxTurnOnInfoList.Add(info);
-            // }
         }
     }
 
@@ -336,6 +300,30 @@ public class ActionController
                         return;
                     }
                 }
+            }
+        }
+    }
+
+    public void PreorderActionByActionChangeInfo(ActionChangeInfo info)
+    {
+        switch (info.changeType)
+        {
+            case ActionChangeType.Keep: break;
+            case ActionChangeType.ChangeToActionId:
+            {
+                CharacterAction action = GetActionById(info.param, out bool found);
+                if (found)
+                {
+                    preorderActionList.Add(new PreorderActionInfo {
+                        ActionId                  = action.mActionName,
+                        Priority                  = action.mPriority + info.priority,
+                        TransitionNormalized      = info.transNormalized,
+                        FromNormalized            = info.fromNormalized,
+                        FreezingAfterChangeAction = 0,
+                        FromFrameIndex            = 0
+                    });
+                }
+                break;
             }
         }
     }

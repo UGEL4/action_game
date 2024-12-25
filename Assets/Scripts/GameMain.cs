@@ -112,10 +112,12 @@ public class GameMain : MonoBehaviour
         ActionChangeInfo attackerChangeInfo = 
         attackInfo.SelfActionChangeInfo.priority >= defensePhase.TargetActionChangeInfo.priority 
         ? attackInfo.SelfActionChangeInfo : defensePhase.TargetActionChangeInfo;
+        attacker.GetActionController().PreorderActionByActionChangeInfo(attackerChangeInfo);
 
         ActionChangeInfo defenderChangeInfo = 
         attackInfo.TargetActionChangeInfo.priority > defensePhase.SelfActionChangeInfo.priority 
         ? attackInfo.TargetActionChangeInfo : defensePhase.SelfActionChangeInfo;
+        target.GetActionController().PreorderActionByActionChangeInfo(defenderChangeInfo);
 
         attacker.AddHitRecord(target, attackInfo.AttackPhase);
     }

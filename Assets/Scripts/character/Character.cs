@@ -8,6 +8,8 @@ public class Character : MonoBehaviour
 {
     private ActionController actionCtrl;
 
+    private MovementComponent mMovementComp;
+
     public float speed;
 
     private Vector3 curMovement;
@@ -44,6 +46,7 @@ public class Character : MonoBehaviour
     void Start()
     {
         SimpleLog.Info("Start: ", gameObject.name);
+        mMovementComp = GetComponent<MovementComponent>();
         // animator = GetComponent<Animator>();
         // //fsm.Start();
         // //animator.SetFloat("Speed", 1.0f);
@@ -296,6 +299,7 @@ public class Character : MonoBehaviour
     {
         inputToCommand.Tick();
         actionCtrl.Tick();
+        mMovementComp?.NatureMove();
     }
 
     public bool IsMoving()
