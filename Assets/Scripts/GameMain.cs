@@ -9,6 +9,7 @@ public class GameMain : MonoBehaviour
     public List<GameObject> enemies = new();
     void Start()
     {
+        Application.targetFrameRate = 60;
         mLogicFrameIndex = 0;
         GameInstance.Instance.Init();
         for (int i = 0; i < players.Count; i++)

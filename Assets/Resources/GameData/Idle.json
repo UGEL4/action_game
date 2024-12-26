@@ -59,7 +59,7 @@
                 "transNormalized": 0.0
             },
             "TargetActionChangeInfo": {
-                "changeType": 1,
+                "changeType": 0,
                 "param": "AttackBlocked02",
                 "priority": 1,
                 "fromNormalized": 0.1,

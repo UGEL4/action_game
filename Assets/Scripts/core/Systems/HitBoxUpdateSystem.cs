@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using ACTTools;
+using Unity.Mathematics;
 using UnityEngine;
 
 public class HitBoxUpdateSystem
@@ -82,6 +83,9 @@ public class HitBoxUpdateSystem
                 var enemyActionController = enemy.GetActionController();
                 var enemyCurrentAction    = enemyActionController.CurAction;
                 uint enemyFrameIndex      = enemyActionController.CurrentFrameIndex;
+
+                //DrawWireCube(mCharacterCurrentActionHitBoxData[enemy], (int)enemyFrameIndex, enemy.transform);
+
                 if (playerAttackPhase != -1)
                 {
                     //找到当前动作对应的碰撞盒数据
@@ -183,6 +187,51 @@ public class HitBoxUpdateSystem
         }
     }
 
+    private void DrawWireCube(List<HitBoxDataPoolSystem.HitBoxData> frameDataList, int frameIndex, Transform rootTransform)
+    {
+        for (int n = 0; n < frameDataList.Count; n++)
+        {
+            if (frameIndex >= frameDataList[n].AllFrameData.Count) break;
+            BoxColliderData defenseBoxInfo = frameDataList[n].AllFrameData[frameIndex];
+            Vector3 wCenter                = rootTransform.TransformPoint(defenseBoxInfo.center);
+            Vector3 wP                     = rootTransform.TransformPoint(defenseBoxInfo.position);
+            // 计算大小的一半
+            Vector3 halfSize = defenseBoxInfo.size * 0.5f;
+            // Vector3 p = target.transform.TransformPoint(defenseBoxInfo.position);
+            Quaternion r = Quaternion.Euler(defenseBoxInfo.rotation);
+
+            //Debug.DrawRay(wP, wP + new Vector3(1, 1, 1), Color.blue, 1.0f);
+            // Vector3 ro = r.eulerAngles;
+            // Vector3 pos = defenseBoxInfo.position;
+            // var boxMatrix    = Matrix4x4.TRS(pos, Quaternion.Euler(defenseBoxInfo.rotation), new Vector3(1, 1, 1));
+            // var worldToLocal = (target.transform.localToWorldMatrix * boxMatrix).inverse;
+            //  计算角点
+            // Vector3 center = frameDataList[n].AllFrameData[index].position + frameDataList[n].AllFrameData[index].center;
+            Vector3[] corners = new Vector3[8];
+            corners[0]        = wCenter + r * new Vector3(halfSize.x, halfSize.y, halfSize.z);
+            corners[1]        = wCenter + r * new Vector3(halfSize.x, halfSize.y, -halfSize.z);
+            corners[2]        = wCenter + r * new Vector3(halfSize.x, -halfSize.y, halfSize.z);
+            corners[3]        = wCenter + r * new Vector3(halfSize.x, -halfSize.y, -halfSize.z);
+            corners[4]        = wCenter + r * new Vector3(-halfSize.x, halfSize.y, halfSize.z);
+            corners[5]        = wCenter + r * new Vector3(-halfSize.x, halfSize.y, -halfSize.z);
+            corners[6]        = wCenter + r * new Vector3(-halfSize.x, -halfSize.y, halfSize.z);
+            corners[7]        = wCenter + r * new Vector3(-halfSize.x, -halfSize.y, -halfSize.z);
+            // 绘制边界线
+            Debug.DrawLine(corners[0], corners[1], Color.red, 0.1f);
+            Debug.DrawLine(corners[0], corners[2], Color.red, 0.1f);
+            Debug.DrawLine(corners[0], corners[4], Color.red, 0.1f);
+            Debug.DrawLine(corners[1], corners[3], Color.red, 0.1f);
+            Debug.DrawLine(corners[1], corners[5], Color.red, 0.1f);
+            Debug.DrawLine(corners[2], corners[3], Color.red, 0.1f);
+            Debug.DrawLine(corners[2], corners[6], Color.red, 0.1f);
+            Debug.DrawLine(corners[3], corners[7], Color.red, 0.1f);
+            Debug.DrawLine(corners[4], corners[5], Color.red, 0.1f);
+            Debug.DrawLine(corners[4], corners[6], Color.red, 0.1f);
+            Debug.DrawLine(corners[5], corners[7], Color.red, 0.1f);
+            Debug.DrawLine(corners[6], corners[7], Color.red, 0.1f);
+        }
+    }
+
     bool IsHit(AttackBoxTurnOnInfo attackBoxInfo, Character attacker, BoxColliderData defenseBoxInfo, Character target, int frame, out string gropuTag)
     {
         for (int i = 0; i < attackBoxInfo.FrameIndexRange.Length; ++i)
@@ -204,6 +253,7 @@ public class HitBoxUpdateSystem
                     var oldPointTrans = point.RayPointTransforms[lastFrame];
                     var worldPos      = attacker.transform.localToWorldMatrix * new Vector4(pointTrans.Position.x, pointTrans.Position.y, pointTrans.Position.z, 1);
                     var worldPosOld   = attacker.transform.localToWorldMatrix * new Vector4(oldPointTrans.Position.x, oldPointTrans.Position.y, oldPointTrans.Position.z, 1);
+                    Debug.DrawLine(worldPos, worldPosOld, Color.red, 1.0f);
                     if (IsHitBox(worldPos, worldPosOld, defenseBoxInfo, target.transform))
                     {
                         gropuTag = rayGroup.Tag;
@@ -218,19 +268,89 @@ public class HitBoxUpdateSystem
 
     bool IsHitBox(Vector3 startPos, Vector3 endPos, BoxColliderData boxInfo, Transform rootTransform)
     {
-        var boxMatrix    = Matrix4x4.TRS(boxInfo.position, Quaternion.Euler(boxInfo.rotation), new Vector3(1, 1, 1));
-        var worldToLocal = (rootTransform.localToWorldMatrix * boxMatrix).inverse;
-        startPos         = worldToLocal.MultiplyPoint3x4(startPos);
-        endPos           = worldToLocal.MultiplyPoint3x4(endPos);
+        // 创建碰撞盒的局部旋转
+        //Quaternion colliderRotation = Quaternion.Euler(boxInfo.rotation);
+        // 将射线起点和终点转换到父物体的局部坐标系
+        //Vector3 worldToParentStart = rootTransform.InverseTransformPoint(startPos);
+        //Vector3 worldToParentEnd = rootTransform.InverseTransformPoint(endPos);
+        // 将父物体的坐标转换到碰撞盒的局部坐标系
+        //startPos = Quaternion.Inverse(colliderRotation) * (worldToParentStart - boxInfo.position);
+        //endPos = Quaternion.Inverse(colliderRotation) * (worldToParentEnd - boxInfo.position);
+        //var boxMatrix    = Matrix4x4.TRS(boxInfo.position, Quaternion.Euler(boxInfo.rotation), new Vector3(1, 1, 1));
+        //var worldToLocal = (rootTransform.localToWorldMatrix * boxMatrix).inverse;
+        // 创建平移矩阵（父节点）
+        //Matrix4x4 parentTranslationMatrix = Matrix4x4.TRS(rootTransform.position, rootTransform.rotation, Vector3.one);
+        //var worldToLocal = boxMatrix * parentTranslationMatrix.inverse;
+        //startPos         = worldToLocal.MultiplyPoint(startPos);
+        //endPos           = worldToLocal.MultiplyPoint(endPos);
         Ray ray          = new Ray(startPos, endPos - startPos);
-        bool hit         = RayIntersectsAABB(ray, boxInfo.center, boxInfo.size, out float tNear, out float tFar);
+        bool hit         = RayIntersectsAABB(rootTransform,ray, boxInfo.position, boxInfo.rotation, boxInfo.center, boxInfo.size, out float tNear, out float tFar);
+
+        // Vector3 wCenter = rootTransform.TransformPoint(boxInfo.center);
+        // // 计算AABB的最小点和最大点
+        // Quaternion r = Quaternion.Euler(boxInfo.rotation);
+        // Vector3 aabbMin = wCenter + r * (boxInfo.size * -0.5f); // AABB的最小点
+        // Vector3 aabbMax = wCenter + r * (boxInfo.size * 0.5f); // AABB的最大点
+        // Debug.DrawLine(aabbMin, aabbMax, Color.green, 1.0f);
         return hit;
     }
 
-    bool RayIntersectsAABB(Ray ray, Vector3 center, Vector3 size, out float tNear, out float tFar)
+    bool RayIntersectsAABB(Transform rootTransform, Ray ray, Vector3 boxPos, Vector3 boxRot, Vector3 center, Vector3 size, out float tNear, out float tFar)
     {
+        // 计算盒子的最小和最大边界
+        Vector3 halfSize = size * 0.5f;
+        Vector3 boxMin = center - halfSize;
+        Vector3 boxMax = center + halfSize;
+        // 创建一个旋转矩阵
+        Matrix4x4 rotationMatrix = Matrix4x4.Rotate(quaternion.Euler(boxRot));
+        // 计算父节点的变换
+        Matrix4x4 parentMatrix = Matrix4x4.TRS(rootTransform.position, rootTransform.rotation, rootTransform.localScale);
+        // 将盒子的角点转换到世界坐标
+        Vector3[] corners = new Vector3[8];
+        corners[0] = boxMin;
+        corners[1] = new Vector3(boxMin.x, boxMin.y, boxMax.z);
+        corners[2] = new Vector3(boxMin.x, boxMax.y, boxMin.z);
+        corners[3] = new Vector3(boxMin.x, boxMax.y, boxMax.z);
+        corners[4] = new Vector3(boxMax.x, boxMin.y, boxMin.z);
+        corners[5] = new Vector3(boxMax.x, boxMin.y, boxMax.z);
+        corners[6] = new Vector3(boxMax.x, boxMax.y, boxMin.z);
+        corners[7] = boxMax;
+        // 应用旋转
+        for (int i = 0; i < corners.Length; i++)
+        {
+            corners[i] = rotationMatrix.MultiplyPoint3x4(corners[i]);
+        }
+        // 应用父节点的变换
+        for (int i = 0; i < corners.Length; i++)
+        {
+            corners[i] = parentMatrix.MultiplyPoint3x4(corners[i]);
+        }
+        Debug.DrawLine(corners[0], corners[1], Color.red, 0.1f);
+            Debug.DrawLine(corners[0], corners[2], Color.red, 0.1f);
+            Debug.DrawLine(corners[0], corners[4], Color.red, 0.1f);
+            Debug.DrawLine(corners[1], corners[3], Color.red, 0.1f);
+            Debug.DrawLine(corners[1], corners[5], Color.red, 0.1f);
+            Debug.DrawLine(corners[2], corners[3], Color.red, 0.1f);
+            Debug.DrawLine(corners[2], corners[6], Color.red, 0.1f);
+            Debug.DrawLine(corners[3], corners[7], Color.red, 0.1f);
+            Debug.DrawLine(corners[4], corners[5], Color.red, 0.1f);
+            Debug.DrawLine(corners[4], corners[6], Color.red, 0.1f);
+            Debug.DrawLine(corners[5], corners[7], Color.red, 0.1f);
+            Debug.DrawLine(corners[6], corners[7], Color.red, 0.1f);
+
+        // 计算包围盒
+        Bounds boxBounds = new Bounds(corners[0], Vector3.zero);
+        foreach (var corner in corners)
+        {
+            boxBounds.Encapsulate(corner);
+        }
+        // 检测光线与盒子的相交
+        tNear = 0;
+        tFar  = 0;
+        return boxBounds.IntersectRay(ray);
+
         // 计算AABB的最小点和最大点
-        Vector3 aabbMin = center - size * 0.5f; // AABB的最小点
+        /*Vector3 aabbMin = center - size * 0.5f; // AABB的最小点
         Vector3 aabbMax = center + size * 0.5f; // AABB的最大点
 
         tNear = float.NegativeInfinity;
@@ -257,6 +377,6 @@ public class HitBoxUpdateSystem
                 return false;
         }
 
-        return tNear <= tFar;
+        return tNear <= tFar;*/
     }
 }

@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Rendering;
 
@@ -9,6 +10,7 @@ public class MovementComponent : MonoBehaviour
     [SerializeField] PlayerController playerController;
     [SerializeField] CharacterController controller;
     [SerializeField] Character owner;
+    public GameObject RenderObj;
     public float speed = 10;
 
     // Update is called once per frame
@@ -24,6 +26,9 @@ public class MovementComponent : MonoBehaviour
 
     void HandleMovement()
     {
+        if (!RenderObj) return;
+        RenderObj.transform.position = Vector3.Lerp(RenderObj.transform.position, transform.position, 12 * Time.deltaTime);
+        //controller.Move(motion);
         float MoveInputAcceptance = owner.GetMoveInputAcceptance();
         if (MoveInputAcceptance <= 0.0) return;
         //var moveDir = new Vector3(input.Direction.x, 0.0f, input.Direction.y).normalized;
@@ -60,6 +65,8 @@ public class MovementComponent : MonoBehaviour
             adjDir.Normalize();
             float MoveInputAcceptance = owner.GetMoveInputAcceptance();
             Vector3 motion = adjDir * LogicUnitToRenderUnit(mSpeed) /** MoveInputAcceptance*/;
+            //Vector3 motion = adjDir * 6 * Time.fixedDeltaTime /** MoveInputAcceptance*/;
+            //mPosition = mPosition + motion;
             controller.Move(motion);
         }
         return new Vector3(1, 1, 1);

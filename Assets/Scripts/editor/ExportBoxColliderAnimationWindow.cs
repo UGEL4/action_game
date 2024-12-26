@@ -91,9 +91,12 @@ public class ExportBoxColliderAnimationWindow : EditorWindow
                     allBoxColliderDataMap.Add(name, FrameData);
                 }
                 Vector3 position     = PreviewObj.transform.InverseTransformPoint(boxTransforms[i].position);
+                //Vector3 position     = boxTransforms[i].position;
                 Vector3 rotation     = (Quaternion.Inverse(PreviewObj.transform.rotation) * boxTransforms[i].rotation).eulerAngles;
+                //Vector3 rotation     = boxTransforms[i].rotation.eulerAngles;
                 BoxCollider collider = boxTransforms[i].GetComponent<BoxCollider>();
-                Vector3 center       = collider.center;
+                Vector3 center       = boxTransforms[i].TransformPoint(collider.center);
+                center               = PreviewObj.transform.InverseTransformPoint(center);
                 Vector3 size         = collider.size;
 
                 allBoxColliderDataMap[name][frame].position = position;
