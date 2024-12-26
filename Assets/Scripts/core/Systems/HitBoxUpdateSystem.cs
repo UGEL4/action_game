@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using ACTTools;
+using Log;
 using Unity.Mathematics;
 using UnityEngine;
 
@@ -254,6 +255,7 @@ public class HitBoxUpdateSystem
                     var worldPos      = attacker.transform.localToWorldMatrix * new Vector4(pointTrans.Position.x, pointTrans.Position.y, pointTrans.Position.z, 1);
                     var worldPosOld   = attacker.transform.localToWorldMatrix * new Vector4(oldPointTrans.Position.x, oldPointTrans.Position.y, oldPointTrans.Position.z, 1);
                     Debug.DrawLine(worldPos, worldPosOld, Color.red, 1.0f);
+                    SimpleLog.Info("frame: ", frame, lastFrame, oldPointTrans.Position);
                     if (IsHitBox(worldPos, worldPosOld, defenseBoxInfo, target.transform))
                     {
                         gropuTag = rayGroup.Tag;
@@ -297,46 +299,48 @@ public class HitBoxUpdateSystem
 
     bool RayIntersectsAABB(Transform rootTransform, Ray ray, Vector3 boxPos, Vector3 boxRot, Vector3 center, Vector3 size, out float tNear, out float tFar)
     {
+        Vector3 worldCenter = rootTransform.TransformPoint(center);
         // 计算盒子的最小和最大边界
         Vector3 halfSize = size * 0.5f;
-        Vector3 boxMin = center - halfSize;
-        Vector3 boxMax = center + halfSize;
+        //Vector3 boxMin = center - halfSize;
+        //Vector3 boxMax = center + halfSize;
+        Quaternion rot = Quaternion.Euler(boxRot);
         // 创建一个旋转矩阵
-        Matrix4x4 rotationMatrix = Matrix4x4.Rotate(quaternion.Euler(boxRot));
+        //Matrix4x4 rotationMatrix = Matrix4x4.Rotate(quaternion.Euler(boxRot));
         // 计算父节点的变换
-        Matrix4x4 parentMatrix = Matrix4x4.TRS(rootTransform.position, rootTransform.rotation, rootTransform.localScale);
+        //Matrix4x4 parentMatrix = Matrix4x4.TRS(rootTransform.position, rootTransform.rotation, rootTransform.localScale);
         // 将盒子的角点转换到世界坐标
         Vector3[] corners = new Vector3[8];
-        corners[0] = boxMin;
-        corners[1] = new Vector3(boxMin.x, boxMin.y, boxMax.z);
-        corners[2] = new Vector3(boxMin.x, boxMax.y, boxMin.z);
-        corners[3] = new Vector3(boxMin.x, boxMax.y, boxMax.z);
-        corners[4] = new Vector3(boxMax.x, boxMin.y, boxMin.z);
-        corners[5] = new Vector3(boxMax.x, boxMin.y, boxMax.z);
-        corners[6] = new Vector3(boxMax.x, boxMax.y, boxMin.z);
-        corners[7] = boxMax;
+        corners[0]        = worldCenter + rot * new Vector3(halfSize.x, halfSize.y, halfSize.z);
+        corners[1]        = worldCenter + rot * new Vector3(halfSize.x, halfSize.y, -halfSize.z);
+        corners[2]        = worldCenter + rot * new Vector3(halfSize.x, -halfSize.y, halfSize.z);
+        corners[3]        = worldCenter + rot * new Vector3(halfSize.x, -halfSize.y, -halfSize.z);
+        corners[4]        = worldCenter + rot * new Vector3(-halfSize.x, halfSize.y, halfSize.z);
+        corners[5]        = worldCenter + rot * new Vector3(-halfSize.x, halfSize.y, -halfSize.z);
+        corners[6]        = worldCenter + rot * new Vector3(-halfSize.x, -halfSize.y, halfSize.z);
+        corners[7]        = worldCenter + rot * new Vector3(-halfSize.x, -halfSize.y, -halfSize.z);
         // 应用旋转
-        for (int i = 0; i < corners.Length; i++)
-        {
-            corners[i] = rotationMatrix.MultiplyPoint3x4(corners[i]);
-        }
+        // for (int i = 0; i < corners.Length; i++)
+        // {
+        //     corners[i] = rotationMatrix.MultiplyPoint3x4(corners[i]);
+        // }
         // 应用父节点的变换
-        for (int i = 0; i < corners.Length; i++)
-        {
-            corners[i] = parentMatrix.MultiplyPoint3x4(corners[i]);
-        }
+        // for (int i = 0; i < corners.Length; i++)
+        // {
+        //     corners[i] = parentMatrix.MultiplyPoint3x4(corners[i]);
+        // }
         Debug.DrawLine(corners[0], corners[1], Color.red, 0.1f);
-            Debug.DrawLine(corners[0], corners[2], Color.red, 0.1f);
-            Debug.DrawLine(corners[0], corners[4], Color.red, 0.1f);
-            Debug.DrawLine(corners[1], corners[3], Color.red, 0.1f);
-            Debug.DrawLine(corners[1], corners[5], Color.red, 0.1f);
-            Debug.DrawLine(corners[2], corners[3], Color.red, 0.1f);
-            Debug.DrawLine(corners[2], corners[6], Color.red, 0.1f);
-            Debug.DrawLine(corners[3], corners[7], Color.red, 0.1f);
-            Debug.DrawLine(corners[4], corners[5], Color.red, 0.1f);
-            Debug.DrawLine(corners[4], corners[6], Color.red, 0.1f);
-            Debug.DrawLine(corners[5], corners[7], Color.red, 0.1f);
-            Debug.DrawLine(corners[6], corners[7], Color.red, 0.1f);
+        Debug.DrawLine(corners[0], corners[2], Color.red, 0.1f);
+        Debug.DrawLine(corners[0], corners[4], Color.red, 0.1f);
+        Debug.DrawLine(corners[1], corners[3], Color.red, 0.1f);
+        Debug.DrawLine(corners[1], corners[5], Color.red, 0.1f);
+        Debug.DrawLine(corners[2], corners[3], Color.red, 0.1f);
+        Debug.DrawLine(corners[2], corners[6], Color.red, 0.1f);
+        Debug.DrawLine(corners[3], corners[7], Color.red, 0.1f);
+        Debug.DrawLine(corners[4], corners[5], Color.red, 0.1f);
+        Debug.DrawLine(corners[4], corners[6], Color.red, 0.1f);
+        Debug.DrawLine(corners[5], corners[7], Color.red, 0.1f);
+        Debug.DrawLine(corners[6], corners[7], Color.red, 0.1f);
 
         // 计算包围盒
         Bounds boxBounds = new Bounds(corners[0], Vector3.zero);
