@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Rendering;
+using UnityEngine.SocialPlatforms;
 
 public class MovementComponent : MonoBehaviour
 {
@@ -24,10 +25,20 @@ public class MovementComponent : MonoBehaviour
         HandleMovement();
     }
 
+    float GetPositionLerpT()
+    {
+        int renderFrameRate = GameInstance.Instance.FrameRate;
+        int logicFrameRate  = GameInstance.Instance.LogicFrameRate;
+        float t             = (float)logicFrameRate / renderFrameRate;
+        //float t = 1f / renderFrameRate / (1f / logicFrameRate);
+        t = Mathf.Clamp01(t);
+        return t;
+    }
+
     void HandleMovement()
     {
         if (!RenderObj) return;
-        RenderObj.transform.position = Vector3.Lerp(RenderObj.transform.position, transform.position, 12 * Time.deltaTime);
+        RenderObj.transform.position = Vector3.Lerp(RenderObj.transform.position, transform.position, GetPositionLerpT());
         //controller.Move(motion);
         float MoveInputAcceptance = owner.GetMoveInputAcceptance();
         if (MoveInputAcceptance <= 0.0) return;
@@ -68,6 +79,8 @@ public class MovementComponent : MonoBehaviour
             //Vector3 motion = adjDir * 6 * Time.fixedDeltaTime /** MoveInputAcceptance*/;
             //mPosition = mPosition + motion;
             controller.Move(motion);
+            // if (RenderObj)
+            //     RenderObj.transform.position = Vector3.Lerp(RenderObj.transform.position, transform.position, GetPositionLerpT());
         }
         return new Vector3(1, 1, 1);
     }

@@ -1498,6 +1498,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   players: []
   enemies: []
+  DebugRunFrameRate: 60
 --- !u!1 &832575517
 GameObject:
   m_ObjectHideFlags: 0
@@ -2101,6 +2102,7 @@ MonoBehaviour:
   - {fileID: 1375345268}
   enemies:
   - {fileID: 1627499155}
+  DebugRunFrameRate: 120
 --- !u!1 &1375030082 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 100000, guid: 6f58b72b1e244303aa5a7910f9227863,
@@ -2145,17 +2147,17 @@ PrefabInstance:
     - target: {fileID: 265053509478477020, guid: 082da679394915c4caec414f95a47298,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: -1.372216
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 265053509478477020, guid: 082da679394915c4caec414f95a47298,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.01
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 265053509478477020, guid: 082da679394915c4caec414f95a47298,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: 1.9461086
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 265053509478477020, guid: 082da679394915c4caec414f95a47298,
         type: 3}
@@ -2240,7 +2242,7 @@ PrefabInstance:
     - target: {fileID: 8727693784785891578, guid: 082da679394915c4caec414f95a47298,
         type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 3024482897445015686, guid: 082da679394915c4caec414f95a47298, type: 3}

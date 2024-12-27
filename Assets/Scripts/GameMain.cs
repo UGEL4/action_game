@@ -7,11 +7,13 @@ public class GameMain : MonoBehaviour
     private ulong mLogicFrameIndex;
     public List<GameObject> players = new();
     public List<GameObject> enemies = new();
+    public int DebugRunFrameRate = 60;
     void Start()
     {
-        Application.targetFrameRate = 60;
+        Application.targetFrameRate = DebugRunFrameRate;
         mLogicFrameIndex = 0;
         GameInstance.Instance.Init();
+        GameInstance.Instance.FrameRate = DebugRunFrameRate;
         for (int i = 0; i < players.Count; i++)
         {
             Character ch = players[i].GetComponent<Character>();

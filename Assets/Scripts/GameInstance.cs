@@ -14,6 +14,9 @@ public sealed class GameInstance
 
     private List<Character> mPlayerList = new();
     private List<Character> mEnemyList = new();
+
+    public int FrameRate = 0;
+    public int LogicFrameRate = 30;
     
     private GameInstance() { }
 
