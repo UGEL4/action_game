@@ -8,8 +8,11 @@ public class GameMain : MonoBehaviour
     public List<GameObject> players = new();
     public List<GameObject> enemies = new();
     public int DebugRunFrameRate = 60;
+
+    private float mNextUpdateTime = 0f;
     void Start()
     {
+        mNextUpdateTime = 0f;
         Application.targetFrameRate = DebugRunFrameRate;
         mLogicFrameIndex = 0;
         GameInstance.Instance.Init();
@@ -49,9 +52,30 @@ public class GameMain : MonoBehaviour
         // {
         //     DoAttack(attackPhase);
         // }
+        if (Time.time >= mNextUpdateTime)
+        {
+            mNextUpdateTime += 0.033f;
+            UpdateLogic();
+        }
+        UpdateRender();
     }
 
-    void FixedUpdate()
+    void UpdateRender()
+    {
+        List<Character> playerList = GameInstance.Instance.GetPlayerList();
+        for (int i = 0; i < playerList.Count; i++)
+        {
+            playerList[i].UpdateRender();
+        }
+
+        List<Character> enemyList = GameInstance.Instance.GetEnemyList();
+        for (int i = 0; i < enemyList.Count; i++)
+        {
+            enemyList[i].UpdateRender();
+        }
+    }
+
+    void UpdateLogic()
     {
         mLogicFrameIndex++;
         GameInstance.Instance.SetLogicFrameIndex(mLogicFrameIndex);

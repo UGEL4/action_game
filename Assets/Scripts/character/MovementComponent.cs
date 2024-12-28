@@ -20,7 +20,12 @@ public class MovementComponent : MonoBehaviour
     {
         mCameraTransform = Camera.main.transform;
     }
-    void Update()
+    // void Update()
+    // {
+    //     HandleMovement();
+    // }
+
+    public void UpdateRender()
     {
         HandleMovement();
     }
@@ -35,10 +40,16 @@ public class MovementComponent : MonoBehaviour
         return t;
     }
 
+    private float mLastT = 0f;
     void HandleMovement()
     {
         if (!RenderObj) return;
-        RenderObj.transform.position = Vector3.Lerp(RenderObj.transform.position, transform.position, GetPositionLerpT());
+        float t = GetPositionLerpT();
+        if (t == mLastT) t *= 2;
+        mLastT = t;
+        if (mLastT > t) mLastT = 0f;
+
+        RenderObj.transform.position = Vector3.Lerp(RenderObj.transform.position, transform.position, mLastT);
         //controller.Move(motion);
         float MoveInputAcceptance = owner.GetMoveInputAcceptance();
         if (MoveInputAcceptance <= 0.0) return;

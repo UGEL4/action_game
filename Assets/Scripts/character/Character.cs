@@ -274,12 +274,17 @@ public class Character : MonoBehaviour
         });
     }
 
-    void Update()
+    // void Update()
+    // {
+    //     //fsm.Update();
+    //     //CHController.Move(curMovement * speed * Time.deltaTime);
+    //     //MoveDir();
+    //     //inputToCommand.Tick();
+    // }
+
+    public void UpdateRender()
     {
-        //fsm.Update();
-        //CHController.Move(curMovement * speed * Time.deltaTime);
-        //MoveDir();
-        //inputToCommand.Tick();
+        mMovementComp?.UpdateRender();
     }
 
     // void FixedUpdate()
