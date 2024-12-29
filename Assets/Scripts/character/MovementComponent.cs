@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Log;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Rendering;
@@ -41,15 +42,40 @@ public class MovementComponent : MonoBehaviour
     }
 
     private float mLastT = 0f;
+
+    private Vector3 mStartPos = Vector3.zero;
     void HandleMovement()
     {
         if (!RenderObj) return;
-        float t = GetPositionLerpT();
-        if (t == mLastT) t *= 2;
-        mLastT = t;
-        if (mLastT > t) mLastT = 0f;
+        
+        if (mLastFrameIndex == 0)
+        {
+            mLastFrameIndex = mFrameIndex;
+        }
 
-        RenderObj.transform.position = Vector3.Lerp(RenderObj.transform.position, transform.position, mLastT);
+        //SimpleLog.Info("mLastFrameIndex: ", mLastFrameIndex, mFrameIndex);
+        // if (mLastFrameIndex == mFrameIndex)
+        // {
+        //     bool eq = RenderObj.transform.position.Equals(transform.position);
+        //     if (!eq)
+        //     {
+        //         float t = GetPositionLerpT();
+        //         if (mLastT == 0f) mLastT = t;
+        //         mLastT += t;
+        //         mLastT = Mathf.Clamp01(mLastT);
+        //         RenderObj.transform.position = Vector3.Lerp(mPosition, transform.position, mLastT);
+        //         //SimpleLog.Info("mLastFrameIndex: ", mStartPos, transform.position, RenderObj.transform.position, mLastT);
+        //     }
+        // }
+        // else
+        // {
+        //     mLastFrameIndex = mFrameIndex;
+        //     mLastT          = 0f;
+        //     RenderObj.transform.position = mPosition;
+        //     mStartPos = transform.position;
+        // }
+
+        RenderObj.transform.position = Vector3.Lerp(RenderObj.transform.position, transform.position, GetPositionLerpT());
         //controller.Move(motion);
         float MoveInputAcceptance = owner.GetMoveInputAcceptance();
         if (MoveInputAcceptance <= 0.0) return;
@@ -73,6 +99,14 @@ public class MovementComponent : MonoBehaviour
 
     private Vector3 mPosition = Vector3.zero;
 
+    private ulong mFrameIndex = 0;
+    private ulong mLastFrameIndex = 0;
+    public void UpdateLogic(ulong frameIndex)
+    {
+        mFrameIndex = frameIndex;
+        NatureMove();
+    }
+
     //逻辑单位到渲染单位的转换
     public float LogicUnitToRenderUnit(int unit)
     {
@@ -81,6 +115,7 @@ public class MovementComponent : MonoBehaviour
 
     public Vector3 NatureMove()
     {
+        mPosition = transform.position;
         var adjDir  = Quaternion.AngleAxis(mCameraTransform.eulerAngles.y, Vector3.up) * playerController.CurrMoveDir;
         if (adjDir.magnitude > 0.0f)
         {

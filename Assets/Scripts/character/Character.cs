@@ -304,7 +304,7 @@ public class Character : MonoBehaviour
     {
         inputToCommand.Tick();
         actionCtrl.Tick();
-        mMovementComp?.NatureMove();
+        mMovementComp?.UpdateLogic(frameIndex);
     }
 
     public bool IsMoving()

@@ -51,10 +51,10 @@ public class GameMain : MonoBehaviour
         // if (player.CanAttackTargetNow(out AttackInfo attackPhase))
         // {
         //     DoAttack(attackPhase);
-        // }
+        // }0.033 0.0083
         if (Time.time >= mNextUpdateTime)
         {
-            mNextUpdateTime += 0.033f;
+            mNextUpdateTime = Time.time + 0.033f;
             UpdateLogic();
         }
         UpdateRender();
