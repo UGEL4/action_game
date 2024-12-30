@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using UnityEditor;
 using UnityEngine;
 
@@ -66,8 +67,10 @@ public class RootMotionToInplace : EditorWindow
             }
         }
 
+        string assetPath = AssetDatabase.GetAssetPath(_animationClip);
+        string assetDir  = Path.GetDirectoryName(assetPath);
         // 保存新的动画剪辑
-        string path = EditorUtility.SaveFilePanel("Save New Animation Clip", "Assets", _animationClip.name + "_Modified.anim", "anim");
+        string path = EditorUtility.SaveFilePanel("Save New Animation Clip", assetDir, _animationClip.name + "_Modified.anim", "anim");
         if (!string.IsNullOrEmpty(path))
         {
             path = FileUtil.GetProjectRelativePath(path);
