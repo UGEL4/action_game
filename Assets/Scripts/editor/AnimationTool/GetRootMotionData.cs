@@ -1,6 +1,8 @@
 using System.IO;
 using System.Text;
 using ACTTools.RootMotionData;
+using Log;
+using Unity.VisualScripting;
 using UnityEditor;
 using UnityEngine;
 
@@ -13,9 +15,11 @@ public class GetRootMotionData : EditorWindow
     }
 
     private AnimationClip Animation;
+    private int EvaluateFrameRate;
     void OnGUI()
     {
-        Animation = EditorGUILayout.ObjectField("AnimationClip", Animation, typeof(AnimationClip), false) as AnimationClip;
+        Animation         = EditorGUILayout.ObjectField("AnimationClip", Animation, typeof(AnimationClip), false) as AnimationClip;
+        EvaluateFrameRate = EditorGUILayout.IntField("采样帧率", EvaluateFrameRate);
         if (Animation)
         {
             if (GUILayout.Button("Save"))
@@ -32,9 +36,17 @@ public class GetRootMotionData : EditorWindow
         {
             return;
         }
+        if (EvaluateFrameRate <= 0)
+        {
+            SimpleLog.Error("没有设置采样帧率");
+            return;
+        }
 
         RootMotionData rootMotionData = new();
         var curveBindings             = AnimationUtility.GetCurveBindings(Animation);
+        AnimationCurve X = null;
+        AnimationCurve Y = null;
+        AnimationCurve Z = null;
         foreach (var curveBinding in curveBindings)
         {
             if (curveBinding.path == "root")
@@ -43,43 +55,89 @@ public class GetRootMotionData : EditorWindow
 
                 if (curveBinding.propertyName.Contains("LocalPosition.x"))
                 {
-                    var curve        = AnimationUtility.GetEditorCurve(Animation, curveBinding);
-                    rootMotionData.X = new Keyframe[curve.length];
-                    for (int i = 0; i < curve.length; i++)
-                    {
-                        rootMotionData.X[i] = curve.keys[i];
-                    }
+                    X = AnimationUtility.GetEditorCurve(Animation, curveBinding);
+                    // rootMotionData.X = new Keyframe[curve.length];
+                    // for (int i = 0; i < curve.length; i++)
+                    // {
+                    //     rootMotionData.X[i] = curve.keys[i];
+                    // }
                 }
                 else if (curveBinding.propertyName.Contains("LocalPosition.y"))
                 {
-                    var curve        = AnimationUtility.GetEditorCurve(Animation, curveBinding);
-                    rootMotionData.Y = new Keyframe[curve.length];
-                    for (int i = 0; i < curve.length; i++)
-                    {
-                        rootMotionData.Y[i] = curve.keys[i];
-                    }
+                    Y = AnimationUtility.GetEditorCurve(Animation, curveBinding);
+                    // rootMotionData.Y = new Keyframe[curve.length];
+                    // for (int i = 0; i < curve.length; i++)
+                    // {
+                    //     rootMotionData.Y[i] = curve.keys[i];
+                    // }
                 }
                 else if (curveBinding.propertyName.Contains("LocalPosition.z"))
                 {
-                    var curve        = AnimationUtility.GetEditorCurve(Animation, curveBinding);
-                    rootMotionData.Z = new Keyframe[curve.length];
-                    for (int i = 0; i < curve.length; i++)
-                    {
-                        rootMotionData.Z[i] = curve.keys[i];
-                    }
+                    Z = AnimationUtility.GetEditorCurve(Animation, curveBinding);
+                    // rootMotionData.Z = new Keyframe[curve.length];
+                    // for (int i = 0; i < curve.length; i++)
+                    // {
+                    //     rootMotionData.Z[i] = curve.keys[i];
+                    // }
                 }
             }
+            if (X != null && Y != null && Z != null)
+            {
+                break;
+            }
         }
-
+        float maxTime = 0f;
+        if (X.length > 0)
+        {
+            maxTime = X[X.length - 1].time;
+        }
+        if (Y.length > 0)
+        {
+            float time = Y[Y.length - 1].time;
+            if (time > maxTime)
+            {
+                maxTime = time;
+            }
+        }
+        if (Z.length > 0)
+        {
+            float time = Z[Z.length - 1].time;
+            if (time > maxTime)
+            {
+                maxTime = time;
+            }
+        }
+        int totalFrame = (int)(maxTime * EvaluateFrameRate);
+        int frame      = 0;
+        float step     = 1f / EvaluateFrameRate;
+        if (totalFrame > 0)
+        {
+            rootMotionData.X = new float[totalFrame];
+            rootMotionData.Y = new float[totalFrame];
+            rootMotionData.Z = new float[totalFrame];
+            while (true)
+            {
+                if (frame >= totalFrame)
+                {
+                    break;
+                }
+                float time              = frame * step;
+                float x                 = X.Evaluate(time);
+                float y                 = Y.Evaluate(time);
+                float z                 = Z.Evaluate(time);
+                rootMotionData.X[frame] = x;
+                rootMotionData.Y[frame] = y;
+                rootMotionData.Z[frame] = z;
+                frame++;
+            }
+        }
         StringBuilder json = new StringBuilder("{\n");
-        //layout: {X:[[Time, Value, InTangent, OutTangent, TangentMode, WeightedMode, InWeight, OutWeight]], Y:[...], Z:[...]}
-        string format = "[{0},{1},{2},{3},{4},{5},{6},{7}]";
+        //layout: {X:[frame0, frame1, ...], Y:[...], Z:[...]}
+        //string format = "{0},{1},{2},{3},{4},{5},{6},{7}]";
         json.Append("\"X\":[");
         for (int i = 0; i < rootMotionData.X.Length; i++)
         {
-            json.Append(string.Format(format, rootMotionData.X[i].time, rootMotionData.X[i].value, 
-                                      rootMotionData.X[i].inTangent, rootMotionData.X[i].outTangent, (int)rootMotionData.X[i].tangentMode, 
-                                      (int)rootMotionData.X[i].weightedMode, rootMotionData.X[i].inWeight, rootMotionData.X[i].outWeight));
+            json.Append(rootMotionData.X[i]);
             if (i < rootMotionData.X.Length - 1)
             {
                 json.Append(',');
@@ -89,9 +147,7 @@ public class GetRootMotionData : EditorWindow
         json.Append("\"Y\":[");
         for (int i = 0; i < rootMotionData.Y.Length; i++)
         {
-            json.Append(string.Format(format, rootMotionData.Y[i].time, rootMotionData.Y[i].value, 
-                                      rootMotionData.Y[i].inTangent, rootMotionData.Y[i].outTangent, (int)rootMotionData.Y[i].tangentMode, 
-                                      (int)rootMotionData.Y[i].weightedMode, rootMotionData.Y[i].inWeight, rootMotionData.Y[i].outWeight));
+            json.Append(rootMotionData.Y[i]);
             if (i < rootMotionData.Y.Length - 1)
             {
                 json.Append(',');
@@ -101,9 +157,7 @@ public class GetRootMotionData : EditorWindow
         json.Append("\"Z\":[");
         for (int i = 0; i < rootMotionData.Z.Length; i++)
         {
-            json.Append(string.Format(format, rootMotionData.Z[i].time, rootMotionData.Z[i].value, 
-                                      rootMotionData.Z[i].inTangent, rootMotionData.Z[i].outTangent, (int)rootMotionData.Z[i].tangentMode, 
-                                      (int)rootMotionData.Z[i].weightedMode, rootMotionData.Z[i].inWeight, rootMotionData.Z[i].outWeight));
+            json.Append(rootMotionData.Z[i]);
             if (i < rootMotionData.Z.Length - 1)
             {
                 json.Append(',');

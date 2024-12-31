@@ -26,8 +26,8 @@ namespace ACTTools.RootMotionData
     [Serializable]
     public struct RootMotionData
     {
-        public Keyframe[] X;
-        public Keyframe[] Y;
-        public Keyframe[] Z;
+        public float[] X;
+        public float[] Y;
+        public float[] Z;
     }
 }
