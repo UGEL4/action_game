@@ -13,7 +13,7 @@ public class SaveActionWindow : EditorWindow
     private TimelineAsset timelineAsset;
     private string fileName;
 
-    [MenuItem("Window/SaveAction")]
+    [MenuItem("Tools/Action/SaveAction")]
     public static void ShowWindow()
     {
         GetWindow<SaveActionWindow>("SaveAction");
@@ -39,6 +39,12 @@ public class SaveActionWindow : EditorWindow
 
     void Save()
     {
+        string path = EditorUtility.SaveFilePanel("Save File", Application.dataPath + "/Resources/GameData/ActionData", "NewFile.json", "json");
+        if (string.IsNullOrEmpty(path))
+        {
+            return;
+        }
+
         AttackBoxTurnOnInfo[] allTurnOnInfo = new AttackBoxTurnOnInfo[0];
         BeHitBoxTurnOnInfo[] defensePhases  = new BeHitBoxTurnOnInfo[0];
         CharacterAction characterAction     = new CharacterAction();
@@ -67,7 +73,7 @@ public class SaveActionWindow : EditorWindow
             Directory.CreateDirectory(Application.dataPath + "/Resources/GameData");
         }
         json.Append("}");
-        string path = Application.dataPath + "/Resources/GameData/" + fileName + ".json";
+        //string path = Application.dataPath + "/Resources/GameData/" + fileName + ".json";
         File.WriteAllText(path, json.ToString());
     }
 

@@ -2,6 +2,8 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using Action;
+using ACTTools.RootMotionData;
+using UnityEngine;
 
 [Serializable]
 public struct CharacterAction
@@ -42,4 +44,29 @@ public struct CharacterAction
     /// 如果策划填表填错了，2段重叠了，那么就取速度慢的那段
     /// </summary>
     public MoveInputAcceptance[] moveInputAcceptance;
+
+    //root motion数据文件路径
+    public string RootMotionDataPath;
+    public RootMotionData RootMotionData;
+
+    public float MoveSpeed;
+
+    public bool ForceMoce;
+    public bool HasRootMotion()
+    {
+        return !string.IsNullOrEmpty(RootMotionDataPath);
+    }
+
+    public void LoadRootMotion()
+    {
+        if (!HasRootMotion())
+        {
+            return;
+        }
+        TextAsset ta = Resources.Load<TextAsset>("GameData/RootMotion/" + RootMotionDataPath);
+        if (ta)
+        {
+            RootMotionData = JsonUtility.FromJson<RootMotionData>(ta.text);
+        }
+    }
 }

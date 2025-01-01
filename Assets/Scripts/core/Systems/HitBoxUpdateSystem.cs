@@ -120,6 +120,10 @@ public class HitBoxUpdateSystem
     int GetAttackPhase(CharacterAction action, int frameIndex)
     {
         int attackPhase = -1;
+        if (action.attackPhaseList == null)
+        {
+            return attackPhase;
+        }
         for (int j = 0; j < action.attackPhaseList.Length; j++)
         {
             for (int k = 0; k < action.attackPhaseList[j].FrameIndexRange.Length; k++)
@@ -142,6 +146,10 @@ public class HitBoxUpdateSystem
     int GetDefensePhase(CharacterAction action, int frameIndex)
     {
         int defensePhases = -1;
+        if (action.defensePhases == null)
+        {
+            return defensePhases;
+        }
         for (int j = 0; j < action.defensePhases.Length; ++j)
         {
             if (frameIndex < action.defensePhases[j].FrameIndexRange.min || frameIndex > action.defensePhases[j].FrameIndexRange.max)

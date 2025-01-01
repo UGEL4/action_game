@@ -1,6 +1,9 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using ACTTools.RootMotionData;
+using Log;
+using Unity.VisualScripting;
 using UnityEngine;
 public class ActionController
 {
@@ -33,6 +36,11 @@ public class ActionController
     private Dictionary<string, List<BeHitBoxTurnOnInfo>> mBoxHits = new();
     public Dictionary<string, List<BeHitBoxTurnOnInfo>> BoxHits => mBoxHits;
 
+    public Vector3 RootMotionMove {private set; get;} = Vector3.zero;
+
+    public Vector3 UnderForceMove {private set; get;} = Vector3.zero;
+    public bool IsUnderForceMove {private set; get; } = false;
+
     public void SetChangeActinCallback(Action<CharacterAction, CharacterAction> cb)
     {
         _onChangeAction = cb;
@@ -41,7 +49,7 @@ public class ActionController
     public ActionController(Character owner, InputToCommand inputToCommand)
     {
         mOwner   = owner;
-        animator = mOwner.GetComponent<Animator>();
+        animator = mOwner.GetComponentInChildren<Animator>();
         command  = inputToCommand;
     } 
 
@@ -63,7 +71,7 @@ public class ActionController
         _pec = Mathf.Clamp01(nextAnimatorState.length > 0 ? nextAnimatorState.normalizedTime : animatorState.normalizedTime);
 
         mCurrentFrameIndex += 1;
-        if (mCurrentFrameIndex > CurAction.mTotalFrameCount)
+        if (mCurrentFrameIndex >= CurAction.mTotalFrameCount)
         {
             mCurrentFrameIndex = 0;
         }
@@ -97,13 +105,17 @@ public class ActionController
             preorderActionList.Sort((action1, action2) => action1.Priority > action2.Priority ? -1 : 1);
             if (preorderActionList[0].ActionId == CurAction.mActionName && CurAction.keepPlayingAnim)
             {
-                KeepAction(_pec);
+                KeepAction(0);
             }
             else
             {
                 ChangeAction(preorderActionList[0].ActionId, preorderActionList[0].TransitionNormalized, preorderActionList[0].FromNormalized, preorderActionList[0].FromFrameIndex);
             }
         }
+
+        //要处理当没有rootmotion时的移动情况
+        //可以有一个默认的移动速度
+        RootMotionMove = GetRootMotionData();
 
         preorderActionList.Clear();
         mBoxHits.Clear();
@@ -161,6 +173,7 @@ public class ActionController
                 mCurrentFrameIndex = 0;
             }
         }
+        if (mCurrentFrameIndex == 0) mCurrentFrameIndex = 1;
     }
 
     void ChangeAction(string actionName, float normalizedTransitionDuration, float normalizedTimeOffset, uint fromFrameIndex)
@@ -168,6 +181,7 @@ public class ActionController
         CharacterAction action = GetActionById(actionName, out bool found);
         if (found)
         {
+            SimpleLog.Info("ChangeAction: ", actionName, action.mAnimation);
             //
             _onChangeAction?.Invoke(CurAction, action);
             animator.CrossFade(action.mAnimation, normalizedTransitionDuration, 0, normalizedTimeOffset);
@@ -325,5 +339,45 @@ public class ActionController
                 break;
             }
         }
+    }
+
+    private Vector3 GetRootMotionData()
+    {
+        IsUnderForceMove = CurAction.ForceMoce;
+        RootMotionData data = CurAction.RootMotionData;
+        if (data.X == null || data.Y == null || data.Z == null)
+        {
+            return Vector3.zero;
+        }
+        if (string.IsNullOrEmpty(CurAction.mActionName))
+        {
+            return Vector3.zero;
+        }
+        if (data.X.Length == 0)
+        {
+            return Vector3.zero;
+        }
+        uint index = mCurrentFrameIndex;
+        if (mCurrentFrameIndex >= data.X.Length)
+        {
+            index = 0;
+        }
+        Vector3 Move = Vector3.zero;
+        if (index > 0)
+        {
+            Vector3 LastMove = new Vector3(data.X[index - 1], data.Y[index - 1], data.Z[index -1]);
+            Vector3 NowMove  = new Vector3(data.X[index], data.Y[index], data.Z[index]);
+            Move             = NowMove - LastMove;
+        }
+        else
+        {
+            Move = new Vector3(data.X[index], data.Y[index], data.Z[index]);
+        }
+
+        if (CurAction.ForceMoce)
+        {
+            UnderForceMove   = Move;
+        }
+        return Move;
     }
 }

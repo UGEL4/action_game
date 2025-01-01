@@ -1,0 +1,65 @@
+{"data":{
+    "mActionName": "ComboA_2",
+    "mAnimation": "ComboA_2",
+    "mPriority": 100,
+    "mAutoNextActionName": "Idle",
+    "mAutoTerminate": false,
+    "keepPlayingAnim": false,
+    "mTotalFrameCount": 52,
+    "mCancelTagList": [
+        {
+            "tag": "To_ComboA_2",
+            "priority": 1,
+            "startFromPercentage": 0.0,
+            "startFromFrameIndex": 0,
+            "fadeInPercentage": 0.0
+        }
+    ],
+    "mBeCanceledTagList": [
+        {
+            "cancelTag": [
+                "To_ComboA_3"
+            ],
+            "fadeOutPercentage": 0.0,
+            "priority": 0,
+            "range": {
+                "min": 0.0,
+                "max": 0.0
+            },
+            "frameIndexRange": {
+                "min": 7,
+                "max": 20
+            }
+        }
+    ],
+    "mTempBeCanceledTagList": [],
+    "mCommandList": [
+        {
+            "keySequences": [
+                7
+            ],
+            "validInSecond": 0.0,
+            "validInFrameCount": 2
+        }
+    ],
+    "attackInfoList": [],
+    "attackPhaseList": [],
+    "defensePhases": [],
+    "moveInputAcceptance": [
+        {
+            "range": {
+                "min": 0.0,
+                "max": 1.0
+            },
+            "rate": 1.0
+        }
+    ],
+    "RootMotionDataPath": "Vergil/Yamato/ComboA_2",
+    "RootMotionData": {
+        "X": [],
+        "Y": [],
+        "Z": []
+    },
+    "MoveSpeed": 0.0,
+    "ForceMoce": true
+}}

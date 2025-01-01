@@ -104,7 +104,14 @@ public class MovementComponent : MonoBehaviour
     public void UpdateLogic(ulong frameIndex)
     {
         mFrameIndex = frameIndex;
-        NatureMove();
+        if (owner.GetActionController().IsUnderForceMove)
+        {
+            ForceMove();
+        }
+        else
+        {
+            NatureMove();
+        }
     }
 
     //逻辑单位到渲染单位的转换
@@ -115,20 +122,35 @@ public class MovementComponent : MonoBehaviour
 
     public Vector3 NatureMove()
     {
-        mPosition = transform.position;
+        //mPosition = transform.position;
         var adjDir  = Quaternion.AngleAxis(mCameraTransform.eulerAngles.y, Vector3.up) * playerController.CurrMoveDir;
         if (adjDir.magnitude > 0.0f)
         {
             adjDir.Normalize();
-            float MoveInputAcceptance = owner.GetMoveInputAcceptance();
-            Vector3 motion = adjDir * LogicUnitToRenderUnit(mSpeed) /** MoveInputAcceptance*/;
             //Vector3 motion = adjDir * 6 * Time.fixedDeltaTime /** MoveInputAcceptance*/;
             //mPosition = mPosition + motion;
-            controller.Move(motion);
+
+            if (owner.GetActionController().CurAction.HasRootMotion())
+            {
+                Vector3 RootMotionMove = owner.GetActionController().RootMotionMove;
+                controller.Move(RootMotionMove);
+            }
+            else
+            {
+                float MoveInputAcceptance = owner.GetMoveInputAcceptance();
+                Vector3 motion = adjDir * LogicUnitToRenderUnit(mSpeed) /** MoveInputAcceptance*/;
+                controller.Move(motion);
+            }
             // if (RenderObj)
             //     RenderObj.transform.position = Vector3.Lerp(RenderObj.transform.position, transform.position, GetPositionLerpT());
         }
         return new Vector3(1, 1, 1);
+    }
+
+    public void ForceMove()
+    {
+        Vector3 Move = owner.GetActionController().UnderForceMove;
+        controller.Move(Move);
     }
     /////////////////////////////logic
 }

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Log;
 using UnityEngine;
 public class InputToCommand
 {
@@ -46,6 +47,7 @@ public class InputToCommand
 
     public void AddInput(KeyMap key)
     {
+        SimpleLog.Warn("AddInput", key, mCurrFrame);
         KeyRecord keyRecord = new KeyRecord(key, mCurrTimeStamp, mCurrFrame);
         mInputList.Add(keyRecord);
     }

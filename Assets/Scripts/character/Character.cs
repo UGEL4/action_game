@@ -32,6 +32,10 @@ public class Character : MonoBehaviour
     public List<AttackHitBox> mAttackHitBoxList = new();
     public List<AttackHitBox> AttackHitBoxList => mAttackHitBoxList;
 
+    //debug
+    public GameObject DebugWeapon;
+    public Yamato Y;
+
     void Awake()
     {
         /* Move.Enable();
@@ -47,6 +51,7 @@ public class Character : MonoBehaviour
     {
         SimpleLog.Info("Start: ", gameObject.name);
         mMovementComp = GetComponent<MovementComponent>();
+        Y = DebugWeapon.GetComponent<Yamato>();
         // animator = GetComponent<Animator>();
         // //fsm.Start();
         // //animator.SetFloat("Speed", 1.0f);
@@ -271,6 +276,17 @@ public class Character : MonoBehaviour
         GameInstance.Instance.HitRecordSys.Register(HitRecordComponent);
         actionCtrl.SetChangeActinCallback((lastAction, newAction)=>{
             HitRecordComponent.Clear();
+            if (Y)
+            {
+                if (newAction.mActionName == "ComboA_3")
+                {
+                    Y.OnAttack();
+                }
+                else if (lastAction.mActionName == "ComboA_3")
+                {
+                    Y.OnAttackEnd();
+                }
+            }
         });
     }
 
@@ -304,6 +320,10 @@ public class Character : MonoBehaviour
     {
         inputToCommand.Tick();
         actionCtrl.Tick();
+        if (Y)
+        {
+            Y.UpdateLogic((int)actionCtrl.CurrentFrameIndex);
+        }
         mMovementComp?.UpdateLogic(frameIndex);
     }
 
@@ -437,21 +457,22 @@ public class Character : MonoBehaviour
         List<CharacterAction> actions = new List<CharacterAction>();
         for (int i = 0; i < DebugActionList.Count; i++)
         {
-            TextAsset ta = Resources.Load<TextAsset>("GameData/" + DebugActionList[i]);
+            TextAsset ta = Resources.Load<TextAsset>("GameData/ActionData/" + DebugActionList[i]);
             if (ta)
             {
                 ActionInfoContainer aic = JsonUtility.FromJson<ActionInfoContainer>(ta.text);
                 //if (aic.data == null) continue;
                 //foreach (CharacterAction info in aic.data)
                 {
+                    aic.data.LoadRootMotion();
                     actions.Add(aic.data);
                     GameInstance.Instance.HitBoxDataPool.LoadHitBoxData(aic.data.mActionName);
                 }
             }
         }
-        if (DebugActionList.Count > 0)
+        if (actions.Count > 0)
         {
-            actionCtrl.SetAllAction(actions, DebugActionList[0]);
+            actionCtrl.SetAllAction(actions, actions[0].mActionName);
         }
         SimpleLog.Info(gameObject.name, " LoadActions, ", "actions:", actions.Count);
     }
