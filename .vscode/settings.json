@@ -53,6 +53,6 @@
     },
     "dotnet.defaultSolution": "action.sln",
     "[csharp]":{
-        "editor.defaultFormatter": "mjohns.clang-format"
-    }
+        "editor.defaultFormatter": "ms-dotnettools.csharp"
+    },
 }

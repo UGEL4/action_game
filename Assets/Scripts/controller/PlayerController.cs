@@ -118,7 +118,8 @@ public class PlayerController
     void ProduceInputDir()
     {
         if (mOwner == null) return;
-        Vector3 inputDir  = CameraRelativeFlatten(mCurMoveDir, Vector3.up);
+        //Vector3 inputDir  = CameraRelativeFlatten(mCurMoveDir, Vector3.up);
+        Vector3 inputDir  = CharacterRelativeFlatten(mCurMoveDir);
         float dotF        = Vector3.Dot(inputDir, mOwner.transform.forward);
         float dotR        = Vector3.Dot(inputDir, mOwner.transform.right);
         float invalidArea = 0.2f;
@@ -169,6 +170,16 @@ public class PlayerController
 
         // Now we rotate our input vector into this frame of reference
         return flatten * input;
+    }
+
+    public Vector3 CharacterRelativeFlatten(Vector3 input)
+    {
+        Vector3 forward = Camera.main.transform.forward;
+        Vector3 right   = Camera.main.transform.right;
+        forward.y = 0f;
+        forward.Normalize();
+        Vector3 Move = forward * input.z + right * input.x;
+        return Move;
     }
 
     void OnAttackA(InputActionPhase phase)

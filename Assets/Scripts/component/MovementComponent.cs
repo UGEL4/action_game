@@ -56,11 +56,12 @@ public class MovementComponent : ComponentBase
         return unit * mRenderUnit;
     }
 
-    public Vector3 NatureMove()
+    public void NatureMove()
     {
         //mPosition = transform.position;
         PlayerController pc = mOwner.GetPlayerController();
-        var adjDir          = Quaternion.AngleAxis(Camera.main.transform.eulerAngles.y, Vector3.up) * pc.CurrMoveDir;
+        //var adjDir          = Quaternion.AngleAxis(Camera.main.transform.eulerAngles.y, Vector3.up) * pc.CurrMoveDir;
+        var adjDir = pc.CharacterRelativeFlatten(pc.CurrMoveDir);
         if (adjDir.magnitude > 0.0f)
         {
             adjDir.Normalize();
@@ -73,31 +74,41 @@ public class MovementComponent : ComponentBase
                 Transform transform = mOwner.gameObject.transform;
                 if (transform)
                 {
-                    var targetRot = Quaternion.LookRotation(adjDir);
-                    transform.rotation = Quaternion.RotateTowards(transform.rotation, targetRot, 2.0f * Time.deltaTime);
+                    //var targetRot = Quaternion.LookRotation(adjDir);
+                    //transform.rotation = Quaternion.RotateTowards(transform.rotation, targetRot, 2.0f * Time.deltaTime);
+                    //transform.LookAt(transform.position + adjDir);
+                    // float targetAngle = Mathf.Atan2(adjDir.x, adjDir.z) * Mathf.Rad2Deg;
+                    // Quaternion targetRotation = Quaternion.Euler(0, targetAngle, 0);
+
+                    // // 更新角色的旋转
+                    // transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * 10f);
                     transform.LookAt(transform.position + adjDir);
                 }
-                RootMotionMove.x *= adjDir.x;
-                RootMotionMove.y *= adjDir.y;
-                RootMotionMove.z *= adjDir.z;
-                pc.Move(RootMotionMove);
+                pc.Move(RootMotionMove.magnitude * adjDir);
             }
             else
             {
                 float MoveInputAcceptance = mOwner.GetMoveInputAcceptance();
-                Vector3 motion = adjDir * LogicUnitToRenderUnit(mSpeed) /** MoveInputAcceptance*/;
+                Vector3 motion = adjDir * LogicUnitToRenderUnit(mSpeed) * MoveInputAcceptance;
                 pc.Move(motion);
             }
             // if (RenderObj)
             //     RenderObj.transform.position = Vector3.Lerp(RenderObj.transform.position, transform.position, GetPositionLerpT());
         }
-        return Vector3.zero;
     }
 
     public void ForceMove()
     {
         Vector3 Move = mOwner.Action.UnderForceMove;
-        mOwner.GetPlayerController().Move(Move);
+        Transform transform = mOwner.gameObject.transform;
+        if (transform)
+        {
+            mOwner.GetPlayerController().Move(Move.magnitude * transform.forward);
+        }
+        else
+        {
+            Owner.GetPlayerController().Move(Move);
+        }
     }
     /////////////////////////////logic
 }
