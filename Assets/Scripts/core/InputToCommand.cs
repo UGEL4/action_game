@@ -15,9 +15,9 @@ public class InputToCommand
     private ulong mCurrFrame = 0;
     private const byte RecordKeepFrameCount = 30;
 
-    private Character mOwner;
+    private CharacterObj mOwner;
 
-    public InputToCommand(Character owner)
+    public InputToCommand(CharacterObj owner)
     {
         mOwner = owner;
     }
@@ -47,7 +47,7 @@ public class InputToCommand
 
     public void AddInput(KeyMap key)
     {
-        SimpleLog.Warn("AddInput", key, mCurrFrame);
+        //SimpleLog.Warn("AddInput", key, mCurrFrame);
         KeyRecord keyRecord = new KeyRecord(key, mCurrTimeStamp, mCurrFrame);
         mInputList.Add(keyRecord);
     }

@@ -149,7 +149,7 @@ MonoBehaviour:
     m_DisplayName: ActionEditorActionDataClip
   m_Markers:
     m_Objects: []
---- !u!114 &-1989726938817227756
+--- !u!114 &-1651659245772664203
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_CorrespondingSourceObject: {fileID: 0}
@@ -217,8 +217,8 @@ MonoBehaviour:
   - m_Version: 1
     m_Start: 0
     m_ClipIn: 0
-    m_Asset: {fileID: -1989726938817227756}
-    m_Duration: 2.966666666666667
+    m_Asset: {fileID: -1651659245772664203}
+    m_Duration: 2.9833333333333334
     m_TimeScale: 1
     m_ParentTrack: {fileID: 1805317493975543071}
     m_EaseInDuration: 0

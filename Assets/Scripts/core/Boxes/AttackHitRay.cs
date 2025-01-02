@@ -5,5 +5,5 @@ using ACTTools;
 public class AttackHitRay
 {
     public PositionRotationData Point;
-    public Character Owner;
+    public CharacterObj Owner;
 }

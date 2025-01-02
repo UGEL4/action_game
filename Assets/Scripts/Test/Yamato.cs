@@ -9,9 +9,11 @@ public class Yamato : MonoBehaviour
     // Start is called before the first frame update
     public GameObject RightHand;
     public GameObject LeftHand;
-    public GameObject Suit;
     private bool mNeedAttack = false;
     public int EndFrame = 0;
+
+    public GameObject Root;
+    public GameObject Part00;
 
     void Start()
     {
@@ -25,9 +27,9 @@ public class Yamato : MonoBehaviour
         {
             if (frame == 10)
             {
-                transform.SetParent(RightHand.transform);
-                transform.SetLocalPositionAndRotation(new Vector3(0, 0, 0), quaternion.identity);
-                Suit.SetActive(false);
+                Part00.transform.SetParent(RightHand.transform);
+                Part00.transform.SetLocalPositionAndRotation(new Vector3(0, 0, 0), quaternion.identity);
+                Part00.transform.localScale = Vector3.one;
             }
             else if (frame >= EndFrame)
             {
@@ -44,8 +46,8 @@ public class Yamato : MonoBehaviour
     public void OnAttackEnd()
     {
         mNeedAttack = false;
-        transform.SetParent(LeftHand.transform);
-        transform.SetLocalPositionAndRotation(new Vector3(0, 0, 0), quaternion.identity);
-        Suit.SetActive(true);
+        Part00.transform.SetParent(Root.transform);
+        Part00.transform.SetLocalPositionAndRotation(new Vector3(0, 0, 0), quaternion.identity);
+        Part00.transform.localScale = Vector3.one;
     }
 }

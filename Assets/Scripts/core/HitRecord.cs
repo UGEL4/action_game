@@ -16,7 +16,7 @@ public class HitRecord
     //多少帧之后能再次命中
     public int CooldownFrame;
 
-    public HitRecord(Character ch, int phase, int canHitCount, int coolDown)
+    public HitRecord(CharacterObj ch, int phase, int canHitCount, int coolDown)
     {
         Id            = ch.gameObject.GetInstanceID();
         Phase         = phase;

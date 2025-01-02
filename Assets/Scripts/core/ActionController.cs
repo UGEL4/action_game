@@ -7,7 +7,7 @@ using Unity.VisualScripting;
 using UnityEngine;
 public class ActionController
 {
-    private Character mOwner;
+    private CharacterObj mOwner;
     private Animator animator;
     private InputToCommand command;
     public List<CharacterAction> AllActions {get; set;} = new List<CharacterAction>();
@@ -46,12 +46,16 @@ public class ActionController
         _onChangeAction = cb;
     }
 
-    public ActionController(Character owner, InputToCommand inputToCommand)
+    public ActionController(CharacterObj owner, InputToCommand inputToCommand)
     {
         mOwner   = owner;
-        animator = mOwner.GetComponentInChildren<Animator>();
         command  = inputToCommand;
-    } 
+    }
+
+    public void BeginPlay()
+    {
+        animator = mOwner.Animator;
+    }
 
     public void SetAllAction(List<CharacterAction> actions, string defaultActionId)
     {

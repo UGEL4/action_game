@@ -13,16 +13,16 @@ public class PlayerFSM : FSM<PlayerFSM.PlayerState>
         Max
     };
 
-    Character mOwner;
+    CharacterObj mOwner;
 
-    public PlayerFSM(Character owner)
+    public PlayerFSM(CharacterObj owner)
     {
         mOwner = owner;
 
         var idleState = new PlayerIdleState(mOwner);
         var walkState = new PlayerWalkState(mOwner);
-        At(idleState, walkState, new StatePredicate(()=> mOwner.IsMoving()));
-        At(walkState, idleState, new StatePredicate(()=> !mOwner.IsMoving()));
+        //At(idleState, walkState, new StatePredicate(()=> mOwner.IsMoving()));
+        //At(walkState, idleState, new StatePredicate(()=> !mOwner.IsMoving()));
     }
 
     public void Start()

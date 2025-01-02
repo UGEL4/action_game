@@ -12,8 +12,8 @@ public sealed class GameInstance
 
     private ulong mLogicFrameIndex;
 
-    private List<Character> mPlayerList = new();
-    private List<Character> mEnemyList = new();
+    private List<CharacterObj> mPlayerList = new();
+    private List<CharacterObj> mEnemyList = new();
 
     public int FrameRate = 0;
     public int LogicFrameRate = 30;
@@ -35,9 +35,15 @@ public sealed class GameInstance
 
     public void Destory()
     {
-        mEnemyList.Clear();
+        for (int i = 0; i < mEnemyList.Count; i++)
+        {
+            mEnemyList[i].Destroy();
+        }
+        for (int i = 0; i < mPlayerList.Count; i++)
+        {
+            mPlayerList[i].Destroy();
+        }
         mEnemyList = null;
-        mPlayerList.Clear();
         mPlayerList = null;
         HitRecordSys.Destory();
         HitRecordSys = null;
@@ -57,7 +63,7 @@ public sealed class GameInstance
         mLogicFrameIndex = frameIndex;
     }
 
-    public void AddPlayer(Character player)
+    public void AddPlayer(CharacterObj player)
     {
         if (!mPlayerList.Contains(player))
         {
@@ -65,7 +71,7 @@ public sealed class GameInstance
         }
     }
 
-    public void AddEnemy(Character enemy)
+    public void AddEnemy(CharacterObj enemy)
     {
         if (!mEnemyList.Contains(enemy))
         {
@@ -73,12 +79,12 @@ public sealed class GameInstance
         }
     }
 
-    public List<Character> GetPlayerList()
+    public List<CharacterObj> GetPlayerList()
     {
         return mPlayerList;
     }
 
-    public List<Character> GetEnemyList()
+    public List<CharacterObj> GetEnemyList()
     {
         return mEnemyList;
     }

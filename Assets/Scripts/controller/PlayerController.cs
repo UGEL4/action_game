@@ -1,80 +1,94 @@
 using System;
-using Cinemachine;
-using Log;
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public class PlayerController : MonoBehaviour
+public class PlayerController
 {
-    [SerializeField] CharacterController controller;
-    [SerializeField] CinemachineFreeLook freeLookCam;
-    [SerializeField] InputReader input;
-    // Start is called before the first frame update
+    private CharacterController mController;
+    private InputReader mInput;
 
     //方向输入
     public Vector3 mCurMoveDir  = new Vector3();
     private InputActionPhase mDirInputPhase = InputActionPhase.Disabled;
 
-    private Transform mainCamera;
-
-    [SerializeField] Character owner;
+    private CharacterObj mOwner;
 
     public Vector3 CurrMoveDir => mCurMoveDir;
 
-    void Awake()
+    // void Awake()
+    // {
+    //     //freeLookCam.Follow = transform;
+    //     //freeLookCam.LookAt = transform;
+    //     //freeLookCam.OnTargetObjectWarped(transform, transform.position - freeLookCam.transform.position - Vector3.forward);
+    // }
+
+    public PlayerController()
     {
-        controller  = GetComponent<CharacterController>();
-        mainCamera  = Camera.main.transform;
-        //freeLookCam.Follow = transform;
-        //freeLookCam.LookAt = transform;
-        //freeLookCam.OnTargetObjectWarped(transform, transform.position - freeLookCam.transform.position - Vector3.forward);
+
     }
 
-    void InitializeInput()
+    public PlayerController(CharacterObj owner)
     {
-        input.Move += OnMove;
-        input.AttackA += OnAttackA;
-        input.AttackB += OnAttackB;
+        mOwner = owner;
     }
 
-    void Start()
+    public void InitializeInput()
     {
+        if (mInput)
+        {
+            mInput.Move += OnMove;
+            mInput.AttackA += OnAttackA;
+            mInput.AttackB += OnAttackB;
+        }
+    }
+
+    public void BeginPlay()
+    {
+        mInput = mOwner.GetInputReader();
         InitializeInput();
     }
 
-    void Update()
+    public void Update()
+    {
+        // if (mDirInputPhase == InputActionPhase.Performed)
+        // {
+        //     mOwner.AddInputCommand(KeyMap.DirInput);
+        // }
+    }
+
+    public void UpdateLogic()
     {
         if (mDirInputPhase == InputActionPhase.Performed)
         {
-            owner.AddInputCommand(KeyMap.DirInput);
+            mOwner.AddInputCommand(KeyMap.DirInput);
         }
     }
 
-    void OnDestroy()
+    public void OnDestroy()
     {
-        input.Move -= OnMove;
-        input.AttackA -= OnAttackA;
-        input.AttackB -= OnAttackB;
-    }
-
-    void HandleMovement()
-    {
-        //var moveDir = new Vector3(input.Direction.x, 0.0f, input.Direction.y).normalized;
-        var adjDir  = Quaternion.AngleAxis(mainCamera.eulerAngles.y, Vector3.up) * mCurMoveDir;
-        if (adjDir.magnitude > 0.0f)
+        if (mInput)
         {
-            var targetRot = Quaternion.LookRotation(adjDir);
-            //transform.rotation = Quaternion.RotateTowards(transform.rotation, targetRot, 2.0f * Time.deltaTime);
-            transform.LookAt(transform.position + adjDir);
-            HandleRotation();
-
-            controller.Move(adjDir * 10.0f * Time.deltaTime);
+            mInput.Move -= OnMove;
+            mInput.AttackA -= OnAttackA;
+            mInput.AttackB -= OnAttackB;
         }
     }
 
-    void HandleRotation()
+    public void SetCharacterController(CharacterController controller)
     {
-        
+        mController = controller;
+    }
+
+    public CharacterController GetCharacterController()
+    {
+        return mController;
+    }
+
+    public void SetInputReader(InputReader input)
+    {
+        mInput = input;
     }
 
     void OnMove(Vector2 xy, InputActionPhase phase)
@@ -96,17 +110,17 @@ public class PlayerController : MonoBehaviour
 
     public Vector3 GetCameraForward()
     {
-        var adjDir  = Quaternion.AngleAxis(mainCamera.eulerAngles.y, Vector3.up) * mCurMoveDir;
+        var adjDir  = Quaternion.AngleAxis(Camera.main.transform.eulerAngles.y, Vector3.up) * mCurMoveDir;
         //return mainCamera.forward;
         return adjDir;
     }
 
     void ProduceInputDir()
     {
-        if (owner == null) return;
+        if (mOwner == null) return;
         Vector3 inputDir  = CameraRelativeFlatten(mCurMoveDir, Vector3.up);
-        float dotF        = Vector3.Dot(inputDir, transform.forward);
-        float dotR        = Vector3.Dot(inputDir, transform.right);
+        float dotF        = Vector3.Dot(inputDir, mOwner.transform.forward);
+        float dotR        = Vector3.Dot(inputDir, mOwner.transform.right);
         float invalidArea = 0.2f;
         bool xHasInput    = Mathf.Abs(dotR) >= invalidArea;
         bool yHasInput    = Mathf.Abs(dotF) >= invalidArea;
@@ -134,11 +148,11 @@ public class PlayerController : MonoBehaviour
         } */
         if (!xHasInput && !yHasInput)
         {
-            owner.AddInputCommand(KeyMap.NoDir);
+            mOwner.AddInputCommand(KeyMap.NoDir);
         }
         else
         {
-            owner.AddInputCommand(KeyMap.DirInput);
+            mOwner.AddInputCommand(KeyMap.DirInput);
         }
     }
 
@@ -150,7 +164,7 @@ public class PlayerController : MonoBehaviour
         // the camera's look direction as closely as it can in the horizontal plane.
         Quaternion flatten = Quaternion.LookRotation(
                              -localUp,
-                             mainCamera.forward) *
+                             Camera.main.transform.forward) *
                              Quaternion.Euler(Vector3.right * -90f);
 
         // Now we rotate our input vector into this frame of reference
@@ -162,7 +176,7 @@ public class PlayerController : MonoBehaviour
         //SimpleLog.Info("OnAttackA: ", phase);
         if (phase == InputActionPhase.Started)
         {
-            owner.AddActionCommand(KeyMap.ButtonX);
+            mOwner.AddActionCommand(KeyMap.ButtonX);
         }
     }
 
@@ -170,7 +184,12 @@ public class PlayerController : MonoBehaviour
     {
         if (phase == InputActionPhase.Started)
         {
-            owner.AddActionCommand(KeyMap.ButtonY);
+            mOwner.AddActionCommand(KeyMap.ButtonY);
         }
+    }
+
+    public void Move(Vector3 motion)
+    {
+        mController?.Move(motion);
     }
 }

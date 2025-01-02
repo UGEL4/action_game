@@ -9,7 +9,7 @@ public class FSM<EState>  where EState : Enum
     protected HashSet<StateTransition<EState>> mAnyTransitions = new HashSet<StateTransition<EState>>();
     protected bool mIsChangingState = false;
 
-    public Character owner;
+    public CharacterObj owner;
 
     public void Update()
     {

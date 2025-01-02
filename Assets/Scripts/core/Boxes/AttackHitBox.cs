@@ -13,11 +13,11 @@ public enum AttackHitBoxType
 public struct AttackHitBox
 {
     public string Tag;
-    public Character Owner;
+    public CharacterObj Owner;
     public bool Active;
     public AttackHitBoxType BoxType;
 
-    public AttackHitBox(Character owner, string tag, AttackHitBoxType boxType, bool active)
+    public AttackHitBox(CharacterObj owner, string tag, AttackHitBoxType boxType, bool active)
     {
         Owner   = owner;
         Tag     = tag;

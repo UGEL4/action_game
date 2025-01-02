@@ -7,10 +7,10 @@ using UnityEngine;
 
 public class HitBoxUpdateSystem
 {
-    private List<Character> mPlayers;
-    private List<Character> mAllEnemies;
+    private List<CharacterObj> mPlayers;
+    private List<CharacterObj> mAllEnemies;
 
-    private Dictionary<Character, List<HitBoxDataPoolSystem.HitBoxData>> mCharacterCurrentActionHitBoxData = new();
+    private Dictionary<CharacterObj, List<HitBoxDataPoolSystem.HitBoxData>> mCharacterCurrentActionHitBoxData = new();
 
     public void Init()
     {
@@ -26,7 +26,7 @@ public class HitBoxUpdateSystem
         mPlayers = null;
     }
 
-    public void AddPlayer(Character player)
+    public void AddPlayer(CharacterObj player)
     {
         if (!mPlayers.Contains(player))
         {
@@ -34,7 +34,7 @@ public class HitBoxUpdateSystem
         }
     }
 
-    public void AddEnemy(Character enemy)
+    public void AddEnemy(CharacterObj enemy)
     {
         if (!mAllEnemies.Contains(enemy))
         {
@@ -42,7 +42,7 @@ public class HitBoxUpdateSystem
         }
     }
 
-    public void OnChangeAction(Character ch, string actionName)
+    public void OnChangeAction(CharacterObj ch, string actionName)
     {
         var hitBoxDataMap = GameInstance.Instance.HitBoxDataPool.GetActionHitBoxData(actionName);
         if (!mCharacterCurrentActionHitBoxData.ContainsKey(ch))
@@ -69,7 +69,7 @@ public class HitBoxUpdateSystem
         for (int i = 0; i < mPlayers.Count; ++i)
         {
             var player              = mPlayers[i];
-            var actionController    = player.GetActionController();
+            var actionController    = player.Action;
             var playerCurrentAction = actionController.CurAction;
 
             // player的攻击框
@@ -81,7 +81,7 @@ public class HitBoxUpdateSystem
             {
                 //player的攻击对enemy产生的碰撞
                 var enemy                 = mAllEnemies[e];
-                var enemyActionController = enemy.GetActionController();
+                var enemyActionController = enemy.Action;
                 var enemyCurrentAction    = enemyActionController.CurAction;
                 uint enemyFrameIndex      = enemyActionController.CurrentFrameIndex;
 
@@ -162,13 +162,13 @@ public class HitBoxUpdateSystem
         return defensePhases;
     }
 
-    void CheckHit(Character attacker, AttackBoxTurnOnInfo attackBoxInfo, int attackerFrameIndex, Character target, BeHitBoxTurnOnInfo defenseBoxInfo, int targetFrameIndex)
+    void CheckHit(CharacterObj attacker, AttackBoxTurnOnInfo attackBoxInfo, int attackerFrameIndex, CharacterObj target, BeHitBoxTurnOnInfo defenseBoxInfo, int targetFrameIndex)
     {
         if (!mCharacterCurrentActionHitBoxData.ContainsKey(target))
         {
             return;
         }
-        var attackActionController = attacker.GetActionController();
+        var attackActionController = attacker.Action;
         var frameDataList          = mCharacterCurrentActionHitBoxData[target];
         for (int k = 0; k < defenseBoxInfo.Tags.Length; ++k)
         {
@@ -241,7 +241,7 @@ public class HitBoxUpdateSystem
         }
     }
 
-    bool IsHit(AttackBoxTurnOnInfo attackBoxInfo, Character attacker, BoxColliderData defenseBoxInfo, Character target, int frame, out string gropuTag)
+    bool IsHit(AttackBoxTurnOnInfo attackBoxInfo, CharacterObj attacker, BoxColliderData defenseBoxInfo, CharacterObj target, int frame, out string gropuTag)
     {
         for (int i = 0; i < attackBoxInfo.FrameIndexRange.Length; ++i)
         {

@@ -5,11 +5,12 @@ using UnityEngine;
 public class GameMain : MonoBehaviour
 {
     private ulong mLogicFrameIndex;
-    public List<GameObject> players = new();
-    public List<GameObject> enemies = new();
+    public List<CharacterObj> players = new();
+    public List<CharacterObj> enemies = new();
     public int DebugRunFrameRate = 60;
 
     private float mNextUpdateTime = 0f;
+
     void Start()
     {
         mNextUpdateTime = 0f;
@@ -17,9 +18,14 @@ public class GameMain : MonoBehaviour
         mLogicFrameIndex = 0;
         GameInstance.Instance.Init();
         GameInstance.Instance.FrameRate = DebugRunFrameRate;
+
+        //todo
+        CharacterObj player = new MainPlayerCharacterObj();
+        players.Add(player);
+
         for (int i = 0; i < players.Count; i++)
         {
-            Character ch = players[i].GetComponent<Character>();
+            CharacterObj ch = players[i];
             if (ch != null)
             {
                 GameInstance.Instance.AddPlayer(ch);
@@ -30,7 +36,7 @@ public class GameMain : MonoBehaviour
         }
         for (int i = 0; i < enemies.Count; i++)
         {
-            Character ch = enemies[i].GetComponent<Character>();
+            CharacterObj ch = enemies[i];
             if (ch != null)
             {
                 GameInstance.Instance.AddEnemy(ch);
@@ -44,6 +50,8 @@ public class GameMain : MonoBehaviour
     void OnDestroy()
     {
         GameInstance.Instance.Destory();
+        players.Clear();
+        enemies.Clear();
     }
 
     void Update()
@@ -62,16 +70,16 @@ public class GameMain : MonoBehaviour
 
     void UpdateRender()
     {
-        List<Character> playerList = GameInstance.Instance.GetPlayerList();
+        List<CharacterObj> playerList = GameInstance.Instance.GetPlayerList();
         for (int i = 0; i < playerList.Count; i++)
         {
-            playerList[i].UpdateRender();
+            playerList[i].UpdateRender(Time.deltaTime);
         }
 
-        List<Character> enemyList = GameInstance.Instance.GetEnemyList();
+        List<CharacterObj> enemyList = GameInstance.Instance.GetEnemyList();
         for (int i = 0; i < enemyList.Count; i++)
         {
-            enemyList[i].UpdateRender();
+            enemyList[i].UpdateRender(Time.deltaTime);
         }
     }
 
@@ -84,29 +92,29 @@ public class GameMain : MonoBehaviour
 
         DealWithAttacks();
 
-        List<Character> playerList = GameInstance.Instance.GetPlayerList();
+        List<CharacterObj> playerList = GameInstance.Instance.GetPlayerList();
         for (int i = 0; i < playerList.Count; i++)
         {
-            playerList[i].UpdateLogic(mLogicFrameIndex);
+            playerList[i].UpdateLogic((int)mLogicFrameIndex);
         }
 
-        List<Character> enemyList = GameInstance.Instance.GetEnemyList();
+        List<CharacterObj> enemyList = GameInstance.Instance.GetEnemyList();
         for (int i = 0; i < enemyList.Count; i++)
         {
-            enemyList[i].UpdateLogic(mLogicFrameIndex);
+            enemyList[i].UpdateLogic((int)mLogicFrameIndex);
         }
     }
 
     void DealWithAttacks()
     {
-        List<Character> playerList = GameInstance.Instance.GetPlayerList();
-        List<Character> enemyList  = GameInstance.Instance.GetEnemyList();
+        List<CharacterObj> playerList = GameInstance.Instance.GetPlayerList();
+        List<CharacterObj> enemyList  = GameInstance.Instance.GetEnemyList();
         for (int i = 0; i < enemyList.Count; i++)
         {
-            Character enemy = enemyList[i];
+            CharacterObj enemy = enemyList[i];
             for (int j = 0; j < playerList.Count; j++)
             {
-                Character player = playerList[j];
+                CharacterObj player = playerList[j];
                 if (player.CanAttackTargetNow(enemy, out AttackInfo playerAttackInfo, out BeHitBoxTurnOnInfo enemyDefensePhase))
                 {
                     HitRecord record = player.GetHitRecord(enemy, playerAttackInfo.AttackPhase);
@@ -128,7 +136,7 @@ public class GameMain : MonoBehaviour
         } 
     }
 
-    void DoAttack(Character attacker, Character target, AttackInfo attackInfo, BeHitBoxTurnOnInfo defensePhase, string debug)
+    void DoAttack(CharacterObj attacker, CharacterObj target, AttackInfo attackInfo, BeHitBoxTurnOnInfo defensePhase, string debug)
     {
         SimpleLog.Info("DoAttack: ", debug);
         //CancelTag开启
@@ -139,12 +147,12 @@ public class GameMain : MonoBehaviour
         ActionChangeInfo attackerChangeInfo = 
         attackInfo.SelfActionChangeInfo.priority >= defensePhase.TargetActionChangeInfo.priority 
         ? attackInfo.SelfActionChangeInfo : defensePhase.TargetActionChangeInfo;
-        attacker.GetActionController().PreorderActionByActionChangeInfo(attackerChangeInfo);
+        attacker.Action.PreorderActionByActionChangeInfo(attackerChangeInfo);
 
         ActionChangeInfo defenderChangeInfo = 
         attackInfo.TargetActionChangeInfo.priority > defensePhase.SelfActionChangeInfo.priority 
         ? attackInfo.TargetActionChangeInfo : defensePhase.SelfActionChangeInfo;
-        target.GetActionController().PreorderActionByActionChangeInfo(defenderChangeInfo);
+        target.Action.PreorderActionByActionChangeInfo(defenderChangeInfo);
 
         attacker.AddHitRecord(target, attackInfo.AttackPhase);
     }
