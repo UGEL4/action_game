@@ -60,6 +60,8 @@ public class CharacterObj
 
     public GameObject Model;
 
+    public YamatoObj Y;
+
     public CharacterObj()
     {
         mPlayerController = new PlayerController(this);
@@ -97,21 +99,33 @@ public class CharacterObj
         }
         //PlayerController
 
+        //debug
+        Y = new YamatoObj(this);
+        //debug
+
         //HitRecordComponent
         GameInstance.Instance.HitRecordSys.Register(HitRecordComponent);
         mActionCtrl.SetChangeActinCallback((lastAction, newAction) => {
             HitRecordComponent.Clear();
-            // if (Y)
-            // {
-            //     if (newAction.mActionName == "ComboA_3")
-            //     {
-            //         Y.OnAttack();
-            //     }
-            //     else if (lastAction.mActionName == "ComboA_3")
-            //     {
-            //         Y.OnAttackEnd();
-            //     }
-            // }
+            if (Y != null)
+            {
+                if (newAction.mActionName == "ComboA_3")
+                {
+                    Y.MonoScript.OnAttack(comp.BeginFrame[0], comp.EndFrame[0]);
+                }
+                else if (newAction.mActionName == "ComboC_Loop")
+                {
+                    Y.MonoScript.OnAttack(comp.BeginFrame[1], 10000);
+                }
+                else if (newAction.mActionName == "ComboC_Finish")
+                {
+                    Y.MonoScript.OnAttack(-1, comp.EndFrame[2]);
+                }
+                // else if (lastAction.mActionName == "ComboA_3")
+                // {
+                //     Y.OnAttackEnd();
+                // }
+            }
         });
         //HitRecordComponent
 
@@ -139,10 +153,10 @@ public class CharacterObj
         mPlayerController.UpdateLogic();
         mInputToCommand.Tick();
         mActionCtrl.Tick();
-        // if (Y)
-        // {
-        //     Y.UpdateLogic((int)actionCtrl.CurrentFrameIndex);
-        // }
+        if (Y != null)
+        {
+            Y.UpdateLogic((int)mActionCtrl.CurrentFrameIndex);
+        }
         mMovementComponent.UpdateLogic(frameIndex);
     }
 
@@ -164,6 +178,12 @@ public class CharacterObj
         mMovementComponent = null;
 
         HitRecordComponent = null;
+
+        if (Y != null)
+        {
+            Y.EndPlay();
+            Y = null;
+        }
     }
 
     public void AddInputCommand(KeyMap key)
@@ -334,6 +354,9 @@ public class CharacterObj
         "Vergil/Yamato/ComboA_1",
         "Vergil/Yamato/ComboA_2",
         "Vergil/Yamato/ComboA_3",
+        "Vergil/Yamato/ComboC_Start",
+        "Vergil/Yamato/ComboC_Loop",
+        "Vergil/Yamato/ComboC_Finish",
     };
     public void LoadActions()
     {

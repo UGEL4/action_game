@@ -22,6 +22,8 @@ public struct CharacterAction
 
     public uint mTotalFrameCount;
 
+    public int SelfLoopCount;
+
     public CancelTag[] mCancelTagList;
 
     public BeCanceledTag[] mBeCanceledTagList;

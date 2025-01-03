@@ -1,16 +1,16 @@
 {"data":{
-    "mActionName": "ComboA_2",
-    "mAnimation": "ComboA_2",
+    "mActionName": "ComboC_Loop",
+    "mAnimation": "ComboC_Loop",
     "mPriority": 100,
-    "mAutoNextActionName": "Idle",
+    "mAutoNextActionName": "ComboC_Finish",
     "mAutoTerminate": false,
     "keepPlayingAnim": false,
-    "mTotalFrameCount": 52,
-    "SelfLoopCount": 0,
+    "mTotalFrameCount": 18,
+    "SelfLoopCount": 7,
     "mCancelTagList": [
         {
-            "tag": "To_ComboA_2",
-            "priority": 1,
+            "tag": "Loop_ComboC_Loop",
+            "priority": 100,
             "startFromPercentage": 0.0,
             "startFromFrameIndex": 0,
             "fadeInPercentage": 0.0
@@ -19,7 +19,7 @@
     "mBeCanceledTagList": [
         {
             "cancelTag": [
-                "To_ComboA_3"
+                "Loop_ComboC_Loop"
             ],
             "fadeOutPercentage": 0.0,
             "priority": 0,
@@ -29,22 +29,7 @@
             },
             "frameIndexRange": {
                 "min": 7,
-                "max": 20
-            }
-        },
-        {
-            "cancelTag": [
-                "To_ComboC_Start"
-            ],
-            "fadeOutPercentage": 0.0,
-            "priority": 1,
-            "range": {
-                "min": 0.0,
-                "max": 0.0
-            },
-            "frameIndexRange": {
-                "min": 15,
-                "max": 25
+                "max": 18
             }
         }
     ],
@@ -67,15 +52,15 @@
                 "min": 0.0,
                 "max": 1.0
             },
-            "rate": 1.0
+            "rate": 0.0
         }
     ],
-    "RootMotionDataPath": "Vergil/Yamato/ComboA_2",
+    "RootMotionDataPath": "",
     "RootMotionData": {
         "X": [],
         "Y": [],
         "Z": []
     },
     "MoveSpeed": 0.0,
-    "ForceMoce": true
+    "ForceMoce": false
 }}

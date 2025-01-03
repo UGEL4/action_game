@@ -1,0 +1,50 @@
+{"data":{
+    "mActionName": "ComboC_Start",
+    "mAnimation": "ComboC_Start",
+    "mPriority": 100,
+    "mAutoNextActionName": "ComboC_Loop",
+    "mAutoTerminate": false,
+    "keepPlayingAnim": false,
+    "mTotalFrameCount": 11,
+    "SelfLoopCount": 0,
+    "mCancelTagList": [
+        {
+            "tag": "To_ComboC_Start",
+            "priority": 2,
+            "startFromPercentage": 0.0,
+            "startFromFrameIndex": 0,
+            "fadeInPercentage": 0.0
+        }
+    ],
+    "mBeCanceledTagList": [],
+    "mTempBeCanceledTagList": [],
+    "mCommandList": [
+        {
+            "keySequences": [
+                7
+            ],
+            "validInSecond": 0.0,
+            "validInFrameCount": 2
+        }
+    ],
+    "attackInfoList": [],
+    "attackPhaseList": [],
+    "defensePhases": [],
+    "moveInputAcceptance": [
+        {
+            "range": {
+                "min": 0.0,
+                "max": 1.0
+            },
+            "rate": 0.0
+        }
+    ],
+    "RootMotionDataPath": "",
+    "RootMotionData": {
+        "X": [],
+        "Y": [],
+        "Z": []
+    },
+    "MoveSpeed": 0.0,
+    "ForceMoce": false
+}}

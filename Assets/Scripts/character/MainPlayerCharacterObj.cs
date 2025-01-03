@@ -20,7 +20,7 @@ public class MainPlayerCharacterObj : CharacterObj
             CinemachineFreeLook camera = obj.GetComponent<CinemachineFreeLook>();
             if (camera)
             {
-                var cameraPivot = mGameObject.transform.Find("CameraPivot");
+                var cameraPivot = mGameObject.transform.Find("Model/CameraPivot");
                 if (cameraPivot)
                 {
                     camera.Follow = cameraPivot;

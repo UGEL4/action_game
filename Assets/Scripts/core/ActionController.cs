@@ -82,7 +82,7 @@ public class ActionController
 
         ////CalculateBoxInfo(_wasPercentage, _pec);
         //计算移动接受输入
-        //CalculateInputAcceptance(_wasPercentage, _pec);
+        CalculateInputAcceptance(_wasPercentage, _pec);
         
         foreach (CharacterAction ac in AllActions)
         {
@@ -125,6 +125,7 @@ public class ActionController
         mBoxHits.Clear();
     }
 
+    private int ActionLoopCount = 0;
     bool CanActionCancelCurrentAction(CharacterAction actionInfo, bool checkCommand, out CancelTag foundTag, out BeCanceledTag beCabceledTag)
     {
         foundTag = new CancelTag();
@@ -141,6 +142,10 @@ public class ActionController
                 {
                     if (bcTagName == cTag.tag)
                     {
+                        if (actionInfo.SelfLoopCount > 0 && ActionLoopCount > actionInfo.SelfLoopCount)
+                        {
+                            continue;
+                        }
                         tagFit = true;
                         foundTag = cTag;
                         beCabceledTag = bcTagInfo;
@@ -190,6 +195,14 @@ public class ActionController
             _onChangeAction?.Invoke(CurAction, action);
             animator.CrossFade(action.mAnimation, normalizedTransitionDuration, 0, normalizedTimeOffset);
             //
+            if (CurAction.mActionName == actionName && CurAction.SelfLoopCount > 0)
+            {
+                ActionLoopCount++;
+            }
+            else
+            {
+                ActionLoopCount = 0;
+            }
             CurAction = action;
             curBeCanceledTagList.Clear();
             foreach (BeCanceledTag tag in CurAction.mBeCanceledTagList)
@@ -221,6 +234,7 @@ public class ActionController
         {
             mCurrentFrameIndex = 0;
             mLastFrameIndex    = 0;
+            ActionLoopCount = 0;
         }
         mBoxHits.Clear();
     }
@@ -248,6 +262,10 @@ public class ActionController
             if (acceptance.range.min <= pec && acceptance.range.max >= wasPec &&
                 (MoveInputAcceptance <= 0 || acceptance.rate < MoveInputAcceptance))
                 MoveInputAcceptance = acceptance.rate;
+        }
+        if (CurAction.moveInputAcceptance.Length > 0)
+        {
+            MoveInputAcceptance = CurAction.moveInputAcceptance[0].rate;
         }
     }
 

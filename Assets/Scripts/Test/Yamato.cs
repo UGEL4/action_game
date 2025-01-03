@@ -10,6 +10,7 @@ public class Yamato : MonoBehaviour
     public GameObject RightHand;
     public GameObject LeftHand;
     private bool mNeedAttack = false;
+    public int StartFrame = 0;
     public int EndFrame = 0;
 
     public GameObject Root;
@@ -25,7 +26,7 @@ public class Yamato : MonoBehaviour
     {
         if (mNeedAttack)
         {
-            if (frame == 10)
+            if (frame == StartFrame)
             {
                 Part00.transform.SetParent(RightHand.transform);
                 Part00.transform.SetLocalPositionAndRotation(new Vector3(0, 0, 0), quaternion.identity);
@@ -38,8 +39,10 @@ public class Yamato : MonoBehaviour
         }
     }
 
-    public void OnAttack()
+    public void OnAttack(int startFrame, int endFrame)
     {
+        StartFrame = startFrame;
+        EndFrame   = endFrame;
         mNeedAttack = true;
     }
 

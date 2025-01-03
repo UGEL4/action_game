@@ -213,7 +213,7 @@ MonoBehaviour:
       m_LegacyHeadingDefinition: -1
       m_LegacyVelocityFilterStrength: -1
   m_YAxisRecentering:
-    m_enabled: 1
+    m_enabled: 0
     m_WaitTime: 1
     m_RecenteringTime: 2
     m_LegacyHeadingDefinition: -1
@@ -1041,7 +1041,7 @@ PlayableDirector:
   m_GameObject: {fileID: 919132149522740809}
   m_Enabled: 1
   serializedVersion: 3
-  m_PlayableAsset: {fileID: 11400000, guid: f05feeb82fc80b34badb65987f95bc7f, type: 2}
+  m_PlayableAsset: {fileID: 11400000, guid: 355f6f6b4fcdb2641b9d95c5894b29c7, type: 2}
   m_InitialState: 1
   m_WrapMode: 2
   m_DirectorUpdateMode: 1
@@ -1056,6 +1056,12 @@ PlayableDirector:
   - key: {fileID: 1805317493975543071, guid: ca5a06e4678f88447a0fb20e9c762e91, type: 2}
     value: {fileID: 503089947}
   - key: {fileID: 1805317493975543071, guid: f05feeb82fc80b34badb65987f95bc7f, type: 2}
+    value: {fileID: 503089947}
+  - key: {fileID: 1805317493975543071, guid: 3242c076b05200f458f67f38e3b2471f, type: 2}
+    value: {fileID: 503089947}
+  - key: {fileID: 1805317493975543071, guid: ab007f1df11cf32478558285a6a272df, type: 2}
+    value: {fileID: 503089947}
+  - key: {fileID: 1805317493975543071, guid: fc2a3ad548c25434980a2c2b79f5f438, type: 2}
     value: {fileID: 503089947}
   m_ExposedReferences:
     m_References: []
@@ -2147,7 +2153,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bc2a45481c2a7bc4bad8a841b96f03ac, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  DebugRunFrameRate: 120
+  DebugRunFrameRate: 60
 --- !u!1001 &1375345265
 PrefabInstance:
   m_ObjectHideFlags: 0

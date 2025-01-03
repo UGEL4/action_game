@@ -36,13 +36,8 @@ public class MovementComponent : ComponentBase
         {
             if (mStartSyncModelPosition)
             {
-                model.transform.position = mLastPosition;
+                //model.transform.position = mLastPosition;
                 //model.transform.position = Vector3.Lerp(mLastPosition, mOwner.gameObject.transform.position, Time.deltaTime);
-            }
-            float speed = mOwner.Action.MoveSpeed;
-            if (speed == 0f)
-            {
-                speed = 100f;
             }
             if (model.transform.position == mOwner.gameObject.transform.position)
             {
@@ -50,13 +45,10 @@ public class MovementComponent : ComponentBase
                 mStartSyncModelPosition = false;
                 return;
             }
-            mTime += Time.deltaTime;
-            //Vector3 pos = Vector3.Lerp(mLastPosition, mOwner.gameObject.transform.position, mTime);
+            mTime += (float)GameInstance.Instance.LogicFrameRate / GameInstance.Instance.FrameRate;
+            Vector3 pos = Vector3.Lerp(mLastPosition, mOwner.gameObject.transform.position, mTime);
             //SimpleLog.Warn("pos: ", pos);
-            //model.transform.position = pos;
-            Vector3 dir = mOwner.gameObject.transform.position - model.transform.position;
-            dir.Normalize();
-            model.transform.Translate(dir * Time.deltaTime * 6);
+            model.transform.position = pos;
         }
         if (mStartSyncModelPosition)
         {
@@ -124,9 +116,9 @@ public class MovementComponent : ComponentBase
                     // transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * 10f);
                     transform.LookAt(transform.position + adjDir);
                 }
-                //pc.Move(RootMotionMove.magnitude * adjDir);
+                pc.Move(RootMotionMove.magnitude * adjDir);
                 //debug
-                pc.Move(6 * adjDir / 30);
+                //pc.Move(6 * adjDir / 30);
             }
             else
             {
@@ -147,7 +139,13 @@ public class MovementComponent : ComponentBase
         Transform transform = mOwner.gameObject.transform;
         if (transform)
         {
-            mOwner.GetPlayerController().Move(Move.magnitude * transform.forward);
+            float MoveInputAcceptance = mOwner.GetMoveInputAcceptance();
+            if (MoveInputAcceptance > 0)
+            {
+                Owner.GetPlayerController().Move(Move.magnitude * MoveInputAcceptance * transform.forward);
+            }
+            else
+                mOwner.GetPlayerController().Move(Move.magnitude * transform.forward);
         }
         else
         {
