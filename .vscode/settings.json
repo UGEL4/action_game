@@ -53,6 +53,6 @@
     },
     "dotnet.defaultSolution": "action.sln",
     "[csharp]":{
-        "editor.defaultFormatter": "ms-dotnettools.csharp"
+        "editor.defaultFormatter": "moowiz.clang-format-moowiz-fork"
     },
 }

@@ -345,8 +345,10 @@ public class ActionController
         }
     }
 
+    public float MoveSpeed = 0f;
     private Vector3 GetRootMotionData()
     {
+        MoveSpeed = 0;
         IsUnderForceMove = CurAction.ForceMoce;
         RootMotionData data = CurAction.RootMotionData;
         if (data.X == null || data.Y == null || data.Z == null)
@@ -377,6 +379,7 @@ public class ActionController
         {
             Move = new Vector3(data.X[index], data.Y[index], data.Z[index]);
         }
+        MoveSpeed = Move.magnitude * GameInstance.Instance.LogicFrameRate;
 
         if (CurAction.ForceMoce)
         {

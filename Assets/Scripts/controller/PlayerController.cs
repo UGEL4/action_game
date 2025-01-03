@@ -172,13 +172,19 @@ public class PlayerController
         return flatten * input;
     }
 
+    /// <summary>
+    /// 获取xz平面上的移动方向向量
+    /// </summary>
+    /// <param name="input">xz平面上的输入</param>
+    /// <returns>返回移动方向单位向量</returns>
     public Vector3 CharacterRelativeFlatten(Vector3 input)
     {
         Vector3 forward = Camera.main.transform.forward;
         Vector3 right   = Camera.main.transform.right;
-        forward.y = 0f;
+        forward.y       = 0f;
         forward.Normalize();
         Vector3 Move = forward * input.z + right * input.x;
+        Move.Normalize();
         return Move;
     }
 

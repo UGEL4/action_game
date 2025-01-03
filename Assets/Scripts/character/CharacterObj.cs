@@ -44,8 +44,21 @@ public class CharacterObj
     protected List<AttackHitBox> mAttackHitBoxList = new();
     public List<AttackHitBox> AttackHitBoxList => mAttackHitBoxList;
 
-    protected Vector3 mCurrMovement;
-    protected bool mIsMovementPresed = false;
+    /// <summary>
+    /// 速度，每秒移动多少单位
+    /// </summary>
+    public float Speed
+    {
+        get {
+            if (mActionCtrl != null)
+            {
+                return mActionCtrl.CurAction.MoveSpeed;
+            }
+            return 0;
+        }
+    }
+
+    public GameObject Model;
 
     public CharacterObj()
     {
@@ -71,6 +84,7 @@ public class CharacterObj
         mGameObject.transform.SetLocalPositionAndRotation(Vector3.zero, quaternion.identity);
         mGameObject.transform.localScale = Vector3.one;
         Animator = mGameObject.GetComponentInChildren<Animator>();
+        Model = mGameObject.transform.Find("Model").gameObject;
 
         //PlayerController
         CharacterController controller = mGameObject.GetComponent<CharacterController>();

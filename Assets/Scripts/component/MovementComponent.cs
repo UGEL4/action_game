@@ -1,5 +1,8 @@
 
+using Log;
+using Unity.Mathematics;
 using UnityEngine;
+using UnityEngine.SocialPlatforms;
 
 public class MovementComponent : ComponentBase
 {
@@ -25,8 +28,40 @@ public class MovementComponent : ComponentBase
         HandleMovement();
     }
 
+    private float mTime = 0f;
     void HandleMovement()
     {
+        GameObject model = mOwner.Model;
+        if (model)
+        {
+            if (mStartSyncModelPosition)
+            {
+                model.transform.position = mLastPosition;
+                //model.transform.position = Vector3.Lerp(mLastPosition, mOwner.gameObject.transform.position, Time.deltaTime);
+            }
+            float speed = mOwner.Action.MoveSpeed;
+            if (speed == 0f)
+            {
+                speed = 100f;
+            }
+            if (model.transform.position == mOwner.gameObject.transform.position)
+            {
+                mTime = 0f;
+                mStartSyncModelPosition = false;
+                return;
+            }
+            mTime += Time.deltaTime;
+            //Vector3 pos = Vector3.Lerp(mLastPosition, mOwner.gameObject.transform.position, mTime);
+            //SimpleLog.Warn("pos: ", pos);
+            //model.transform.position = pos;
+            Vector3 dir = mOwner.gameObject.transform.position - model.transform.position;
+            dir.Normalize();
+            model.transform.Translate(dir * Time.deltaTime * 6);
+        }
+        if (mStartSyncModelPosition)
+        {
+            mStartSyncModelPosition = false;
+        }
         // if (!RenderObj) return;
 
         // RenderObj.transform.position = Vector3.Lerp(RenderObj.transform.position, transform.position, GetPositionLerpT());
@@ -50,6 +85,9 @@ public class MovementComponent : ComponentBase
     private int mSpeed = 1; //每帧位移0.2
     private float mRenderUnit = 0.2f;
 
+    private Vector3 mLastPosition = Vector3.zero;
+    private bool mStartSyncModelPosition = false;
+
     //逻辑单位到渲染单位的转换
     public float LogicUnitToRenderUnit(int unit)
     {
@@ -59,19 +97,21 @@ public class MovementComponent : ComponentBase
     public void NatureMove()
     {
         //mPosition = transform.position;
+        //mLastPosition = mOwner.gameObject.transform.position;
+        mLastPosition = mOwner.Model.transform.position;
+        mStartSyncModelPosition = true;
         PlayerController pc = mOwner.GetPlayerController();
         //var adjDir          = Quaternion.AngleAxis(Camera.main.transform.eulerAngles.y, Vector3.up) * pc.CurrMoveDir;
         var adjDir = pc.CharacterRelativeFlatten(pc.CurrMoveDir);
         if (adjDir.magnitude > 0.0f)
         {
-            adjDir.Normalize();
             //Vector3 motion = adjDir * 6 * Time.fixedDeltaTime /** MoveInputAcceptance*/;
             //mPosition = mPosition + motion;
-
+            SimpleLog.Warn("MoveSpeed: ", mOwner.Action.MoveSpeed);
             if (mOwner.Action.CurAction.HasRootMotion())
             {
                 Vector3 RootMotionMove = mOwner.Action.RootMotionMove;
-                Transform transform = mOwner.gameObject.transform;
+                Transform transform    = mOwner.gameObject.transform;
                 if (transform)
                 {
                     //var targetRot = Quaternion.LookRotation(adjDir);
@@ -84,12 +124,16 @@ public class MovementComponent : ComponentBase
                     // transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * 10f);
                     transform.LookAt(transform.position + adjDir);
                 }
-                pc.Move(RootMotionMove.magnitude * adjDir);
+                //pc.Move(RootMotionMove.magnitude * adjDir);
+                //debug
+                pc.Move(6 * adjDir / 30);
             }
             else
             {
                 float MoveInputAcceptance = mOwner.GetMoveInputAcceptance();
-                Vector3 motion = adjDir * LogicUnitToRenderUnit(mSpeed) * MoveInputAcceptance;
+                float speed               = mOwner.Speed;
+                speed                     = speed / GameInstance.Instance.LogicFrameRate;
+                Vector3 motion            = adjDir * speed * MoveInputAcceptance;
                 pc.Move(motion);
             }
             // if (RenderObj)
