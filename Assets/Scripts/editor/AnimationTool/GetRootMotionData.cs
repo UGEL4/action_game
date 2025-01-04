@@ -47,6 +47,10 @@ public class GetRootMotionData : EditorWindow
         AnimationCurve X = null;
         AnimationCurve Y = null;
         AnimationCurve Z = null;
+        AnimationCurve RX = null;
+        AnimationCurve RY = null;
+        AnimationCurve RZ = null;
+        AnimationCurve RW = null;
         foreach (var curveBinding in curveBindings)
         {
             if (curveBinding.path == "root")
@@ -56,32 +60,33 @@ public class GetRootMotionData : EditorWindow
                 if (curveBinding.propertyName.Contains("LocalPosition.x"))
                 {
                     X = AnimationUtility.GetEditorCurve(Animation, curveBinding);
-                    // rootMotionData.X = new Keyframe[curve.length];
-                    // for (int i = 0; i < curve.length; i++)
-                    // {
-                    //     rootMotionData.X[i] = curve.keys[i];
-                    // }
                 }
                 else if (curveBinding.propertyName.Contains("LocalPosition.y"))
                 {
                     Y = AnimationUtility.GetEditorCurve(Animation, curveBinding);
-                    // rootMotionData.Y = new Keyframe[curve.length];
-                    // for (int i = 0; i < curve.length; i++)
-                    // {
-                    //     rootMotionData.Y[i] = curve.keys[i];
-                    // }
                 }
                 else if (curveBinding.propertyName.Contains("LocalPosition.z"))
                 {
                     Z = AnimationUtility.GetEditorCurve(Animation, curveBinding);
-                    // rootMotionData.Z = new Keyframe[curve.length];
-                    // for (int i = 0; i < curve.length; i++)
-                    // {
-                    //     rootMotionData.Z[i] = curve.keys[i];
-                    // }
+                }
+                if (curveBinding.propertyName.Contains("LocalRotation.x"))
+                {
+                    RX = AnimationUtility.GetEditorCurve(Animation, curveBinding);
+                }
+                else if (curveBinding.propertyName.Contains("LocalRotation.y"))
+                {
+                    RY = AnimationUtility.GetEditorCurve(Animation, curveBinding);
+                }
+                else if (curveBinding.propertyName.Contains("LocalRotation.z"))
+                {
+                    RZ = AnimationUtility.GetEditorCurve(Animation, curveBinding);
+                }
+                else if (curveBinding.propertyName.Contains("LocalRotation.w"))
+                {
+                    RW = AnimationUtility.GetEditorCurve(Animation, curveBinding);
                 }
             }
-            if (X != null && Y != null && Z != null)
+            if (X != null && Y != null && Z != null && RX != null && RY != null && RZ != null && RW != null)
             {
                 break;
             }
@@ -107,14 +112,49 @@ public class GetRootMotionData : EditorWindow
                 maxTime = time;
             }
         }
+        if (RX.length > 0)
+        {
+            float time = RX[RX.length - 1].time;
+            if (time > maxTime)
+            {
+                maxTime = time;
+            }
+        }
+        if (RY.length > 0)
+        {
+            float time = RY[RY.length - 1].time;
+            if (time > maxTime)
+            {
+                maxTime = time;
+            }
+        }
+        if (RZ.length > 0)
+        {
+            float time = RZ[RZ.length - 1].time;
+            if (time > maxTime)
+            {
+                maxTime = time;
+            }
+        }
+        if (RW.length > 0)
+        {
+            float time = RZ[RZ.length - 1].time;
+            if (time > maxTime)
+            {
+                maxTime = time;
+            }
+        }
         int totalFrame = (int)(maxTime * EvaluateFrameRate);
         int frame      = 0;
         float step     = 1f / EvaluateFrameRate;
         if (totalFrame > 0)
         {
-            rootMotionData.X = new float[totalFrame];
-            rootMotionData.Y = new float[totalFrame];
-            rootMotionData.Z = new float[totalFrame];
+            rootMotionData.X  = new float[totalFrame];
+            rootMotionData.Y  = new float[totalFrame];
+            rootMotionData.Z  = new float[totalFrame];
+            rootMotionData.RX = new float[totalFrame];
+            rootMotionData.RY = new float[totalFrame];
+            rootMotionData.RZ = new float[totalFrame];
             while (true)
             {
                 if (frame >= totalFrame)
@@ -128,10 +168,22 @@ public class GetRootMotionData : EditorWindow
                 rootMotionData.X[frame] = x;
                 rootMotionData.Y[frame] = y;
                 rootMotionData.Z[frame] = z;
+                float rx                = RX.Evaluate(time);
+                float ry                = RY.Evaluate(time);
+                float rz                = RZ.Evaluate(time);
+                float rw                = RW.Evaluate(time);
+                var rot = new Quaternion(rx, ry, rz, rw);
+                rootMotionData.X[frame] = x;
+                rootMotionData.Y[frame] = y;
+                rootMotionData.Z[frame] = z;
+                rootMotionData.RX[frame] = rot.eulerAngles.x;
+                rootMotionData.RY[frame] = rot.eulerAngles.y;
+                rootMotionData.RZ[frame] = rot.eulerAngles.z;
                 frame++;
             }
         }
         StringBuilder json = new StringBuilder("{\n");
+        //StringBuilder json = new StringBuilder();
         //layout: {X:[frame0, frame1, ...], Y:[...], Z:[...]}
         //string format = "{0},{1},{2},{3},{4},{5},{6},{7}]";
         json.Append("\"X\":[");
@@ -163,7 +215,39 @@ public class GetRootMotionData : EditorWindow
                 json.Append(',');
             }
         }
+        json.Append("],\n");
+        json.Append("\"RX\":[");
+        for (int i = 0; i < rootMotionData.RX.Length; i++)
+        {
+            json.Append(rootMotionData.RX[i]);
+            if (i < rootMotionData.RX.Length - 1)
+            {
+                json.Append(',');
+            }
+        }
+        json.Append("],\n");
+        json.Append("\"RY\":[");
+        for (int i = 0; i < rootMotionData.RY.Length; i++)
+        {
+            json.Append(rootMotionData.RY[i]);
+            if (i < rootMotionData.RY.Length - 1)
+            {
+                json.Append(',');
+            }
+        }
+        json.Append("],\n");
+        json.Append("\"RZ\":[");
+        for (int i = 0; i < rootMotionData.RZ.Length; i++)
+        {
+            json.Append(rootMotionData.RZ[i]);
+            if (i < rootMotionData.RZ.Length - 1)
+            {
+                json.Append(',');
+            }
+        }
         json.Append("]\n}");
+        
+        //json.Append(JsonUtility.ToJson(rootMotionData));
         File.WriteAllText(path, json.ToString());
     }
 }

@@ -29,5 +29,8 @@ namespace ACTTools.RootMotionData
         public float[] X;
         public float[] Y;
         public float[] Z;
+        public float[] RX;
+        public float[] RY;
+        public float[] RZ;
     }
 }

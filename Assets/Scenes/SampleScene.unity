@@ -962,7 +962,7 @@ PrefabInstance:
     - target: {fileID: 919132149155446097, guid: 9c9e1ff5f6ac92e4ba1f5af34a291d13,
         type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1738097372335800592, guid: 9c9e1ff5f6ac92e4ba1f5af34a291d13,
         type: 3}
@@ -983,6 +983,16 @@ PrefabInstance:
         type: 3}
       propertyPath: m_IsActive
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4436805663696350335, guid: 9c9e1ff5f6ac92e4ba1f5af34a291d13,
+        type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4436805663696350335, guid: 9c9e1ff5f6ac92e4ba1f5af34a291d13,
+        type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5341705049914277845, guid: 9c9e1ff5f6ac92e4ba1f5af34a291d13,
         type: 3}
@@ -1041,7 +1051,7 @@ PlayableDirector:
   m_GameObject: {fileID: 919132149522740809}
   m_Enabled: 1
   serializedVersion: 3
-  m_PlayableAsset: {fileID: 11400000, guid: 355f6f6b4fcdb2641b9d95c5894b29c7, type: 2}
+  m_PlayableAsset: {fileID: 11400000, guid: fc2a3ad548c25434980a2c2b79f5f438, type: 2}
   m_InitialState: 1
   m_WrapMode: 2
   m_DirectorUpdateMode: 1

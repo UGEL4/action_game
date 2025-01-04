@@ -37,6 +37,7 @@ public class ActionController
     public Dictionary<string, List<BeHitBoxTurnOnInfo>> BoxHits => mBoxHits;
 
     public Vector3 RootMotionMove {private set; get;} = Vector3.zero;
+    public Quaternion RootMotionRotation {private set; get; } = Quaternion.identity;
 
     public Vector3 UnderForceMove {private set; get;} = Vector3.zero;
     public bool IsUnderForceMove {private set; get; } = false;
@@ -120,6 +121,7 @@ public class ActionController
         //要处理当没有rootmotion时的移动情况
         //可以有一个默认的移动速度
         RootMotionMove = GetRootMotionData();
+        RootMotionRotation = GetRootMotionRotation((int)mCurrentFrameIndex);
 
         preorderActionList.Clear();
         mBoxHits.Clear();
@@ -368,34 +370,20 @@ public class ActionController
     {
         MoveSpeed = 0;
         IsUnderForceMove = CurAction.ForceMoce;
-        RootMotionData data = CurAction.RootMotionData;
-        if (data.X == null || data.Y == null || data.Z == null)
-        {
-            return Vector3.zero;
-        }
         if (string.IsNullOrEmpty(CurAction.mActionName))
         {
             return Vector3.zero;
         }
-        if (data.X.Length == 0)
-        {
-            return Vector3.zero;
-        }
-        uint index = mCurrentFrameIndex;
-        if (mCurrentFrameIndex >= data.X.Length)
-        {
-            index = 0;
-        }
         Vector3 Move = Vector3.zero;
-        if (index > 0)
+        if (mCurrentFrameIndex > 0)
         {
-            Vector3 LastMove = new Vector3(data.X[index - 1], data.Y[index - 1], data.Z[index -1]);
-            Vector3 NowMove  = new Vector3(data.X[index], data.Y[index], data.Z[index]);
+            Vector3 LastMove = GetRootMotionPosition((int)mCurrentFrameIndex - 1);
+            Vector3 NowMove  = GetRootMotionPosition((int)mCurrentFrameIndex);
             Move             = NowMove - LastMove;
         }
         else
         {
-            Move = new Vector3(data.X[index], data.Y[index], data.Z[index]);
+            Move = GetRootMotionPosition((int)mCurrentFrameIndex);
         }
         MoveSpeed = Move.magnitude * GameInstance.Instance.LogicFrameRate;
 
@@ -404,5 +392,47 @@ public class ActionController
             UnderForceMove   = Move;
         }
         return Move;
+    }
+
+    private Vector3 GetRootMotionPosition(int index)
+    {
+        RootMotionData data = CurAction.RootMotionData;
+        float x             = 0;
+        float y             = 0;
+        float z             = 0;
+        if (data.X != null && data.X.Length > index)
+        {
+            x = data.X[index];
+        }
+        if (data.Y != null && data.Y.Length > index)
+        {
+            y = data.Y[index];
+        }
+        if (data.Z != null && data.Z.Length > index)
+        {
+            z = data.Z[index];
+        }
+        return new Vector3(x, y, z);
+    }
+
+    private Quaternion GetRootMotionRotation(int index)
+    {
+        RootMotionData data = CurAction.RootMotionData;
+        float x             = 0;
+        float y             = 0;
+        float z             = 0;
+        if (data.RX != null && data.RX.Length > index)
+        {
+            x = data.RX[index];
+        }
+        if (data.RY != null && data.RY.Length > index)
+        {
+            y = data.RY[index];
+        }
+        if (data.RZ != null && data.RZ.Length > index)
+        {
+            z = data.RZ[index];
+        }
+        return Quaternion.Euler(x, y, z);
     }
 }

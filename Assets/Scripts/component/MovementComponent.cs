@@ -99,7 +99,7 @@ public class MovementComponent : ComponentBase
         {
             //Vector3 motion = adjDir * 6 * Time.fixedDeltaTime /** MoveInputAcceptance*/;
             //mPosition = mPosition + motion;
-            SimpleLog.Warn("MoveSpeed: ", mOwner.Action.MoveSpeed);
+            //SimpleLog.Warn("MoveSpeed: ", mOwner.Action.MoveSpeed);
             if (mOwner.Action.CurAction.HasRootMotion())
             {
                 Vector3 RootMotionMove = mOwner.Action.RootMotionMove;
@@ -135,17 +135,18 @@ public class MovementComponent : ComponentBase
 
     public void ForceMove()
     {
-        Vector3 Move = mOwner.Action.UnderForceMove;
+        Vector3 Move        = mOwner.Action.UnderForceMove;
         Transform transform = mOwner.gameObject.transform;
         if (transform)
         {
+            //transform.rotation = mOwner.Action.RootMotionRotation;
+            //SimpleLog.Warn("RootMotionRotation: ", mOwner.Action.RootMotionRotation.eulerAngles);
             float MoveInputAcceptance = mOwner.GetMoveInputAcceptance();
             if (MoveInputAcceptance > 0)
             {
-                Owner.GetPlayerController().Move(Move.magnitude * MoveInputAcceptance * transform.forward);
+                Move *= MoveInputAcceptance;
             }
-            else
-                mOwner.GetPlayerController().Move(Move.magnitude * transform.forward);
+            mOwner.GetPlayerController().Move(Move.magnitude * transform.forward);
         }
         else
         {
