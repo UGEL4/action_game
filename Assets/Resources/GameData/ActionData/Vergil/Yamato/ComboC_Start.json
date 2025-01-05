@@ -43,7 +43,10 @@
     "RootMotionData": {
         "X": [],
         "Y": [],
-        "Z": []
+        "Z": [],
+        "RX": [],
+        "RY": [],
+        "RZ": []
     },
     "MoveSpeed": 0.0,
     "ForceMoce": false

@@ -71,4 +71,14 @@ public struct CharacterAction
             RootMotionData = JsonUtility.FromJson<RootMotionData>(ta.text);
         }
     }
+
+    //动作通知
+    public ActionNotify[] Notifies;
+}
+
+[Serializable]
+public struct ActionNotify
+{
+    public int FrameIndex;
+    public string Params;
 }

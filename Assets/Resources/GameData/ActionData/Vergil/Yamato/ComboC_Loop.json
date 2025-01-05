@@ -62,5 +62,11 @@
         "Z": []
     },
     "MoveSpeed": 0.0,
-    "ForceMoce": false
+    "ForceMoce": false,
+    "Notifies": [
+        {
+            "FrameIndex": 1,
+            "Params": "ToRightHand,FixedPart01"
+        }
+    ]
 }}

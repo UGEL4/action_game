@@ -711,6 +711,7 @@ MonoBehaviour:
   EndFrame: 0
   Root: {fileID: 6298026599722245101}
   Part00: {fileID: 4535528566313624329}
+  Part01: {fileID: 6610613621582965290}
 --- !u!1 &6298026599722245101
 GameObject:
   m_ObjectHideFlags: 0

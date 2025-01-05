@@ -52,4 +52,35 @@ public class YamatoObj
         MonoScript = null;
         Owner = null;
     }
+
+    public void OnActionNotify(string param)
+    {
+        string[] _params = param.Split(",");
+        if (_params != null)
+        {
+            for (int i = 0; i < _params.Length; i++)
+            {
+                if (_params[i] == "ToRightHand")
+                {
+                    MonoScript.OnAttack();
+                }
+                else if (_params[i] == "ToLeftHand")
+                {
+                    MonoScript.OnAttackEnd();
+                }
+                else if (_params[i] == "FixedPart01")
+                {
+                    MonoScript.FixedPart01();
+                }
+                else if (_params[i] == "ResetPart01")
+                {
+                    MonoScript.ResetPart01();
+                }
+                else if (_params[i] == "RoataBlade")
+                {
+                    MonoScript.RoataBlade();
+                }
+            }
+        }
+    }
 }

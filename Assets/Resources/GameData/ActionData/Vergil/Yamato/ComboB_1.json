@@ -1,0 +1,90 @@
+{"data":{
+    "mActionName": "ComboB_1",
+    "mAnimation": "ComboB_1",
+    "mPriority": 100,
+    "mAutoNextActionName": "Idle",
+    "mAutoTerminate": false,
+    "keepPlayingAnim": false,
+    "mTotalFrameCount": 114,
+    "SelfLoopCount": 0,
+    "mCancelTagList": [
+        {
+            "tag": "To_ComboB_1",
+            "priority": 1,
+            "startFromPercentage": 0.0,
+            "startFromFrameIndex": 0,
+            "fadeInPercentage": 0.0
+        }
+    ],
+    "mBeCanceledTagList": [
+        {
+            "cancelTag": [
+                "To_ComboB_2"
+            ],
+            "fadeOutPercentage": 0.0,
+            "priority": 0,
+            "range": {
+                "min": 0.0,
+                "max": 0.0
+            },
+            "frameIndexRange": {
+                "min": 13,
+                "max": 25
+            }
+        },
+        {
+            "cancelTag": [
+                "To_ComboC_Start"
+            ],
+            "fadeOutPercentage": 0.0,
+            "priority": 1,
+            "range": {
+                "min": 0.0,
+                "max": 0.0
+            },
+            "frameIndexRange": {
+                "min": 26,
+                "max": 40
+            }
+        }
+    ],
+    "mTempBeCanceledTagList": [],
+    "mCommandList": [
+        {
+            "keySequences": [
+                7
+            ],
+            "validInSecond": 0.0,
+            "validInFrameCount": 2
+        }
+    ],
+    "attackInfoList": [],
+    "attackPhaseList": [],
+    "defensePhases": [],
+    "moveInputAcceptance": [
+        {
+            "range": {
+                "min": 0.0,
+                "max": 1.0
+            },
+            "rate": 1.0
+        }
+    ],
+    "RootMotionDataPath": "Vergil/Yamato/ComboB_1",
+    "RootMotionData": {
+        "X": [],
+        "Y": [],
+        "Z": [],
+        "RX": [],
+        "RY": [],
+        "RZ": []
+    },
+    "MoveSpeed": 0.0,
+    "ForceMoce": true,
+    "Notifies": [
+        {
+            "FrameIndex": 3,
+            "Params": "ToRightHand"
+        }
+    ]
+}}

@@ -34,7 +34,7 @@
         },
         {
             "cancelTag": [
-                "To_ComboC_Start"
+                "To_ComboB_1"
             ],
             "fadeOutPercentage": 0.0,
             "priority": 1,
@@ -74,7 +74,10 @@
     "RootMotionData": {
         "X": [],
         "Y": [],
-        "Z": []
+        "Z": [],
+        "RX": [],
+        "RY": [],
+        "RZ": []
     },
     "MoveSpeed": 0.0,
     "ForceMoce": true

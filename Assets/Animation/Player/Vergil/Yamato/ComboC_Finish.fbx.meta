@@ -12,10 +12,10 @@ ModelImporter:
   animations:
     legacyGenerateAnimations: 4
     bakeSimulation: 0
-    resampleCurves: 1
+    resampleCurves: 0
     optimizeGameObjects: 0
     removeConstantScaleCurves: 0
-    motionNodeName: 
+    motionNodeName: root
     animationImportErrors: 
     animationImportWarnings: 
     animationRetargetingWarnings: 

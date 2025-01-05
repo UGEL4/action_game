@@ -81,6 +81,19 @@ public class ActionController
             mCurrentFrameIndex = 0;
         }
 
+        //通知
+        if (CurAction.Notifies != null && CurAction.Notifies.Length > 0)
+        {
+            for (int i = 0; i < CurAction.Notifies.Length; i++)
+            {
+                if ((int)mCurrentFrameIndex == CurAction.Notifies[i].FrameIndex)
+                {
+                    //触发通知
+                    OnActionNotify(CurAction.Notifies[i].Params);
+                }
+            }
+        }
+
         ////CalculateBoxInfo(_wasPercentage, _pec);
         //计算移动接受输入
         CalculateInputAcceptance(_wasPercentage, _pec);
@@ -120,8 +133,9 @@ public class ActionController
 
         //要处理当没有rootmotion时的移动情况
         //可以有一个默认的移动速度
-        RootMotionMove = GetRootMotionData();
-        RootMotionRotation = GetRootMotionRotation((int)mCurrentFrameIndex);
+        //RootMotionMove = GetRootMotionData();
+        //RootMotionRotation = GetRootMotionRotation((int)mCurrentFrameIndex);
+        ExtractRootMotion();
 
         preorderActionList.Clear();
         mBoxHits.Clear();
@@ -396,6 +410,10 @@ public class ActionController
 
     private Vector3 GetRootMotionPosition(int index)
     {
+        if (index < 0)
+        {
+            index = 0;
+        }
         RootMotionData data = CurAction.RootMotionData;
         float x             = 0;
         float y             = 0;
@@ -417,6 +435,11 @@ public class ActionController
 
     private Quaternion GetRootMotionRotation(int index)
     {
+        if (index < 0)
+        {
+            //index = 0;
+            return Quaternion.identity;
+        }
         RootMotionData data = CurAction.RootMotionData;
         float x             = 0;
         float y             = 0;
@@ -434,5 +457,31 @@ public class ActionController
             z = data.RZ[index];
         }
         return Quaternion.Euler(x, y, z);
+    }
+
+    void ExtractRootMotion()
+    {
+        //Vector3 currentWorldPos = mOwner.transform.position;
+        //Quaternion currentWorldRot = mOwner.transform.rotation;
+        int frameIndex = (int)mCurrentFrameIndex;
+        //先不管循环
+        Vector3 prevPos = GetRootMotionPosition(frameIndex - 1);
+        Vector3 currPos = GetRootMotionPosition(frameIndex);
+        Quaternion prevRot = GetRootMotionRotation(frameIndex - 1);
+        Quaternion currRot = GetRootMotionRotation(frameIndex);
+        Vector3 deltaPos = currPos - prevPos;
+        Quaternion deltaRot = currRot * Quaternion.Inverse(prevRot);
+        RootMotionMove = deltaPos;
+        RootMotionRotation = deltaRot;
+        UnderForceMove = deltaPos;
+        IsUnderForceMove = CurAction.ForceMoce;
+    }
+
+    void OnActionNotify(string param)
+    {
+        if (mOwner.Y != null)
+        {
+            mOwner.Y.OnActionNotify(param);
+        }
     }
 }

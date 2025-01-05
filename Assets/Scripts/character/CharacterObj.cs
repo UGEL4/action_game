@@ -107,25 +107,25 @@ public class CharacterObj
         GameInstance.Instance.HitRecordSys.Register(HitRecordComponent);
         mActionCtrl.SetChangeActinCallback((lastAction, newAction) => {
             HitRecordComponent.Clear();
-            if (Y != null)
-            {
-                if (newAction.mActionName == "ComboA_3")
-                {
-                    Y.MonoScript.OnAttack(comp.BeginFrame[0], comp.EndFrame[0]);
-                }
-                else if (newAction.mActionName == "ComboC_Loop")
-                {
-                    Y.MonoScript.OnAttack(comp.BeginFrame[1], 10000);
-                }
-                else if (newAction.mActionName == "ComboC_Finish")
-                {
-                    Y.MonoScript.OnAttack(-1, comp.EndFrame[2]);
-                }
-                // else if (lastAction.mActionName == "ComboA_3")
-                // {
-                //     Y.OnAttackEnd();
-                // }
-            }
+            // if (Y != null)
+            // {
+            //     if (newAction.mActionName == "ComboA_3")
+            //     {
+            //         Y.MonoScript.OnAttack(comp.BeginFrame[0], comp.EndFrame[0]);
+            //     }
+            //     else if (newAction.mActionName == "ComboC_Loop")
+            //     {
+            //         Y.MonoScript.OnAttack(comp.BeginFrame[1], 10000);
+            //     }
+            //     else if (newAction.mActionName == "ComboC_Finish")
+            //     {
+            //         Y.MonoScript.OnAttack(-1, comp.EndFrame[2]);
+            //     }
+            //     // else if (lastAction.mActionName == "ComboA_3")
+            //     // {
+            //     //     Y.OnAttackEnd();
+            //     // }
+            // }
         });
         //HitRecordComponent
 
@@ -357,6 +357,8 @@ public class CharacterObj
         "Vergil/Yamato/ComboC_Start",
         "Vergil/Yamato/ComboC_Loop",
         "Vergil/Yamato/ComboC_Finish",
+        "Vergil/Yamato/ComboB_1",
+        "Vergil/Yamato/ComboB_2",
     };
     public void LoadActions()
     {

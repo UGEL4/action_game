@@ -54,23 +54,6 @@ public class MovementComponent : ComponentBase
         {
             mStartSyncModelPosition = false;
         }
-        // if (!RenderObj) return;
-
-        // RenderObj.transform.position = Vector3.Lerp(RenderObj.transform.position, transform.position, GetPositionLerpT());
-        // float MoveInputAcceptance = owner.GetMoveInputAcceptance();
-        // if (MoveInputAcceptance <= 0.0) return;
-        // //var moveDir = new Vector3(input.Direction.x, 0.0f, input.Direction.y).normalized;
-        // var adjDir = Quaternion.AngleAxis(mCameraTransform.eulerAngles.y, Vector3.up) * playerController.CurrMoveDir;
-        // if (adjDir.magnitude > 0.0f)
-        // {
-        //     var targetRot = Quaternion.LookRotation(adjDir);
-        //     transform.rotation = Quaternion.RotateTowards(transform.rotation, targetRot, 2.0f * Time.deltaTime);
-        //     transform.LookAt(transform.position + adjDir);
-        //     //HandleRotation();
-
-        //     Vector3 moveDir = adjDir * speed * Time.deltaTime * MoveInputAcceptance;
-        //     controller.Move(moveDir);
-        // }
     }
 
     /////////////////////////////logic
@@ -88,37 +71,23 @@ public class MovementComponent : ComponentBase
 
     public void NatureMove()
     {
-        //mPosition = transform.position;
-        //mLastPosition = mOwner.gameObject.transform.position;
         mLastPosition = mOwner.Model.transform.position;
         mStartSyncModelPosition = true;
         PlayerController pc = mOwner.GetPlayerController();
-        //var adjDir          = Quaternion.AngleAxis(Camera.main.transform.eulerAngles.y, Vector3.up) * pc.CurrMoveDir;
         var adjDir = pc.CharacterRelativeFlatten(pc.CurrMoveDir);
         if (adjDir.magnitude > 0.0f)
         {
-            //Vector3 motion = adjDir * 6 * Time.fixedDeltaTime /** MoveInputAcceptance*/;
-            //mPosition = mPosition + motion;
-            //SimpleLog.Warn("MoveSpeed: ", mOwner.Action.MoveSpeed);
             if (mOwner.Action.CurAction.HasRootMotion())
             {
                 Vector3 RootMotionMove = mOwner.Action.RootMotionMove;
                 Transform transform    = mOwner.gameObject.transform;
                 if (transform)
                 {
-                    //var targetRot = Quaternion.LookRotation(adjDir);
-                    //transform.rotation = Quaternion.RotateTowards(transform.rotation, targetRot, 2.0f * Time.deltaTime);
-                    //transform.LookAt(transform.position + adjDir);
-                    // float targetAngle = Mathf.Atan2(adjDir.x, adjDir.z) * Mathf.Rad2Deg;
-                    // Quaternion targetRotation = Quaternion.Euler(0, targetAngle, 0);
-
                     // // 更新角色的旋转
                     // transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * 10f);
                     transform.LookAt(transform.position + adjDir);
                 }
                 pc.Move(RootMotionMove.magnitude * adjDir);
-                //debug
-                //pc.Move(6 * adjDir / 30);
             }
             else
             {
@@ -128,25 +97,26 @@ public class MovementComponent : ComponentBase
                 Vector3 motion            = adjDir * speed * MoveInputAcceptance;
                 pc.Move(motion);
             }
-            // if (RenderObj)
-            //     RenderObj.transform.position = Vector3.Lerp(RenderObj.transform.position, transform.position, GetPositionLerpT());
         }
     }
 
     public void ForceMove()
     {
         Vector3 Move        = mOwner.Action.UnderForceMove;
+        Quaternion Rot      = mOwner.Action.RootMotionRotation;
         Transform transform = mOwner.gameObject.transform;
         if (transform)
         {
-            //transform.rotation = mOwner.Action.RootMotionRotation;
-            //SimpleLog.Warn("RootMotionRotation: ", mOwner.Action.RootMotionRotation.eulerAngles);
             float MoveInputAcceptance = mOwner.GetMoveInputAcceptance();
             if (MoveInputAcceptance > 0)
             {
                 Move *= MoveInputAcceptance;
             }
-            mOwner.GetPlayerController().Move(Move.magnitude * transform.forward);
+            //transform.position += transform.rotation * Move;
+            //transform.rotation = transform.rotation * Rot;
+            //transform.Translate(Move);
+            mOwner.GetPlayerController().Move(transform.rotation * Move);
+            transform.Rotate(Rot.eulerAngles);
         }
         else
         {

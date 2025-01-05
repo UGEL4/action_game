@@ -10743,7 +10743,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Input: {fileID: 11400000, guid: 5fb9f1edb2399f841aaf0448efc81952, type: 2}
   BeginFrame: 0a0000000100000000000000
-  EndFrame: 2d0000000000000028000000
+  EndFrame: 370000000000000030000000
 --- !u!1 &7424545268606061965
 GameObject:
   m_ObjectHideFlags: 0

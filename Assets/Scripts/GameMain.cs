@@ -11,13 +11,22 @@ public class GameMain : MonoBehaviour
 
     private float mNextUpdateTime = 0f;
 
+    private long mRenderFrameIndex = 0;
+
+    private float mFrameInterval = 0f;
+    private float mFrameTimer = 0f;
+
     void Start()
     {
         mNextUpdateTime = 0f;
+        mFrameTimer     = 0f;
         Application.targetFrameRate = DebugRunFrameRate;
         mLogicFrameIndex = 0;
+        mRenderFrameIndex = 0;
         GameInstance.Instance.Init();
         GameInstance.Instance.FrameRate = DebugRunFrameRate;
+
+        mFrameInterval =  1f / GameInstance.Instance.LogicFrameRate;
 
         //todo
         CharacterObj player = new MainPlayerCharacterObj();
@@ -56,20 +65,20 @@ public class GameMain : MonoBehaviour
 
     void Update()
     {
-        // if (player.CanAttackTargetNow(out AttackInfo attackPhase))
-        // {
-        //     DoAttack(attackPhase);
-        // }0.033 0.0083
-        if (Time.time >= mNextUpdateTime)
+        mFrameTimer += Time.deltaTime;
+        if (mFrameTimer >= mFrameInterval)
         {
-            mNextUpdateTime = Time.time + 0.033f;
+            mFrameTimer -= mFrameInterval;
             UpdateLogic();
+            //SimpleLog.Warn("Update Logic: ", t, Time.time, mNextUpdateTime, mLogicFrameIndex, mRenderFrameIndex);
         }
         UpdateRender();
+        //SimpleLog.Warn("Update Render: ", mFrameTimer, Time.time, mLogicFrameIndex, mRenderFrameIndex);
     }
 
     void UpdateRender()
     {
+        mRenderFrameIndex++;
         List<CharacterObj> playerList = GameInstance.Instance.GetPlayerList();
         for (int i = 0; i < playerList.Count; i++)
         {
