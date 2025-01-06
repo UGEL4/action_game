@@ -41,6 +41,7 @@ public class GameMain : MonoBehaviour
                 GameInstance.Instance.HitBoxUpdate.AddPlayer(ch);
                 ch.Init();
                 ch.LoadActions();
+                ch.BeginPlay();
             }
         }
         for (int i = 0; i < enemies.Count; i++)
@@ -52,6 +53,7 @@ public class GameMain : MonoBehaviour
                 GameInstance.Instance.HitBoxUpdate.AddEnemy(ch);
                 ch.Init();
                 ch.LoadActions();
+                ch.BeginPlay();
             }
         }
     }

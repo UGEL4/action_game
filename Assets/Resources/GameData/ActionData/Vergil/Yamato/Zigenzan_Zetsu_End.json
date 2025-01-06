@@ -1,0 +1,49 @@
+{"data":{
+    "mActionName": "Zigenzan_Zetsu_End",
+    "mAnimation": "Zigenzan_Zetsu_End",
+    "mPriority": 93,
+    "mAutoNextActionName": "Idle",
+    "mAutoTerminate": false,
+    "keepPlayingAnim": false,
+    "mTotalFrameCount": 93,
+    "SelfLoopCount": 0,
+    "mCancelTagList": [],
+    "mBeCanceledTagList": [],
+    "mTempBeCanceledTagList": [],
+    "mCommandList": [],
+    "attackInfoList": [],
+    "attackPhaseList": [],
+    "defensePhases": [],
+    "moveInputAcceptance": [
+        {
+            "range": {
+                "min": 0.0,
+                "max": 1.0
+            },
+            "rate": 0.0
+        }
+    ],
+    "RootMotionDataPath": "",
+    "RootMotionData": {
+        "X": [],
+        "Y": [],
+        "Z": [],
+        "RX": [],
+        "RY": [],
+        "RZ": []
+    },
+    "MoveSpeed": 0.0,
+    "ForceMoce": false,
+    "Notifies": [
+        {
+            "FrameIndex": 1,
+            "FunctionName": "ToRightHand",
+            "Params": []
+        },
+        {
+            "FrameIndex": 55,
+            "FunctionName": "ToLeftHand",
+            "Params": []
+        }
+    ]
+}}

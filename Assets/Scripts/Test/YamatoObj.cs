@@ -22,8 +22,6 @@ public class YamatoObj
 
     public void BeginPlay()
     {
-
-        var model = Owner.transform.Find("Model");
         Transform LeftHand  = Owner.transform.Find("Model/body/root/Hip/Waist/Stomach/Chest/L_Shoulder/L_UpperArm/L_Forearm/L_Hand/L_WeaponHand");
         Transform RightHand = Owner.transform.Find("Model/body/root/Hip/Waist/Stomach/Chest/R_Shoulder/R_UpperArm/R_Forearm/R_Hand/R_WeaponHand");
         MonoScript = WeaponObj.GetComponent<Yamato>();

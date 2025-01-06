@@ -9,6 +9,7 @@ using UnityEngine.InputSystem;
 
 public class CharacterObj
 {
+    protected bool IsBeginPlayed;
     protected GameObject mGameObject;
     public GameObject gameObject => mGameObject;
     public Transform transform
@@ -61,6 +62,7 @@ public class CharacterObj
 
     public CharacterObj()
     {
+        IsBeginPlayed = false;
         mPlayerController = new PlayerController(this);
         mInputToCommand   = new InputToCommand(this);
         mActionCtrl       = new ActionController(this, mInputToCommand);
@@ -100,8 +102,6 @@ public class CharacterObj
             HitRecordComponent.Clear();
         });
         //HitRecordComponent
-
-        BeginPlay();
     }
 
     public InputReader GetInputReader()
@@ -116,6 +116,7 @@ public class CharacterObj
 
     public virtual void BeginPlay()
     {
+        IsBeginPlayed = true;
         mActionCtrl.BeginPlay();
         mPlayerController.BeginPlay();
         ModelComp.BeginPlay();
@@ -329,6 +330,8 @@ public class CharacterObj
         "Vergil/Yamato/ComboC_Finish",
         "Vergil/Yamato/ComboB_1",
         "Vergil/Yamato/ComboB_2",
+        "Vergil/Yamato/Zigenzan_Zetsu_Start",
+        "Vergil/Yamato/Zigenzan_Zetsu_End",
     };
     public void LoadActions()
     {
@@ -358,6 +361,11 @@ public class CharacterObj
     public void PlayAnimation(string actionName, float normalizedTransitionDuration, float normalizedTimeOffset)
     {
         ModelComp.PlayAnimation(actionName);
+    }
+
+    public bool HasBegunPlay()
+    {
+        return IsBeginPlayed;
     }
 }
 

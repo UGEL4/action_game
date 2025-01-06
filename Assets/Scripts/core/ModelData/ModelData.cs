@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 public class ModelData
@@ -5,6 +6,8 @@ public class ModelData
     public GameObject Model;
 
     private Animator mAnimator;
+
+    public System.Action LoadCompleted;
 
     public ModelData(string prefabName)
     {

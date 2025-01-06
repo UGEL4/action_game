@@ -4,16 +4,25 @@ using UnityEngine;
 
 public class ModelComponent : ComponentBase
 {
+    private bool mLoadCompleted;
+    private int mLoadCount;
+    private int ModelNum;
     public List<ModelData> ModelDataList;
     private GameObject mModelRoot;
     public ModelComponent(CharacterObj owner, GameObject modelRoot) : base(owner)
     {
+        ModelNum = 0;
+        mLoadCount = 0;
+        mLoadCompleted = false;
         mModelRoot    = modelRoot;
         ModelDataList = new List<ModelData>();
     }
 
     public ModelComponent(CharacterObj owner) : base(owner)
     {
+        ModelNum = 0;
+        mLoadCount = 0;
+        mLoadCompleted = false;
         ModelDataList = new List<ModelData>();
     }
 

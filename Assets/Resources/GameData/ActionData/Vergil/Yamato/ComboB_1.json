@@ -86,6 +86,99 @@
             "FrameIndex": 3,
             "FunctionName": "ToRightHand",
             "Params": []
+        },
+        {
+            "FrameIndex": 42,
+            "FunctionName": "FixedPart00",
+            "Params": [
+                "0,0,0",
+                "0,192,180"
+            ]
+        },
+        {
+            "FrameIndex": 43,
+            "FunctionName": "FixedPart00",
+            "Params": [
+                "0,0,0",
+                "2.5,166,0"
+            ]
+        },
+        {
+            "FrameIndex": 44,
+            "FunctionName": "FixedPart00",
+            "Params": [
+                "0,0,0",
+                "4.5,161,0"
+            ]
+        },
+        {
+            "FrameIndex": 45,
+            "FunctionName": "FixedPart00",
+            "Params": [
+                "0,0,0",
+                "-11,144,0"
+            ]
+        },
+        {
+            "FrameIndex": 46,
+            "FunctionName": "FixedPart00",
+            "Params": [
+                "0,0,0",
+                "-10.5,124,0"
+            ]
+        },
+        {
+            "FrameIndex": 47,
+            "FunctionName": "FixedPart00",
+            "Params": [
+                "0,0,0",
+                "-17.5,116.5,0"
+            ]
+        },
+        {
+            "FrameIndex": 48,
+            "FunctionName": "FixedPart00",
+            "Params": [
+                "0,0,0",
+                "-23.5,118.5,0"
+            ]
+        },
+        {
+            "FrameIndex": 49,
+            "FunctionName": "FixedPart00",
+            "Params": [
+                "0,0,0",
+                "-12.5,118,0"
+            ]
+        },
+        {
+            "FrameIndex": 65,
+            "FunctionName": "FixedPart00",
+            "Params": [
+                "0,0,0",
+                "-13,118,0"
+            ]
+        },
+        {
+            "FrameIndex": 75,
+            "FunctionName": "FixedPart00",
+            "Params": [
+                "0,0,0",
+                "-14,118,0"
+            ]
+        },
+        {
+            "FrameIndex": 79,
+            "FunctionName": "FixedPart00",
+            "Params": [
+                "0,0,0",
+                "-13.5,118.5,0"
+            ]
+        },
+        {
+            "FrameIndex": 81,
+            "FunctionName": "ToLeftHand",
+            "Params": []
         }
     ]
 }}
