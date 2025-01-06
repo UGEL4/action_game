@@ -32,8 +32,6 @@ public class CharacterObj
 
     protected InputToCommand mInputToCommand;
 
-    public Animator Animator { get; private set; }
-
     public HitRecordComponent HitRecordComponent { get; private set; }
 
     //切换动作时会清空
@@ -58,9 +56,8 @@ public class CharacterObj
         }
     }
 
-    public GameObject Model;
-
-    public YamatoObj Y;
+    public GameObject ModelRoot;
+    public ModelComponent ModelComp;
 
     public CharacterObj()
     {
@@ -69,6 +66,7 @@ public class CharacterObj
         mActionCtrl       = new ActionController(this, mInputToCommand);
         mMovementComponent = new MovementComponent(this);
         HitRecordComponent = new HitRecordComponent();
+        ModelComp          = new ModelComponent(this);
     }
 
     public virtual void Init()
@@ -81,13 +79,10 @@ public class CharacterObj
             SimpleLog.Error("无法实例化", prefab.name);
             return;
         }
-        
         mGameObject.name = prefab.name;
-        mGameObject.transform.SetLocalPositionAndRotation(Vector3.zero, quaternion.identity);
+        mGameObject.transform.SetLocalPositionAndRotation(Vector3.zero, Quaternion.identity);
         mGameObject.transform.localScale = Vector3.one;
-        Animator = mGameObject.GetComponentInChildren<Animator>();
-        Model = mGameObject.transform.Find("Model").gameObject;
-
+        
         //PlayerController
         CharacterController controller = mGameObject.GetComponent<CharacterController>();
         mPlayerController.SetCharacterController(controller);
@@ -99,33 +94,10 @@ public class CharacterObj
         }
         //PlayerController
 
-        //debug
-        Y = new YamatoObj(this);
-        //debug
-
         //HitRecordComponent
         GameInstance.Instance.HitRecordSys.Register(HitRecordComponent);
         mActionCtrl.SetChangeActinCallback((lastAction, newAction) => {
             HitRecordComponent.Clear();
-            // if (Y != null)
-            // {
-            //     if (newAction.mActionName == "ComboA_3")
-            //     {
-            //         Y.MonoScript.OnAttack(comp.BeginFrame[0], comp.EndFrame[0]);
-            //     }
-            //     else if (newAction.mActionName == "ComboC_Loop")
-            //     {
-            //         Y.MonoScript.OnAttack(comp.BeginFrame[1], 10000);
-            //     }
-            //     else if (newAction.mActionName == "ComboC_Finish")
-            //     {
-            //         Y.MonoScript.OnAttack(-1, comp.EndFrame[2]);
-            //     }
-            //     // else if (lastAction.mActionName == "ComboA_3")
-            //     // {
-            //     //     Y.OnAttackEnd();
-            //     // }
-            // }
         });
         //HitRecordComponent
 
@@ -146,6 +118,12 @@ public class CharacterObj
     {
         mActionCtrl.BeginPlay();
         mPlayerController.BeginPlay();
+        ModelComp.BeginPlay();
+    }
+
+    public virtual void EndPlay()
+    {
+        
     }
 
     public void UpdateLogic(int frameIndex)
@@ -153,11 +131,8 @@ public class CharacterObj
         mPlayerController.UpdateLogic();
         mInputToCommand.Tick();
         mActionCtrl.Tick();
-        if (Y != null)
-        {
-            Y.UpdateLogic((int)mActionCtrl.CurrentFrameIndex);
-        }
         mMovementComponent.UpdateLogic(frameIndex);
+        ModelComp.UpdateLogic(frameIndex);
     }
 
     public void UpdateRender(float deltaTime)
@@ -165,8 +140,9 @@ public class CharacterObj
         mMovementComponent.UpdateRender(deltaTime);
     }
 
-    public void Destroy()
+    public virtual void Destroy()
     {
+        ModelComp.EndPlay();
         GameObject.Destroy(mGameObject);
         mGameObject = null;
 
@@ -178,12 +154,6 @@ public class CharacterObj
         mMovementComponent = null;
 
         HitRecordComponent = null;
-
-        if (Y != null)
-        {
-            Y.EndPlay();
-            Y = null;
-        }
     }
 
     public void AddInputCommand(KeyMap key)
@@ -383,6 +353,11 @@ public class CharacterObj
             mActionCtrl.SetAllAction(actions, actions[0].mActionName);
         }
         SimpleLog.Info(mGameObject.name, " LoadActions, ", "actions:", actions.Count);
+    }
+
+    public void PlayAnimation(string actionName, float normalizedTransitionDuration, float normalizedTimeOffset)
+    {
+        ModelComp.PlayAnimation(actionName);
     }
 }
 

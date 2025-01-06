@@ -8,7 +8,6 @@ using UnityEngine;
 public class ActionController
 {
     private CharacterObj mOwner;
-    private Animator animator;
     private InputToCommand command;
     public List<CharacterAction> AllActions {get; set;} = new List<CharacterAction>();
     public CharacterAction CurAction { private set; get; } 
@@ -42,6 +41,8 @@ public class ActionController
     public Vector3 UnderForceMove {private set; get;} = Vector3.zero;
     public bool IsUnderForceMove {private set; get; } = false;
 
+    public Action<string, string[]> OnActionNotify = delegate {};
+
     public void SetChangeActinCallback(Action<CharacterAction, CharacterAction> cb)
     {
         _onChangeAction = cb;
@@ -55,7 +56,6 @@ public class ActionController
 
     public void BeginPlay()
     {
-        animator = mOwner.Animator;
     }
 
     public void SetAllAction(List<CharacterAction> actions, string defaultActionId)
@@ -69,11 +69,11 @@ public class ActionController
     {
         if (AllActions.Count == 0) return;
 
-        float dt = Time.deltaTime;
+        //float dt = Time.deltaTime;
 
-        AnimatorStateInfo animatorState = animator.GetCurrentAnimatorStateInfo(0);
-        AnimatorStateInfo nextAnimatorState = animator.GetNextAnimatorStateInfo(0);
-        _pec = Mathf.Clamp01(nextAnimatorState.length > 0 ? nextAnimatorState.normalizedTime : animatorState.normalizedTime);
+        //AnimatorStateInfo animatorState = animator.GetCurrentAnimatorStateInfo(0);
+        //AnimatorStateInfo nextAnimatorState = animator.GetNextAnimatorStateInfo(0);
+        //_pec = Mathf.Clamp01(nextAnimatorState.length > 0 ? nextAnimatorState.normalizedTime : animatorState.normalizedTime);
 
         mCurrentFrameIndex += 1;
         if (mCurrentFrameIndex >= CurAction.mTotalFrameCount)
@@ -89,14 +89,14 @@ public class ActionController
                 if ((int)mCurrentFrameIndex == CurAction.Notifies[i].FrameIndex)
                 {
                     //触发通知
-                    OnActionNotify(CurAction.Notifies[i].Params);
+                    ActionNotify(CurAction.Notifies[i].FunctionName, CurAction.Notifies[i].Params);
                 }
             }
         }
 
         ////CalculateBoxInfo(_wasPercentage, _pec);
         //计算移动接受输入
-        CalculateInputAcceptance(_wasPercentage, _pec);
+        CalculateInputAcceptance();
         
         foreach (CharacterAction ac in AllActions)
         {
@@ -192,7 +192,8 @@ public class ActionController
     {
         if (currentNormalized >= 1)
         {
-            animator.CrossFade(CurAction.mAnimation, 0, 0, 0);
+            //animator.CrossFade(CurAction.mAnimation, 0, 0, 0);
+            mOwner.PlayAnimation(CurAction.mAnimation, 0, 0);
             if (mCurrentFrameIndex > CurAction.mTotalFrameCount)
             {
                 mCurrentFrameIndex = 0;
@@ -209,7 +210,8 @@ public class ActionController
             SimpleLog.Info("ChangeAction: ", actionName, action.mAnimation);
             //
             _onChangeAction?.Invoke(CurAction, action);
-            animator.CrossFade(action.mAnimation, normalizedTransitionDuration, 0, normalizedTimeOffset);
+            //animator.CrossFade(action.mAnimation, normalizedTransitionDuration, 0, normalizedTimeOffset);
+            mOwner.PlayAnimation(action.mAnimation, normalizedTransitionDuration, normalizedTimeOffset);
             //
             if (CurAction.mActionName == actionName && CurAction.SelfLoopCount > 0)
             {
@@ -269,16 +271,16 @@ public class ActionController
         return CurAction;
     }
 
-    public void CalculateInputAcceptance(float wasPec, float pec)
+    public void CalculateInputAcceptance()
     {
         MoveInputAcceptance = 0;
         if (CurAction.moveInputAcceptance == null) return;
-        foreach (MoveInputAcceptance acceptance in CurAction.moveInputAcceptance)
-        {
-            if (acceptance.range.min <= pec && acceptance.range.max >= wasPec &&
-                (MoveInputAcceptance <= 0 || acceptance.rate < MoveInputAcceptance))
-                MoveInputAcceptance = acceptance.rate;
-        }
+        // foreach (MoveInputAcceptance acceptance in CurAction.moveInputAcceptance)
+        // {
+        //     if (acceptance.range.min <= pec && acceptance.range.max >= wasPec &&
+        //         (MoveInputAcceptance <= 0 || acceptance.rate < MoveInputAcceptance))
+        //         MoveInputAcceptance = acceptance.rate;
+        // }
         if (CurAction.moveInputAcceptance.Length > 0)
         {
             MoveInputAcceptance = CurAction.moveInputAcceptance[0].rate;
@@ -477,11 +479,8 @@ public class ActionController
         IsUnderForceMove = CurAction.ForceMoce;
     }
 
-    void OnActionNotify(string param)
+    void ActionNotify(string functionName, string[] param)
     {
-        if (mOwner.Y != null)
-        {
-            mOwner.Y.OnActionNotify(param);
-        }
+        OnActionNotify.Invoke(functionName, param);
     }
 }

@@ -31,7 +31,7 @@ public class MovementComponent : ComponentBase
     private float mTime = 0f;
     void HandleMovement()
     {
-        GameObject model = mOwner.Model;
+        GameObject model = mOwner.ModelRoot;
         if (model)
         {
             if (mStartSyncModelPosition)
@@ -71,7 +71,10 @@ public class MovementComponent : ComponentBase
 
     public void NatureMove()
     {
-        mLastPosition = mOwner.Model.transform.position;
+        if (mOwner.ModelRoot)
+        {
+            mLastPosition = mOwner.ModelRoot.transform.position;
+        }
         mStartSyncModelPosition = true;
         PlayerController pc = mOwner.GetPlayerController();
         var adjDir = pc.CharacterRelativeFlatten(pc.CurrMoveDir);

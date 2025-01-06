@@ -34,11 +34,13 @@
     "Notifies": [
         {
             "FrameIndex": 48,
-            "Params": "ToLeftHand"
+            "FunctionName": "ToLeftHand",
+            "Params": []
         },
         {
             "FrameIndex": 1,
-            "Params": "ResetPart01"
+            "FunctionName": "ResetPart01",
+            "Params": []
         }
     ]
 }}

@@ -10,7 +10,7 @@ public class PlayerIdleState : BaseState<PlayerFSM.PlayerState>
     public override void Enter(FSM<PlayerFSM.PlayerState> fsm)
     {
         //mOwner.animator?.SetFloat("Speed", 0.0f);
-        mOwner.Animator?.CrossFade("idle", 0.1f);
+        //mOwner.Animator?.CrossFade("idle", 0.1f);
     }
     public override void Update(FSM<PlayerFSM.PlayerState> fsm)
     {

@@ -69,11 +69,13 @@
     "Notifies": [
         {
             "FrameIndex": 10,
-            "Params": "ToRightHand"
+            "FunctionName": "ToRightHand",
+            "Params": []
         },
         {
             "FrameIndex": 55,
-            "Params": "ToLeftHand"
+            "FunctionName": "ToLeftHand",
+            "Params": []
         }
     ]
 }}

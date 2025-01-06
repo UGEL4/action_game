@@ -10,7 +10,7 @@ public class PlayerWalkState : BaseState<PlayerFSM.PlayerState>
     public override void Enter(FSM<PlayerFSM.PlayerState> fsm)
     {
         //mOwner.animator?.SetFloat("Speed", 1.0f);
-        mOwner.Animator?.CrossFade("walking", 0.9f);
+        //mOwner.Animator?.CrossFade("walking", 0.9f);
     }
     public override void Update(FSM<PlayerFSM.PlayerState> fsm)
     {

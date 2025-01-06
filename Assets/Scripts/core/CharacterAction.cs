@@ -80,5 +80,7 @@ public struct CharacterAction
 public struct ActionNotify
 {
     public int FrameIndex;
-    public string Params;
+
+    public string FunctionName;
+    public string[] Params;
 }

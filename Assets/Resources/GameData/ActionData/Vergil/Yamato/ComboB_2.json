@@ -53,11 +53,16 @@
     "Notifies": [
         {
             "FrameIndex": 74,
-            "Params": "ToLeftHand"
+            "FunctionName": "ToLeftHand",
+            "Params": []
         },
         {
             "FrameIndex": 52,
-            "Params": "RoataBlade"
+            "FunctionName": "FixedPart00",
+            "Params": [
+                "0,0,0",
+                "0,72,180"
+            ]
         }
     ]
 }}
