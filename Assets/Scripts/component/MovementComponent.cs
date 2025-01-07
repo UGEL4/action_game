@@ -1,4 +1,5 @@
 
+using System;
 using Log;
 using Unity.Mathematics;
 using UnityEngine;
@@ -6,9 +7,19 @@ using UnityEngine.SocialPlatforms;
 
 public class MovementComponent : ComponentBase
 {
+    public float Gravity;
+    public Vector3 Velocity;
+    private bool mIsFalling;
+    public float Weight;
+    private float mCurrentWeight;
     public MovementComponent(CharacterObj owner)
     : base(owner)
     {
+        Velocity = new Vector3(0, -2, 0);
+        Gravity = -9.8f;
+        mIsFalling = false;
+        mCurrentWeight = 0f;
+        Weight = Gravity / 30f;
     }
 
     public override void UpdateLogic(int frameIndex)
@@ -71,6 +82,15 @@ public class MovementComponent : ComponentBase
 
     public void NatureMove()
     {
+        if (mIsFalling)
+        {
+            //mCurrentWeight += Weight;
+        }
+        else
+        {
+            mCurrentWeight = 0f;
+            JumpEnd();
+        }
         if (mOwner.ModelRoot)
         {
             mLastPosition = mOwner.ModelRoot.transform.position;
@@ -101,6 +121,25 @@ public class MovementComponent : ComponentBase
                 pc.Move(motion);
             }
         }
+        if (mIsFalling)
+        {
+            //Vector3 jumpPos = new Vector3();
+            float speed = 1.5f;
+            if (Velocity.y > 0)
+            {
+                //jumpPos.y = 0.067f;
+                speed = 1.5f;
+            }
+            else
+            {
+                //jumpPos.y = -0.067f;
+                speed = 1.5f;
+            }
+            pc.Move(Velocity * (1f / 30) * speed);
+            Velocity.y += Weight * speed;
+            SimpleLog.Warn("height: ", mOwner.gameObject.transform.position.y);
+        }
+            mIsFalling = mOwner.gameObject.transform.position.y > 0;
     }
 
     public void ForceMove()
@@ -125,6 +164,23 @@ public class MovementComponent : ComponentBase
         {
             Owner.GetPlayerController().Move(Move);
         }
+    }
+    
+    public void Jump()
+    {
+        if (mIsFalling)
+        {
+            return;
+        }
+        mIsFalling = true;
+        float h = 2f * -2f * Gravity;
+        Velocity.y = Mathf.Sqrt(h);
+    }
+
+    void JumpEnd()
+    {
+        mIsFalling = false;
+        Velocity.y = 0;
     }
     /////////////////////////////logic
 }

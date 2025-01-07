@@ -13,6 +13,7 @@ public class InputReader : ScriptableObject, IPlayerActions
     public UnityAction<Vector2> Look = delegate {};
     public UnityAction<InputActionPhase> AttackA = delegate {};
     public UnityAction<InputActionPhase> AttackB = delegate {};
+    public UnityAction<InputActionPhase> Jump = delegate {};
 
     PlayerInput input;
     public Vector3 Direction => input.Player.Move.ReadValue<Vector2>();
@@ -52,5 +53,10 @@ public class InputReader : ScriptableObject, IPlayerActions
     private void OnDisable()
     {
         if (input != null) input.Disable();
+    }
+
+    public void OnJump(InputAction.CallbackContext context)
+    {
+        Jump.Invoke(context.phase);
     }
 }

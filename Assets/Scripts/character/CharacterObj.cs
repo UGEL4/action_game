@@ -27,6 +27,7 @@ public class CharacterObj
     protected PlayerController mPlayerController;
 
     protected MovementComponent mMovementComponent;
+    public MovementComponent MovementComp => mMovementComponent;
 
     protected ActionController mActionCtrl;
     public ActionController Action => mActionCtrl;

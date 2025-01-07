@@ -1,7 +1,7 @@
 {"data":{
     "mActionName": "Zigenzan_Zetsu_Start",
     "mAnimation": "Zigenzan_Zetsu_Start",
-    "mPriority": 48,
+    "mPriority": 110,
     "mAutoNextActionName": "Zigenzan_Zetsu_End",
     "mAutoTerminate": false,
     "keepPlayingAnim": false,
@@ -21,6 +21,7 @@
     "mCommandList": [
         {
             "keySequences": [
+                7,
                 8
             ],
             "validInSecond": 0.0,

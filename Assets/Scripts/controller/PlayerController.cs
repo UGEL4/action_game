@@ -41,6 +41,7 @@ public class PlayerController
             mInput.Move += OnMove;
             mInput.AttackA += OnAttackA;
             mInput.AttackB += OnAttackB;
+            mInput.Jump += Jump;
         }
     }
 
@@ -73,6 +74,7 @@ public class PlayerController
             mInput.Move -= OnMove;
             mInput.AttackA -= OnAttackA;
             mInput.AttackB -= OnAttackB;
+            mInput.Jump -= Jump;
         }
     }
 
@@ -208,5 +210,10 @@ public class PlayerController
     public void Move(Vector3 motion)
     {
         mController?.Move(motion);
+    }
+
+    public void Jump(InputActionPhase phase)
+    {
+        mOwner.MovementComp.Jump();
     }
 }
