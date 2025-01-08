@@ -7,52 +7,59 @@ using UnityEngine;
 public class MovementComponent : ComponentBase
 {
     private CharacterController mController;
-    //jump相关
+    // jump相关
     private bool mPressedJump;
     public int MaxJumpCount;
     private int mJumpCount;
+    private float mTimeToJumpApex;
+    public float TimeToJumpApex
+    {
+        get => mTimeToJumpApex;
+        set {
+            if (value > 0.01f)
+            {
+                TimeToJumpApex = value;
+            }
+        }
+    }
     public float Gravity;
-    public Vector3 Velocity;
-    private float mJumpVelocityY;
+    public Vector3 JumpVelocity;
+    private float mJumpVelocity;
+    private float mGroundedVelocity;
     private bool mIsFalling;
-    public bool IsFalling {
+    public bool IsFalling
+    {
         get => mIsFalling;
         set => mIsFalling = value;
     }
-    private float mDeltaWeight;
-
-    private float mJumpSpeed;
-    public float JumpSpeed {
-        get => mJumpSpeed;
-        set => mJumpSpeed = value;
-    }
 
     private float mJumpHeight;
-    public float JumpHeight {
+    public float JumpHeight
+    {
         get => mJumpHeight;
         set {
             if (value > 0f)
             {
                 mJumpHeight = value;
-                UpdateJumpVelocitY();
+                SetupJumpVariables();
             }
         }
     }
-    //jump相关
+    // jump相关
 
     public MovementComponent(CharacterObj owner)
-    : base(owner)
+        : base(owner)
     {
-        Velocity     = new Vector3(0, -2, 0);
-        Gravity      = 9.8f;
-        mIsFalling   = false;
-        mDeltaWeight = Gravity / 30f;
-        mJumpSpeed   = 1.5f;
-        mPressedJump = false;
-        mJumpHeight  = 2f;
-        MaxJumpCount = 1;
-        mJumpCount   = 0;
-        UpdateJumpVelocitY();
+        Gravity           = -9.8f;
+        mIsFalling        = false;
+        mPressedJump      = false;
+        mJumpHeight       = 2f;
+        MaxJumpCount      = 1;
+        mJumpCount        = 0;
+        mTimeToJumpApex   = 0.5f;
+        mGroundedVelocity = -0.2f;
+        JumpVelocity      = new Vector3(0, mGroundedVelocity, 0);
+        SetupJumpVariables();
     }
 
     public override void UpdateLogic(int frameIndex)
@@ -82,9 +89,9 @@ public class MovementComponent : ComponentBase
         return mController;
     }
 
-    //render
+    // render
     private float mTime = 0f;
-    //render
+    // render
     void HandleMovement()
     {
         GameObject model = mOwner.ModelRoot;
@@ -97,7 +104,7 @@ public class MovementComponent : ComponentBase
             }
             mTime += (float)GameInstance.Instance.LogicFrameRate / GameInstance.Instance.FrameRate;
             Vector3 pos = Vector3.Lerp(mLastPosition, mOwner.gameObject.transform.position, mTime);
-            //SimpleLog.Warn("pos: ", pos);
+            // SimpleLog.Warn("pos: ", pos);
             model.transform.position = pos;
         }
     }
@@ -113,7 +120,7 @@ public class MovementComponent : ComponentBase
         }
         PlayerController pc = mOwner.GetPlayerController();
         var adjDir          = pc.CharacterRelativeFlatten(pc.CurrMoveDir);
-        if (adjDir.magnitude > 0.0f)
+        // if (adjDir.magnitude > 0.0f)
         {
             if (mOwner.Action.CurAction.HasRootMotion())
             {
@@ -134,9 +141,12 @@ public class MovementComponent : ComponentBase
                 speed                     = speed / GameInstance.Instance.LogicFrameRate;
                 Vector3 motion            = adjDir * speed * MoveInputAcceptance;
                 mController.Move(motion);
+                mController.Move(JumpVelocity * (1f / GameInstance.Instance.LogicFrameRate));
             }
         }
-        float delta = 1f / GameInstance.Instance.LogicFrameRate;
+        HandleGravity();
+        HandleJump();
+        /*float delta = 1f / GameInstance.Instance.LogicFrameRate;
         var e = mController.Move(Velocity * delta * mJumpSpeed);
         if (mIsFalling)
         {
@@ -146,8 +156,42 @@ public class MovementComponent : ComponentBase
         else
         {
             OnGround();
-        }
+        }*/
         // SimpleLog.Warn("height: ", mOwner.gameObject.transform.position.y);
+    }
+
+    void SetupJumpVariables()
+    {
+        float time    = mTimeToJumpApex * 0.5f;
+        Gravity       = -2 * mJumpHeight / Mathf.Pow(time, 2);
+        mJumpVelocity = 2 * mJumpHeight / time;
+    }
+
+    void HandleJump()
+    {
+        if (!mIsFalling && mController.isGrounded && mPressedJump)
+        {
+            mIsFalling     = true;
+            JumpVelocity.y = mJumpVelocity;
+        }
+        else if (!mPressedJump && mIsFalling && mController.isGrounded)
+        {
+            mIsFalling = false;
+        }
+    }
+
+    void HandleGravity()
+    {
+        if (mController.isGrounded)
+        {
+            JumpVelocity.y = mGroundedVelocity;
+            mJumpCount     = 0;
+        }
+        else
+        {
+            float delta = 1f / GameInstance.Instance.LogicFrameRate;
+            JumpVelocity.y += Gravity * delta;
+        }
     }
 
     public void ForceMove()
@@ -162,9 +206,9 @@ public class MovementComponent : ComponentBase
             {
                 Move *= MoveInputAcceptance;
             }
-            //transform.position += transform.rotation * Move;
-            //transform.rotation = transform.rotation * Rot;
-            //transform.Translate(Move);
+            // transform.position += transform.rotation * Move;
+            // transform.rotation = transform.rotation * Rot;
+            // transform.Translate(Move);
             mController.Move(transform.rotation * Move);
             transform.Rotate(Rot.eulerAngles);
         }
@@ -173,7 +217,7 @@ public class MovementComponent : ComponentBase
             mController.Move(Move);
         }
     }
-    
+
     public void Jump()
     {
         if (mPressedJump || (mJumpCount >= MaxJumpCount))
@@ -181,8 +225,6 @@ public class MovementComponent : ComponentBase
             return;
         }
         mPressedJump = true;
-        mIsFalling   = true;
-        Velocity.y   = mJumpVelocityY;
         mJumpCount++;
     }
 
@@ -193,18 +235,18 @@ public class MovementComponent : ComponentBase
 
     public void OnGround()
     {
-        Velocity.y = -2f;
-        mJumpCount = 0;
+        JumpVelocity.y = -2f;
+        mJumpCount     = 0;
     }
 
     void UpdateJumpVelocitY()
     {
-        mJumpVelocityY = Mathf.Sqrt(JumpHeight * 2 * Gravity);
+        mJumpVelocity = Mathf.Sqrt(JumpHeight * 2 * Gravity);
     }
 
     void ResetJumpVelocity()
     {
-        Velocity.y = -2f;
+        JumpVelocity.y = -2f;
     }
     /////////////////////////////logic
 }
