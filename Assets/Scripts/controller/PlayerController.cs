@@ -1,12 +1,12 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
 public class PlayerController
 {
-    private CharacterController mController;
     private InputReader mInput;
 
     //方向输入
@@ -51,14 +51,6 @@ public class PlayerController
         InitializeInput();
     }
 
-    public void Update()
-    {
-        // if (mDirInputPhase == InputActionPhase.Performed)
-        // {
-        //     mOwner.AddInputCommand(KeyMap.DirInput);
-        // }
-    }
-
     public void UpdateLogic()
     {
         if (mDirInputPhase == InputActionPhase.Performed)
@@ -78,16 +70,6 @@ public class PlayerController
         }
     }
 
-    public void SetCharacterController(CharacterController controller)
-    {
-        mController = controller;
-    }
-
-    public CharacterController GetCharacterController()
-    {
-        return mController;
-    }
-
     public void SetInputReader(InputReader input)
     {
         mInput = input;
@@ -103,11 +85,6 @@ public class PlayerController
 
         //
         ProduceInputDir();
-    }
-
-    public bool IsMoving()
-    {
-        return mCurMoveDir.x != 0.0f || mCurMoveDir.z != 0.0f;
     }
 
     public Vector3 GetCameraForward()
@@ -207,13 +184,15 @@ public class PlayerController
         }
     }
 
-    public void Move(Vector3 motion)
-    {
-        mController?.Move(motion);
-    }
-
     public void Jump(InputActionPhase phase)
     {
-        mOwner.MovementComp.Jump();
+        if (phase == InputActionPhase.Started)
+        {
+            mOwner.MovementComp.Jump();
+        }
+        else if (phase == InputActionPhase.Canceled)
+        {
+            mOwner.MovementComp.StopJumping();
+        }
     }
 }

@@ -86,10 +86,10 @@ public class CharacterObj
         mGameObject.transform.SetLocalPositionAndRotation(Vector3.zero, Quaternion.identity);
         mGameObject.transform.localScale = Vector3.one;
         
-        //PlayerController
         CharacterController controller = mGameObject.GetComponent<CharacterController>();
-        mPlayerController.SetCharacterController(controller);
+        mMovementComponent.SetCharacterController(controller);
         
+        //PlayerController
         var comp = mGameObject.GetComponent<InputReaderComponentMono>();
         if (comp)
         {

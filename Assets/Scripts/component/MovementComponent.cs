@@ -3,23 +3,56 @@ using System;
 using Log;
 using Unity.Mathematics;
 using UnityEngine;
-using UnityEngine.SocialPlatforms;
 
 public class MovementComponent : ComponentBase
 {
+    private CharacterController mController;
+    //jump相关
+    private bool mPressedJump;
+    public int MaxJumpCount;
+    private int mJumpCount;
     public float Gravity;
     public Vector3 Velocity;
+    private float mJumpVelocityY;
     private bool mIsFalling;
-    public float Weight;
-    private float mCurrentWeight;
+    public bool IsFalling {
+        get => mIsFalling;
+        set => mIsFalling = value;
+    }
+    private float mDeltaWeight;
+
+    private float mJumpSpeed;
+    public float JumpSpeed {
+        get => mJumpSpeed;
+        set => mJumpSpeed = value;
+    }
+
+    private float mJumpHeight;
+    public float JumpHeight {
+        get => mJumpHeight;
+        set {
+            if (value > 0f)
+            {
+                mJumpHeight = value;
+                UpdateJumpVelocitY();
+            }
+        }
+    }
+    //jump相关
+
     public MovementComponent(CharacterObj owner)
     : base(owner)
     {
-        Velocity = new Vector3(0, -2, 0);
-        Gravity = -9.8f;
-        mIsFalling = false;
-        mCurrentWeight = 0f;
-        Weight = Gravity / 30f;
+        Velocity     = new Vector3(0, -2, 0);
+        Gravity      = 9.8f;
+        mIsFalling   = false;
+        mDeltaWeight = Gravity / 30f;
+        mJumpSpeed   = 1.5f;
+        mPressedJump = false;
+        mJumpHeight  = 2f;
+        MaxJumpCount = 1;
+        mJumpCount   = 0;
+        UpdateJumpVelocitY();
     }
 
     public override void UpdateLogic(int frameIndex)
@@ -39,21 +72,27 @@ public class MovementComponent : ComponentBase
         HandleMovement();
     }
 
+    public void SetCharacterController(CharacterController controller)
+    {
+        mController = controller;
+    }
+
+    public CharacterController GetCharacterController()
+    {
+        return mController;
+    }
+
+    //render
     private float mTime = 0f;
+    //render
     void HandleMovement()
     {
         GameObject model = mOwner.ModelRoot;
         if (model)
         {
-            if (mStartSyncModelPosition)
-            {
-                //model.transform.position = mLastPosition;
-                //model.transform.position = Vector3.Lerp(mLastPosition, mOwner.gameObject.transform.position, Time.deltaTime);
-            }
             if (model.transform.position == mOwner.gameObject.transform.position)
             {
                 mTime = 0f;
-                mStartSyncModelPosition = false;
                 return;
             }
             mTime += (float)GameInstance.Instance.LogicFrameRate / GameInstance.Instance.FrameRate;
@@ -61,43 +100,19 @@ public class MovementComponent : ComponentBase
             //SimpleLog.Warn("pos: ", pos);
             model.transform.position = pos;
         }
-        if (mStartSyncModelPosition)
-        {
-            mStartSyncModelPosition = false;
-        }
     }
 
     /////////////////////////////logic
-    private int mSpeed = 1; //每帧位移0.2
-    private float mRenderUnit = 0.2f;
-
     private Vector3 mLastPosition = Vector3.zero;
-    private bool mStartSyncModelPosition = false;
-
-    //逻辑单位到渲染单位的转换
-    public float LogicUnitToRenderUnit(int unit)
-    {
-        return unit * mRenderUnit;
-    }
 
     public void NatureMove()
     {
-        if (mIsFalling)
-        {
-            //mCurrentWeight += Weight;
-        }
-        else
-        {
-            mCurrentWeight = 0f;
-            JumpEnd();
-        }
         if (mOwner.ModelRoot)
         {
             mLastPosition = mOwner.ModelRoot.transform.position;
         }
-        mStartSyncModelPosition = true;
         PlayerController pc = mOwner.GetPlayerController();
-        var adjDir = pc.CharacterRelativeFlatten(pc.CurrMoveDir);
+        var adjDir          = pc.CharacterRelativeFlatten(pc.CurrMoveDir);
         if (adjDir.magnitude > 0.0f)
         {
             if (mOwner.Action.CurAction.HasRootMotion())
@@ -110,7 +125,7 @@ public class MovementComponent : ComponentBase
                     // transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * 10f);
                     transform.LookAt(transform.position + adjDir);
                 }
-                pc.Move(RootMotionMove.magnitude * adjDir);
+                mController.Move(RootMotionMove.magnitude * adjDir);
             }
             else
             {
@@ -118,28 +133,21 @@ public class MovementComponent : ComponentBase
                 float speed               = mOwner.Speed;
                 speed                     = speed / GameInstance.Instance.LogicFrameRate;
                 Vector3 motion            = adjDir * speed * MoveInputAcceptance;
-                pc.Move(motion);
+                mController.Move(motion);
             }
         }
+        float delta = 1f / GameInstance.Instance.LogicFrameRate;
+        var e = mController.Move(Velocity * delta * mJumpSpeed);
         if (mIsFalling)
         {
-            //Vector3 jumpPos = new Vector3();
-            float speed = 1.5f;
-            if (Velocity.y > 0)
-            {
-                //jumpPos.y = 0.067f;
-                speed = 1.5f;
-            }
-            else
-            {
-                //jumpPos.y = -0.067f;
-                speed = 1.5f;
-            }
-            pc.Move(Velocity * (1f / 30) * speed);
-            Velocity.y += Weight * speed;
-            SimpleLog.Warn("height: ", mOwner.gameObject.transform.position.y);
+            Velocity.y -= mDeltaWeight * mJumpSpeed;
+            mIsFalling = !mController.isGrounded;
         }
-            mIsFalling = mOwner.gameObject.transform.position.y > 0;
+        else
+        {
+            OnGround();
+        }
+        // SimpleLog.Warn("height: ", mOwner.gameObject.transform.position.y);
     }
 
     public void ForceMove()
@@ -157,30 +165,46 @@ public class MovementComponent : ComponentBase
             //transform.position += transform.rotation * Move;
             //transform.rotation = transform.rotation * Rot;
             //transform.Translate(Move);
-            mOwner.GetPlayerController().Move(transform.rotation * Move);
+            mController.Move(transform.rotation * Move);
             transform.Rotate(Rot.eulerAngles);
         }
         else
         {
-            Owner.GetPlayerController().Move(Move);
+            mController.Move(Move);
         }
     }
     
     public void Jump()
     {
-        if (mIsFalling)
+        if (mPressedJump || (mJumpCount >= MaxJumpCount))
         {
             return;
         }
-        mIsFalling = true;
-        float h = 2f * -2f * Gravity;
-        Velocity.y = Mathf.Sqrt(h);
+        mPressedJump = true;
+        mIsFalling   = true;
+        Velocity.y   = mJumpVelocityY;
+        mJumpCount++;
     }
 
-    void JumpEnd()
+    public void StopJumping()
     {
-        mIsFalling = false;
-        Velocity.y = 0;
+        mPressedJump = false;
+    }
+
+    public void OnGround()
+    {
+        Velocity.y = -2f;
+        mJumpCount = 0;
+    }
+
+    void UpdateJumpVelocitY()
+    {
+        mJumpVelocityY = Mathf.Sqrt(JumpHeight * 2 * Gravity);
+    }
+
+    void ResetJumpVelocity()
+    {
+        Velocity.y = -2f;
     }
     /////////////////////////////logic
 }
