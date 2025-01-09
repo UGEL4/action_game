@@ -393,13 +393,13 @@ public class ActionController
         Vector3 Move = Vector3.zero;
         if (mCurrentFrameIndex > 0)
         {
-            Vector3 LastMove = GetRootMotionPosition((int)mCurrentFrameIndex - 1);
-            Vector3 NowMove  = GetRootMotionPosition((int)mCurrentFrameIndex);
+            Vector3 LastMove = GetRootMotionPosition((int)mCurrentFrameIndex - 1, true);
+            Vector3 NowMove  = GetRootMotionPosition((int)mCurrentFrameIndex, false);
             Move             = NowMove - LastMove;
         }
         else
         {
-            Move = GetRootMotionPosition((int)mCurrentFrameIndex);
+            Move = GetRootMotionPosition((int)mCurrentFrameIndex, false);
         }
         MoveSpeed = Move.magnitude * GameInstance.Instance.LogicFrameRate;
 
@@ -422,42 +422,77 @@ public class ActionController
         float z             = 0;
         if (data.X != null)
         {
-            if (index >= data.X.Length && index > 0)
+            if (lastFrame)
             {
-                if (lastFrame)
+                if (index >= data.X.Length && data.X.Length >= 2)
                 {
-                    if (index >= data.X.Length && index > 0)
-                    {
-                        
-                    }
+                    x = data.X[data.X.Length - 2];
                 }
-                x = data.X[lastFrame ? data.X.Length - 2 : data.X.Length - 1];
+                else if (data.X.Length > index + 1)
+                {
+                    x = data.X[index];
+                }
             }
             else
             {
-                x = data.X[index];
+                if (index >= data.X.Length && data.X.Length > 0)
+                {
+                    x = data.X[data.X.Length - 1];
+                }
+                else  if (data.X.Length > index)
+                {
+                    x = data.X[index];
+                }
             }
         }
         if (data.Y != null)
         {
-            if (index >= data.Y.Length && index > 0)
+            if (lastFrame)
             {
-                y = data.Y[lastFrame ? data.Y.Length - 2 : data.Y.Length - 1];
+                if (index >= data.Y.Length && data.Y.Length >= 2)
+                {
+                    y = data.Y[data.Y.Length - 2];
+                }
+                else  if (data.Y.Length > index + 1)
+                {
+                    y = data.Y[index];
+                }
             }
             else
             {
-                y = data.Y[index];
+                if (index >= data.Y.Length && data.Y.Length > 0)
+                {
+                    y = data.Y[data.Y.Length - 1];
+                }
+                else  if (data.Y.Length > index)
+                {
+                    y = data.Y[index];
+                }
             }
         }
         if (data.Z != null)
         {
-            if (index >= data.Z.Length && index > 0)
+            if (lastFrame)
             {
-                z = data.Z[lastFrame ? data.Z.Length - 2 : data.Z.Length - 1];
+                if (index >= data.Z.Length && data.Z.Length >= 2)
+                {
+                    z = data.Z[data.Z.Length - 2];
+                }
+                else  if (data.Z.Length > index + 1)
+                {
+                    z = data.Z[index];
+                }
             }
             else
             {
-                z = data.Z[index];
+                if (index >= data.Z.Length && data.Z.Length > 0)
+                {
+                    z = data.Z[data.Z.Length - 1];
+                }
+                else  if (data.Z.Length > index)
+                {
+                    z = data.Z[index];
+                }
             }
         }
         return new Vector3(x, y, z);
@@ -476,35 +511,77 @@ public class ActionController
         float z             = 0;
         if (data.RX != null)
         {
-            if (index >= data.RX.Length && index > 0)
+            if (lastFrame)
             {
-                x = data.RX[lastFrame ? data.RX.Length - 2 : data.RX.Length - 1];
+                if (index >= data.RX.Length && data.RX.Length >= 2)
+                {
+                    x = data.RX[data.RX.Length - 2];
+                }
+                else if (data.RX.Length > index + 1)
+                {
+                    x = data.RX[index];
+                }
             }
             else
             {
-                x = data.RX[index];
+                if (index >= data.RX.Length && data.RX.Length > 0)
+                {
+                    x = data.RX[data.RX.Length - 1];
+                }
+                else  if (data.RY.Length > index)
+                {
+                    x = data.RX[index];
+                }
             }
         }
         if (data.RY != null)
         {
-            if (index >= data.RY.Length && index > 0)
+            if (lastFrame)
             {
-                y = data.RY[lastFrame ? data.RY.Length - 2 : data.RY.Length - 1];
+                if (index >= data.RY.Length && data.RY.Length >= 2)
+                {
+                    y = data.RY[data.RY.Length - 2];
+                }
+                else  if (data.RY.Length > index + 1)
+                {
+                    y = data.RY[index];
+                }
             }
             else
             {
-                y = data.RY[index];
+                if (index >= data.RY.Length && data.RY.Length > 0)
+                {
+                    y = data.RY[data.RY.Length - 1];
+                }
+                else  if (data.RY.Length > index)
+                {
+                    y = data.RY[index];
+                }
             }
         }
         if (data.RZ != null)
         {
-            if (index >= data.RZ.Length && index > 0)
+            if (lastFrame)
             {
-                z = data.RZ[lastFrame ? data.RZ.Length - 2 : data.RZ.Length - 1];
+                if (index >= data.RZ.Length && data.RZ.Length >= 2)
+                {
+                    z = data.RY[data.RZ.Length - 2];
+                }
+                else  if (data.RZ.Length > index + 1)
+                {
+                    z = data.RZ[index];
+                }
             }
             else
             {
-                z = data.RZ[index];
+                if (index >= data.RZ.Length && index > 0)
+                {
+                    z = data.RZ[data.RZ.Length - 1];
+                }
+                else  if (data.RZ.Length > index)
+                {
+                    z = data.RZ[index];
+                }
             }
         }
         return Quaternion.Euler(x, y, z);
@@ -516,10 +593,10 @@ public class ActionController
         //Quaternion currentWorldRot = mOwner.transform.rotation;
         int frameIndex = (int)mCurrentFrameIndex;
         //先不管循环
-        Vector3 prevPos     = GetRootMotionPosition(frameIndex - 1);
-        Vector3 currPos     = GetRootMotionPosition(frameIndex);
-        Quaternion prevRot  = GetRootMotionRotation(frameIndex - 1);
-        Quaternion currRot  = GetRootMotionRotation(frameIndex);
+        Vector3 prevPos     = GetRootMotionPosition(frameIndex - 1, true);
+        Vector3 currPos     = GetRootMotionPosition(frameIndex, false);
+        Quaternion prevRot  = GetRootMotionRotation(frameIndex - 1, true);
+        Quaternion currRot  = GetRootMotionRotation(frameIndex, false);
         Vector3 deltaPos    = currPos - prevPos;
         Quaternion deltaRot = currRot * Quaternion.Inverse(prevRot);
         RootMotionMove      = deltaPos;
