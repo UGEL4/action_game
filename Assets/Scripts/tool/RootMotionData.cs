@@ -32,5 +32,10 @@ namespace ACTTools.RootMotionData
         public float[] RX;
         public float[] RY;
         public float[] RZ;
+
+        public static bool HasRootMotion(RootMotionData data)
+        {
+            return data.X != null && data.X.Length > 0 && data.Y != null && data.Y.Length > 0 && data.Z != null && data.Z.Length > 0 && data.RX != null && data.RX.Length > 0 && data.RY != null && data.RY.Length > 0 && data.RZ != null && data.RZ.Length > 0;
+        }
     }
 }

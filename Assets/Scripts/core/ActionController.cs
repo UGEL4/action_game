@@ -410,32 +410,60 @@ public class ActionController
         return Move;
     }
 
-    private Vector3 GetRootMotionPosition(int index)
+    private Vector3 GetRootMotionPosition(int index, bool lastFrame)
     {
         if (index < 0)
         {
-            index = 0;
+            return Vector3.zero;
         }
         RootMotionData data = CurAction.RootMotionData;
         float x             = 0;
         float y             = 0;
         float z             = 0;
-        if (data.X != null && data.X.Length > index)
+        if (data.X != null)
         {
-            x = data.X[index];
+            if (index >= data.X.Length && index > 0)
+            {
+                if (lastFrame)
+                {
+                    if (index >= data.X.Length && index > 0)
+                    {
+                        
+                    }
+                }
+                x = data.X[lastFrame ? data.X.Length - 2 : data.X.Length - 1];
+            }
+            else
+            {
+                x = data.X[index];
+            }
         }
-        if (data.Y != null && data.Y.Length > index)
+        if (data.Y != null)
         {
-            y = data.Y[index];
+            if (index >= data.Y.Length && index > 0)
+            {
+                y = data.Y[lastFrame ? data.Y.Length - 2 : data.Y.Length - 1];
+            }
+            else
+            {
+                y = data.Y[index];
+            }
         }
-        if (data.Z != null && data.Z.Length > index)
+        if (data.Z != null)
         {
-            z = data.Z[index];
+            if (index >= data.Z.Length && index > 0)
+            {
+                z = data.Z[lastFrame ? data.Z.Length - 2 : data.Z.Length - 1];
+            }
+            else
+            {
+                z = data.Z[index];
+            }
         }
         return new Vector3(x, y, z);
     }
 
-    private Quaternion GetRootMotionRotation(int index)
+    private Quaternion GetRootMotionRotation(int index, bool lastFrame)
     {
         if (index < 0)
         {
@@ -446,17 +474,38 @@ public class ActionController
         float x             = 0;
         float y             = 0;
         float z             = 0;
-        if (data.RX != null && data.RX.Length > index)
+        if (data.RX != null)
         {
-            x = data.RX[index];
+            if (index >= data.RX.Length && index > 0)
+            {
+                x = data.RX[lastFrame ? data.RX.Length - 2 : data.RX.Length - 1];
+            }
+            else
+            {
+                x = data.RX[index];
+            }
         }
-        if (data.RY != null && data.RY.Length > index)
+        if (data.RY != null)
         {
-            y = data.RY[index];
+            if (index >= data.RY.Length && index > 0)
+            {
+                y = data.RY[lastFrame ? data.RY.Length - 2 : data.RY.Length - 1];
+            }
+            else
+            {
+                y = data.RY[index];
+            }
         }
-        if (data.RZ != null && data.RZ.Length > index)
+        if (data.RZ != null)
         {
-            z = data.RZ[index];
+            if (index >= data.RZ.Length && index > 0)
+            {
+                z = data.RZ[lastFrame ? data.RZ.Length - 2 : data.RZ.Length - 1];
+            }
+            else
+            {
+                z = data.RZ[index];
+            }
         }
         return Quaternion.Euler(x, y, z);
     }
@@ -467,16 +516,16 @@ public class ActionController
         //Quaternion currentWorldRot = mOwner.transform.rotation;
         int frameIndex = (int)mCurrentFrameIndex;
         //先不管循环
-        Vector3 prevPos = GetRootMotionPosition(frameIndex - 1);
-        Vector3 currPos = GetRootMotionPosition(frameIndex);
-        Quaternion prevRot = GetRootMotionRotation(frameIndex - 1);
-        Quaternion currRot = GetRootMotionRotation(frameIndex);
-        Vector3 deltaPos = currPos - prevPos;
+        Vector3 prevPos     = GetRootMotionPosition(frameIndex - 1);
+        Vector3 currPos     = GetRootMotionPosition(frameIndex);
+        Quaternion prevRot  = GetRootMotionRotation(frameIndex - 1);
+        Quaternion currRot  = GetRootMotionRotation(frameIndex);
+        Vector3 deltaPos    = currPos - prevPos;
         Quaternion deltaRot = currRot * Quaternion.Inverse(prevRot);
-        RootMotionMove = deltaPos;
-        RootMotionRotation = deltaRot;
-        UnderForceMove = deltaPos;
-        IsUnderForceMove = CurAction.ForceMoce;
+        RootMotionMove      = deltaPos;
+        RootMotionRotation  = deltaRot;
+        UnderForceMove      = deltaPos;
+        IsUnderForceMove    = CurAction.ForceMoce;
     }
 
     void ActionNotify(string functionName, string[] param)

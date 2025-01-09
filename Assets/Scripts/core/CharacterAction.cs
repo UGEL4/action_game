@@ -56,12 +56,13 @@ public struct CharacterAction
     public bool ForceMoce;
     public bool HasRootMotion()
     {
-        return !string.IsNullOrEmpty(RootMotionDataPath);
+        return RootMotionData.HasRootMotion(RootMotionData);
+        //return !string.IsNullOrEmpty(RootMotionDataPath);
     }
 
     public void LoadRootMotion()
     {
-        if (!HasRootMotion())
+        if (string.IsNullOrEmpty(RootMotionDataPath))
         {
             return;
         }

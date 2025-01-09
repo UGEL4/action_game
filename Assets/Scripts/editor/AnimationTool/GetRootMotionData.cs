@@ -16,10 +16,12 @@ public class GetRootMotionData : EditorWindow
 
     private AnimationClip Animation;
     private int EvaluateFrameRate;
+    private bool SkipFirstFrame;
     void OnGUI()
     {
         Animation         = EditorGUILayout.ObjectField("AnimationClip", Animation, typeof(AnimationClip), false) as AnimationClip;
         EvaluateFrameRate = EditorGUILayout.IntField("采样帧率", EvaluateFrameRate);
+        SkipFirstFrame    = EditorGUILayout.Toggle("是否跳过第0帧", SkipFirstFrame);
         if (Animation)
         {
             if (GUILayout.Button("Save"))
@@ -161,7 +163,7 @@ public class GetRootMotionData : EditorWindow
                 {
                     break;
                 }
-                float time              = frame * step;
+                float time              = (SkipFirstFrame ? (frame + 1) : frame) * step;
                 float x                 = X.Evaluate(time);
                 float y                 = Y.Evaluate(time);
                 float z                 = Z.Evaluate(time);

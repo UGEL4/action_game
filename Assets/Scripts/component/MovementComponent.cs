@@ -45,6 +45,8 @@ public class MovementComponent : ComponentBase
             }
         }
     }
+
+    private bool mIsGrounded;
     // jump相关
 
     public MovementComponent(CharacterObj owner)
@@ -59,6 +61,7 @@ public class MovementComponent : ComponentBase
         mTimeToJumpApex   = 0.5f;
         mGroundedVelocity = -0.2f;
         JumpVelocity      = new Vector3(0, mGroundedVelocity, 0);
+        mIsGrounded       = false;
         SetupJumpVariables();
     }
 
@@ -141,11 +144,12 @@ public class MovementComponent : ComponentBase
                 speed                     = speed / GameInstance.Instance.LogicFrameRate;
                 Vector3 motion            = adjDir * speed * MoveInputAcceptance;
                 mController.Move(motion);
-                mController.Move(JumpVelocity * (1f / GameInstance.Instance.LogicFrameRate));
             }
         }
         HandleGravity();
         HandleJump();
+        mController.Move(JumpVelocity * (1f / GameInstance.Instance.LogicFrameRate));
+        mIsGrounded = mController.isGrounded;
         /*float delta = 1f / GameInstance.Instance.LogicFrameRate;
         var e = mController.Move(Velocity * delta * mJumpSpeed);
         if (mIsFalling)
@@ -169,12 +173,12 @@ public class MovementComponent : ComponentBase
 
     void HandleJump()
     {
-        if (!mIsFalling && mController.isGrounded && mPressedJump)
+        if (!mIsFalling && mIsGrounded && mPressedJump)
         {
             mIsFalling     = true;
             JumpVelocity.y = mJumpVelocity;
         }
-        else if (!mPressedJump && mIsFalling && mController.isGrounded)
+        else if (!mPressedJump && mIsFalling && mIsGrounded)
         {
             mIsFalling = false;
         }
@@ -182,7 +186,7 @@ public class MovementComponent : ComponentBase
 
     void HandleGravity()
     {
-        if (mController.isGrounded)
+        if (mIsGrounded)
         {
             JumpVelocity.y = mGroundedVelocity;
             mJumpCount     = 0;
@@ -231,22 +235,6 @@ public class MovementComponent : ComponentBase
     public void StopJumping()
     {
         mPressedJump = false;
-    }
-
-    public void OnGround()
-    {
-        JumpVelocity.y = -2f;
-        mJumpCount     = 0;
-    }
-
-    void UpdateJumpVelocitY()
-    {
-        mJumpVelocity = Mathf.Sqrt(JumpHeight * 2 * Gravity);
-    }
-
-    void ResetJumpVelocity()
-    {
-        JumpVelocity.y = -2f;
     }
     /////////////////////////////logic
 }
