@@ -42,6 +42,8 @@ public class PlayerController
             mInput.AttackA += OnAttackA;
             mInput.AttackB += OnAttackB;
             mInput.Jump += Jump;
+            mInput.ButtonA += OnButtonA;
+            mInput.ButtonB += OnButtonB;
         }
     }
 
@@ -67,6 +69,8 @@ public class PlayerController
             mInput.AttackA -= OnAttackA;
             mInput.AttackB -= OnAttackB;
             mInput.Jump -= Jump;
+            mInput.ButtonA -= OnButtonA;
+            mInput.ButtonB -= OnButtonB;
         }
     }
 
@@ -184,15 +188,31 @@ public class PlayerController
         }
     }
 
+    void OnButtonA(InputActionPhase phase)
+    {
+        if (phase == InputActionPhase.Started)
+        {
+            mOwner.AddActionCommand(KeyMap.ButtonA);
+        }
+    }
+
+    void OnButtonB(InputActionPhase phase)
+    {
+        if (phase == InputActionPhase.Started)
+        {
+            mOwner.AddActionCommand(KeyMap.ButtonB);
+        }
+    }
+
     public void Jump(InputActionPhase phase)
     {
         if (phase == InputActionPhase.Started)
         {
-            mOwner.MovementComp.Jump();
+            //mOwner.MovementComp.Jump();
         }
         else if (phase == InputActionPhase.Canceled)
         {
-            mOwner.MovementComp.StopJumping();
+            //mOwner.MovementComp.StopJumping();
         }
     }
 }

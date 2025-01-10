@@ -333,6 +333,9 @@ public class CharacterObj
         "Vergil/Yamato/ComboB_2",
         "Vergil/Yamato/Zigenzan_Zetsu_Start",
         "Vergil/Yamato/Zigenzan_Zetsu_End",
+        "Vergil/Basic/Jump_Vertical",
+        "Vergil/Basic/Jump_Vertical_Fly_Loop",
+        "Vergil/Basic/Jump_Vertical_Landing",
     };
     public void LoadActions()
     {

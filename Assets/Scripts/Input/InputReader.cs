@@ -13,6 +13,8 @@ public class InputReader : ScriptableObject, IPlayerActions
     public UnityAction<Vector2> Look = delegate {};
     public UnityAction<InputActionPhase> AttackA = delegate {};
     public UnityAction<InputActionPhase> AttackB = delegate {};
+    public UnityAction<InputActionPhase> ButtonA = delegate {};
+    public UnityAction<InputActionPhase> ButtonB = delegate {};
     public UnityAction<InputActionPhase> Jump = delegate {};
 
     PlayerInput input;
@@ -58,5 +60,15 @@ public class InputReader : ScriptableObject, IPlayerActions
     public void OnJump(InputAction.CallbackContext context)
     {
         Jump.Invoke(context.phase);
+    }
+
+    public void OnButtonA(InputAction.CallbackContext context)
+    {
+        ButtonA.Invoke(context.phase);
+    }
+
+    public void OnButtonB(InputAction.CallbackContext context)
+    {
+        ButtonB.Invoke(context.phase);
     }
 }

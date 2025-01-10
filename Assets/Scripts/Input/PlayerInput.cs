@@ -80,6 +80,24 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""ButtonA"",
+                    ""type"": ""Button"",
+                    ""id"": ""76cf04c3-cce4-4ac5-a4de-8e8d2725694f"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""ButtonB"",
+                    ""type"": ""Button"",
+                    ""id"": ""fd31be0a-f02d-44ef-978e-68dc4a20b8a3"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -333,6 +351,28 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""groups"": ""Keyboard&Mouse"",
                     ""action"": ""Jump"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""ded9f343-9907-492d-bbd4-5b80f6459ac0"",
+                    ""path"": ""<Keyboard>/k"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""ButtonA"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""8cb4f861-61e8-4dbb-ac20-4b1a90575d64"",
+                    ""path"": ""<Keyboard>/l"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""ButtonB"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -926,6 +966,8 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
         m_Player_AttackA = m_Player.FindAction("AttackA", throwIfNotFound: true);
         m_Player_AttackB = m_Player.FindAction("AttackB", throwIfNotFound: true);
         m_Player_Jump = m_Player.FindAction("Jump", throwIfNotFound: true);
+        m_Player_ButtonA = m_Player.FindAction("ButtonA", throwIfNotFound: true);
+        m_Player_ButtonB = m_Player.FindAction("ButtonB", throwIfNotFound: true);
         // UI
         m_UI = asset.FindActionMap("UI", throwIfNotFound: true);
         m_UI_Navigate = m_UI.FindAction("Navigate", throwIfNotFound: true);
@@ -1005,6 +1047,8 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
     private readonly InputAction m_Player_AttackA;
     private readonly InputAction m_Player_AttackB;
     private readonly InputAction m_Player_Jump;
+    private readonly InputAction m_Player_ButtonA;
+    private readonly InputAction m_Player_ButtonB;
     public struct PlayerActions
     {
         private @PlayerInput m_Wrapper;
@@ -1015,6 +1059,8 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
         public InputAction @AttackA => m_Wrapper.m_Player_AttackA;
         public InputAction @AttackB => m_Wrapper.m_Player_AttackB;
         public InputAction @Jump => m_Wrapper.m_Player_Jump;
+        public InputAction @ButtonA => m_Wrapper.m_Player_ButtonA;
+        public InputAction @ButtonB => m_Wrapper.m_Player_ButtonB;
         public InputActionMap Get() { return m_Wrapper.m_Player; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -1042,6 +1088,12 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
             @Jump.started += instance.OnJump;
             @Jump.performed += instance.OnJump;
             @Jump.canceled += instance.OnJump;
+            @ButtonA.started += instance.OnButtonA;
+            @ButtonA.performed += instance.OnButtonA;
+            @ButtonA.canceled += instance.OnButtonA;
+            @ButtonB.started += instance.OnButtonB;
+            @ButtonB.performed += instance.OnButtonB;
+            @ButtonB.canceled += instance.OnButtonB;
         }
 
         private void UnregisterCallbacks(IPlayerActions instance)
@@ -1064,6 +1116,12 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
             @Jump.started -= instance.OnJump;
             @Jump.performed -= instance.OnJump;
             @Jump.canceled -= instance.OnJump;
+            @ButtonA.started -= instance.OnButtonA;
+            @ButtonA.performed -= instance.OnButtonA;
+            @ButtonA.canceled -= instance.OnButtonA;
+            @ButtonB.started -= instance.OnButtonB;
+            @ButtonB.performed -= instance.OnButtonB;
+            @ButtonB.canceled -= instance.OnButtonB;
         }
 
         public void RemoveCallbacks(IPlayerActions instance)
@@ -1252,6 +1310,8 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
         void OnAttackA(InputAction.CallbackContext context);
         void OnAttackB(InputAction.CallbackContext context);
         void OnJump(InputAction.CallbackContext context);
+        void OnButtonA(InputAction.CallbackContext context);
+        void OnButtonB(InputAction.CallbackContext context);
     }
     public interface IUIActions
     {

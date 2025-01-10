@@ -897,7 +897,7 @@ PlayableDirector:
   m_GameObject: {fileID: 919132149522740809}
   m_Enabled: 1
   serializedVersion: 3
-  m_PlayableAsset: {fileID: 11400000, guid: 12c7df913af2a894eb6affbfc6405768, type: 2}
+  m_PlayableAsset: {fileID: 11400000, guid: 5658a7d507866f4489dce7f86b9a604a, type: 2}
   m_InitialState: 1
   m_WrapMode: 2
   m_DirectorUpdateMode: 1
@@ -926,6 +926,12 @@ PlayableDirector:
   - key: {fileID: 1805317493975543071, guid: 12c7df913af2a894eb6affbfc6405768, type: 2}
     value: {fileID: 503089947}
   - key: {fileID: 1805317493975543071, guid: 758eb969ebe8a1d439a444813da4a1bf, type: 2}
+    value: {fileID: 503089947}
+  - key: {fileID: 1805317493975543071, guid: caa40042cdc62464d8ad53f524a02b9f, type: 2}
+    value: {fileID: 503089947}
+  - key: {fileID: 1805317493975543071, guid: 2a83d1e796947c34dac6c00853920417, type: 2}
+    value: {fileID: 503089947}
+  - key: {fileID: 1805317493975543071, guid: 5658a7d507866f4489dce7f86b9a604a, type: 2}
     value: {fileID: 503089947}
   m_ExposedReferences:
     m_References: []
@@ -1205,6 +1211,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: Vergil
+      objectReference: {fileID: 0}
+    - target: {fileID: 7404910712244260848, guid: 8cdda6f8105a3684fa99a7f2a30ea7fc,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

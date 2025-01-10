@@ -128,6 +128,7 @@ public class MovementComponent : ComponentBase
             if (mOwner.Action.CurAction.HasRootMotion())
             {
                 Vector3 RootMotionMove = mOwner.Action.RootMotionMove;
+                //SimpleLog.Info("RootMotionMove", RootMotionMove);
                 Transform transform    = mOwner.gameObject.transform;
                 if (transform)
                 {
@@ -135,7 +136,14 @@ public class MovementComponent : ComponentBase
                     // transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * 10f);
                     transform.LookAt(transform.position + adjDir);
                 }
-                mController.Move(RootMotionMove.magnitude * adjDir);
+                if (adjDir.magnitude > 0f)
+                {
+                    mController.Move(RootMotionMove.magnitude * adjDir);
+                }
+                else
+                {
+                    mController.Move(RootMotionMove);
+                }
             }
             else
             {
@@ -146,9 +154,21 @@ public class MovementComponent : ComponentBase
                 mController.Move(motion);
             }
         }
-        HandleGravity();
-        HandleJump();
-        mController.Move(JumpVelocity * (1f / GameInstance.Instance.LogicFrameRate));
+        // HandleGravity();
+        // HandleJump();
+        // mController.Move(JumpVelocity * (1f / GameInstance.Instance.LogicFrameRate));
+        if (!mIsGrounded && mController.isGrounded)
+        {
+            //todo: fixed debug
+            ActionChangeInfo info = new ActionChangeInfo()
+            {
+                changeType = ActionChangeType.ChangeToActionId,
+                param = "Jump_Vertical_Landing",
+                priority = 1
+
+            };
+            mOwner.Action.PreorderActionByActionChangeInfo(info);
+        }
         mIsGrounded = mController.isGrounded;
         /*float delta = 1f / GameInstance.Instance.LogicFrameRate;
         var e = mController.Move(Velocity * delta * mJumpSpeed);

@@ -50,7 +50,7 @@ public class RootMotionToInplace : EditorWindow
             {
                 // 过滤掉位移信息
                 if (binding.propertyName != "m_LocalPosition.x" &&
-                    //binding.propertyName != "m_LocalPosition.y" &&
+                    binding.propertyName != "m_LocalPosition.y" &&
                     binding.propertyName != "m_LocalPosition.z")
                 {
                     // 获取该曲线

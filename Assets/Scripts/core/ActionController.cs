@@ -574,7 +574,7 @@ public class ActionController
             }
             else
             {
-                if (index >= data.RZ.Length && index > 0)
+                if (index >= data.RZ.Length && data.RZ.Length > 0)
                 {
                     z = data.RZ[data.RZ.Length - 1];
                 }
