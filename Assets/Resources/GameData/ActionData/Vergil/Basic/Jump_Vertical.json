@@ -1,7 +1,7 @@
 {"data":{
     "mActionName": "Jump_Vertical",
     "mAnimation": "Jump_Vertical",
-    "mPriority": 1,
+    "mPriority": 2,
     "mAutoNextActionName": "Jump_Vertical_Fly_Loop",
     "mAutoTerminate": false,
     "keepPlayingAnim": false,

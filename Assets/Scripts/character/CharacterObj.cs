@@ -61,6 +61,10 @@ public class CharacterObj
     public GameObject ModelRoot;
     public ModelComponent ModelComp;
 
+    public VelocityComponent VelocityComp;
+
+    public GravityComponent GravityComp;
+
     public CharacterObj()
     {
         IsBeginPlayed = false;
@@ -70,6 +74,8 @@ public class CharacterObj
         mMovementComponent = new MovementComponent(this);
         HitRecordComponent = new HitRecordComponent();
         ModelComp          = new ModelComponent(this);
+        VelocityComp       = new VelocityComponent(this);
+        GravityComp        = new GravityComponent(this);
     }
 
     public virtual void Init()
@@ -133,6 +139,9 @@ public class CharacterObj
         mPlayerController.UpdateLogic();
         mInputToCommand.Tick();
         mActionCtrl.Tick();
+
+        GravityComp.UpdateLogic(frameIndex);
+
         mMovementComponent.UpdateLogic(frameIndex);
         ModelComp.UpdateLogic(frameIndex);
     }

@@ -138,7 +138,13 @@ public class MovementComponent : ComponentBase
                 }
                 if (adjDir.magnitude > 0f)
                 {
-                    mController.Move(RootMotionMove.magnitude * adjDir);
+                    //MoveInputAcceptance
+                    Vector3 xyz = new Vector3(RootMotionMove.x, 0, RootMotionMove.z);
+                    mController.Move(xyz.magnitude * adjDir);
+                    xyz.x = 0;
+                    xyz.z = 0;
+                    xyz.y = RootMotionMove.y;
+                    mController.Move(xyz);
                 }
                 else
                 {

@@ -591,17 +591,22 @@ public class ActionController
     {
         //Vector3 currentWorldPos = mOwner.transform.position;
         //Quaternion currentWorldRot = mOwner.transform.rotation;
-        int frameIndex = (int)mCurrentFrameIndex;
-        //先不管循环
-        Vector3 prevPos     = GetRootMotionPosition(frameIndex - 1, true);
-        Vector3 currPos     = GetRootMotionPosition(frameIndex, false);
-        Quaternion prevRot  = GetRootMotionRotation(frameIndex - 1, true);
-        Quaternion currRot  = GetRootMotionRotation(frameIndex, false);
-        Vector3 deltaPos    = currPos - prevPos;
-        Quaternion deltaRot = currRot * Quaternion.Inverse(prevRot);
-        RootMotionMove      = deltaPos;
-        RootMotionRotation  = deltaRot;
-        UnderForceMove      = deltaPos;
+        if (CurAction.HasRootMotion())
+        {
+            int frameIndex      = (int)mCurrentFrameIndex;
+            Vector3 prevPos     = GetRootMotionPosition(frameIndex - 1, true);
+            Vector3 currPos     = GetRootMotionPosition(frameIndex, false);
+            Quaternion prevRot  = GetRootMotionRotation(frameIndex - 1, true);
+            Quaternion currRot  = GetRootMotionRotation(frameIndex, false);
+            Vector3 deltaPos    = currPos - prevPos;
+            Quaternion deltaRot = currRot * Quaternion.Inverse(prevRot);
+            RootMotionMove      = deltaPos;
+            RootMotionRotation  = deltaRot;
+            UnderForceMove      = deltaPos;
+            mOwner.VelocityComp.Velocity.x = deltaPos.x;
+            mOwner.VelocityComp.Velocity.z = deltaPos.z;
+            mOwner.VelocityComp.Velocity.y = deltaPos.y;
+        }
         IsUnderForceMove    = CurAction.ForceMoce;
     }
 

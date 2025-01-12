@@ -101,6 +101,7 @@
     <Compile Include="Assets\Scripts\core\CancelTag.cs" />
     <Compile Include="Assets\Scripts\core\state\PlayerWalkState.cs" />
     <Compile Include="Assets\Scripts\core\Systems\HitRecordSystem.cs" />
+    <Compile Include="Assets\Scripts\component\VelocityComponent.cs" />
     <Compile Include="Assets\Scripts\core\Boxes\SimpleCollider.cs" />
     <Compile Include="Assets\Scripts\core\ActionFrame.cs" />
     <Compile Include="Assets\Scripts\core\Components\HitRecordComponent.cs" />
@@ -132,6 +133,7 @@
     <Compile Include="Assets\Scripts\Input\PlayerInput.cs" />
     <Compile Include="Assets\Scripts\core\ActionChangeInfo.cs" />
     <Compile Include="Assets\Scripts\core\Boxes\AttackHitBox.cs" />
+    <Compile Include="Assets\Scripts\component\GravityComponent.cs" />
     <Compile Include="Assets\Scripts\core\Boxes\BoxColliderGizmo.cs" />
     <Compile Include="Assets\EasyColliderEditor\Scripts\EasyColliderCreator.cs" />
     <Compile Include="Assets\Scripts\GameMain.cs" />
