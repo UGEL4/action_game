@@ -166,6 +166,8 @@ public class PlayerController
         Vector3 right   = Camera.main.transform.right;
         forward.y       = 0f;
         forward.Normalize();
+        right.y = 0f;
+        right.Normalize();
         Vector3 Move = forward * input.z + right * input.x;
         Move.Normalize();
         return Move;
