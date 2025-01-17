@@ -54,6 +54,9 @@ public struct CharacterAction
     public float MoveSpeed;
 
     public bool ForceMoce;
+
+    //在rootmotion时是否应用重力
+    public bool AppilyGravityInRootMotion;
     public bool HasRootMotion()
     {
         return RootMotionData.HasRootMotion(RootMotionData);
@@ -80,7 +83,7 @@ public struct CharacterAction
 [Serializable]
 public struct ActionNotify
 {
-    public int FrameIndex;
+    public FrameIndexRange Range;
 
     public string FunctionName;
     public string[] Params;

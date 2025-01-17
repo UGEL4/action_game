@@ -67,5 +67,6 @@
         "Y": [],
         "Z": []
     },
-    "MoveSpeed": 0.0
+    "MoveSpeed": 0.0,
+    "AppilyGravityInRootMotion": true
 }}

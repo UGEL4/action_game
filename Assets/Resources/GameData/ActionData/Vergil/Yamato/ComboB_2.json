@@ -52,12 +52,18 @@
     "ForceMoce": true,
     "Notifies": [
         {
-            "FrameIndex": 74,
+            "Range": {
+                "min": 74,
+                "max": 74
+            },
             "FunctionName": "ToLeftHand",
             "Params": []
         },
         {
-            "FrameIndex": 52,
+            "Range": {
+                "min": 52,
+                "max": 52
+            },
             "FunctionName": "FixedPart00",
             "Params": [
                 "0,0,0",

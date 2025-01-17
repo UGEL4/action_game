@@ -7,7 +7,22 @@
     "keepPlayingAnim": false,
     "mTotalFrameCount": 8,
     "SelfLoopCount": 0,
-    "mCancelTagList": [],
+    "mCancelTagList": [
+        {
+            "tag": "RunLoopAction",
+            "priority": 1,
+            "startFromPercentage": 0.0,
+            "startFromFrameIndex": 0,
+            "fadeInPercentage": 0.0
+        },
+        {
+            "tag": "JumpVerticalFlyLoopToLanding",
+            "priority": 1,
+            "startFromPercentage": 0.0,
+            "startFromFrameIndex": 0,
+            "fadeInPercentage": 0.0
+        }
+    ],
     "mBeCanceledTagList": [],
     "mTempBeCanceledTagList": [],
     "mCommandList": [],
@@ -36,5 +51,6 @@
     },
     "MoveSpeed": 0.0,
     "ForceMoce": false,
+    "AppilyGravityInRootMotion": false,
     "Notifies": []
 }}

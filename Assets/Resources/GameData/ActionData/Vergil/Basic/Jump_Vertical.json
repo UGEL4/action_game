@@ -50,5 +50,15 @@
     },
     "MoveSpeed": 0.0,
     "ForceMoce": false,
-    "Notifies": []
+    "AppilyGravityInRootMotion": false,
+    "Notifies": [
+        {
+            "Range": {
+                "min": 0,
+                "max": 25
+            },
+            "FunctionName": "CheckGrounded",
+            "Params": []
+        }
+    ]
 }}

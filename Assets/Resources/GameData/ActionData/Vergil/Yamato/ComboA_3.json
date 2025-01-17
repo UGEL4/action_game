@@ -68,12 +68,18 @@
     "ForceMoce": false,
     "Notifies": [
         {
-            "FrameIndex": 10,
+            "Range": {
+                "min": 10,
+                "max": 10
+            },
             "FunctionName": "ToRightHand",
             "Params": []
         },
         {
-            "FrameIndex": 55,
+            "Range": {
+                "min": 55,
+                "max": 55
+            },
             "FunctionName": "ToLeftHand",
             "Params": []
         }

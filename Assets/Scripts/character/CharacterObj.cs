@@ -1,9 +1,6 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using Log;
-using Unity.Mathematics;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -127,6 +124,7 @@ public class CharacterObj
         mActionCtrl.BeginPlay();
         mPlayerController.BeginPlay();
         ModelComp.BeginPlay();
+        mMovementComponent.BeginPlay();
     }
 
     public virtual void EndPlay()

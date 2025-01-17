@@ -61,8 +61,13 @@ public class MovementComponent : ComponentBase
         mTimeToJumpApex   = 0.5f;
         mGroundedVelocity = -0.2f;
         JumpVelocity      = new Vector3(0, mGroundedVelocity, 0);
-        mIsGrounded       = false;
+        mIsGrounded       = true;
         SetupJumpVariables();
+    }
+
+    public override void BeginPlay()
+    {
+        mOwner.Action.OnActionNotify += CheckGrounded;
     }
 
     public override void UpdateLogic(int frameIndex)
@@ -123,94 +128,87 @@ public class MovementComponent : ComponentBase
         }
         PlayerController pc = mOwner.GetPlayerController();
         var adjDir          = pc.CharacterRelativeFlatten(pc.CurrMoveDir);
-        // if (adjDir.magnitude > 0.0f)
+        if (mOwner.Action.CurAction.HasRootMotion())
         {
-            if (mOwner.Action.CurAction.HasRootMotion())
+            Vector3 RootMotionMove = mOwner.Action.RootMotionMove;
+            // SimpleLog.Info("RootMotionMove", RootMotionMove);
+            if (adjDir.magnitude > 0.1f)
             {
-                Vector3 RootMotionMove = mOwner.Action.RootMotionMove;
-                //SimpleLog.Info("RootMotionMove", RootMotionMove);
-                Transform transform    = mOwner.gameObject.transform;
+                Quaternion targetRotation = Quaternion.LookRotation(adjDir);
+                Transform transform       = mOwner.gameObject.transform;
                 if (transform)
                 {
                     // // 更新角色的旋转
                     // transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * 10f);
-                    transform.LookAt(transform.position + adjDir);
+                    // transform.LookAt(transform.position + adjDir);
+                    transform.rotation = targetRotation;
                 }
-                if (adjDir.magnitude > 0f)
+                // MoveInputAcceptance
+                if (mOwner.Action.CurAction.AppilyGravityInRootMotion)
                 {
-                    //MoveInputAcceptance
-                    Vector3 xyz = new Vector3(RootMotionMove.x, 0, RootMotionMove.z);
-                    mController.Move(xyz.magnitude * adjDir);
-                    xyz.x = 0;
-                    xyz.z = 0;
-                    xyz.y = RootMotionMove.y;
-                    mController.Move(xyz);
+                    RootMotionMove.y = -mOwner.GravityComp.Gravity / GameInstance.Instance.LogicFrameRate;
                 }
-                else
-                {
-                    mController.Move(RootMotionMove);
-                }
-
-                /*
-                    // 用户输入
-    Vector2 input = new Vector2(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical"));
-
-    // 将输入转为 3D 方向向量
-    Vector3 moveDirection = new Vector3(input.x, 0, input.y).normalized;
-
-    // 可选：输入方向基于摄像机的方向
-    Vector3 cameraForward = Camera.main.transform.forward;
-    Vector3 cameraRight = Camera.main.transform.right;
-    cameraForward.y = 0;
-    cameraRight.y = 0;
-    cameraForward.Normalize();
-    cameraRight.Normalize();
-    moveDirection = cameraRight * input.x + cameraForward * input.y;
-    moveDirection = moveDirection.normalized;
-
-    // 假设动画位移是动画计算出来的每帧偏移量
-    Vector3 animationDelta = new Vector3(1, 0, 3);
-
-    if (moveDirection.sqrMagnitude > 0.01f) // 确保有输入
-    {
-        // 将动画的位移朝向用户输入方向旋转
-        Quaternion targetRotation = Quaternion.LookRotation(moveDirection);
-        animationDelta = targetRotation * animationDelta;
-    }
-
-    // 使用 CharacterController 移动
-    CharacterController controller = GetComponent<CharacterController>();
-
-    // 最终位移增量（加上重力影响，如果有需要）
-    Vector3 finalMoveDelta = animationDelta * Time.deltaTime; // 保证时间步依赖
-    controller.Move(finalMoveDelta);
-                */
+                mController.Move(targetRotation * RootMotionMove);
             }
             else
             {
-                float MoveInputAcceptance = mOwner.GetMoveInputAcceptance();
-                float speed               = mOwner.Speed;
-                speed                     = speed / GameInstance.Instance.LogicFrameRate;
-                Vector3 motion            = adjDir * speed * MoveInputAcceptance;
-                mController.Move(motion);
+                if (mOwner.Action.CurAction.AppilyGravityInRootMotion)
+                {
+                    RootMotionMove.y = -mOwner.GravityComp.Gravity / GameInstance.Instance.LogicFrameRate;
+                }
+                mController.Move(RootMotionMove);
             }
+            /*
+                // 用户输入
+Vector2 input = new Vector2(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical"));
+
+// 将输入转为 3D 方向向量
+Vector3 moveDirection = new Vector3(input.x, 0, input.y).normalized;
+
+// 可选：输入方向基于摄像机的方向
+Vector3 cameraForward = Camera.main.transform.forward;
+Vector3 cameraRight = Camera.main.transform.right;
+cameraForward.y = 0;
+cameraRight.y = 0;
+cameraForward.Normalize();
+cameraRight.Normalize();
+moveDirection = cameraRight * input.x + cameraForward * input.y;
+moveDirection = moveDirection.normalized;
+
+// 假设动画位移是动画计算出来的每帧偏移量
+Vector3 animationDelta = new Vector3(1, 0, 3);
+
+if (moveDirection.sqrMagnitude > 0.01f) // 确保有输入
+{
+    // 将动画的位移朝向用户输入方向旋转
+    Quaternion targetRotation = Quaternion.LookRotation(moveDirection);
+    animationDelta = targetRotation * animationDelta;
+}
+
+// 使用 CharacterController 移动
+CharacterController controller = GetComponent<CharacterController>();
+
+// 最终位移增量（加上重力影响，如果有需要）
+Vector3 finalMoveDelta = animationDelta * Time.deltaTime; // 保证时间步依赖
+controller.Move(finalMoveDelta);
+            */
         }
+        else
+        {
+            float MoveInputAcceptance = mOwner.GetMoveInputAcceptance();
+            float speed               = mOwner.Speed;
+            speed                     = speed / GameInstance.Instance.LogicFrameRate;
+            Vector3 motion            = adjDir * speed * MoveInputAcceptance;
+            motion.y = -9.8f / GameInstance.Instance.LogicFrameRate;
+            mController.Move(motion);
+        }
+
         // HandleGravity();
         // HandleJump();
         // mController.Move(JumpVelocity * (1f / GameInstance.Instance.LogicFrameRate));
-        if (!mIsGrounded && mController.isGrounded)
-        {
-            //todo: fixed debug
-            ActionChangeInfo info = new ActionChangeInfo()
-            {
-                changeType = ActionChangeType.ChangeToActionId,
-                param = "Jump_Vertical_Landing",
-                priority = 1
-
-            };
-            mOwner.Action.PreorderActionByActionChangeInfo(info);
-        }
+        HandleInAirAction();
         mIsGrounded = mController.isGrounded;
+        //SimpleLog.Info("mIsGrounded: ", mIsGrounded);
         /*float delta = 1f / GameInstance.Instance.LogicFrameRate;
         var e = mController.Move(Velocity * delta * mJumpSpeed);
         if (mIsFalling)
@@ -298,4 +296,61 @@ public class MovementComponent : ComponentBase
         mPressedJump = false;
     }
     /////////////////////////////logic
+    ///
+
+    private void HandleInAirAction()
+    {
+        if (!mIsGrounded && mController.isGrounded)
+        {
+            CharacterAction action = mOwner.Action.GetActionById("Jump_Vertical_Landing", out bool found);
+            if (found && mOwner.Action.CanActionCancelCurrentAction(action, false, out CancelTag foundTag, out BeCanceledTag beCabceledTag))
+            {
+                ActionChangeInfo info = new ActionChangeInfo() {
+                    changeType = ActionChangeType.ChangeToActionId,
+                    param      = "Jump_Vertical_Landing",
+                    priority   = 2
+
+                };
+                mOwner.Action.PreorderActionByActionChangeInfo(info);
+            }
+        }
+        else if (!mIsGrounded && !mController.isGrounded)
+        {
+            //string actionName = mOwner.Action.CurAction.mActionName;
+            //if (actionName == "")
+            CharacterAction action = mOwner.Action.GetActionById("Jump_Vertical_Fly_Loop", out bool found);
+            if (found && mOwner.Action.CanActionCancelCurrentAction(action, false, out CancelTag foundTag, out BeCanceledTag beCabceledTag))
+            {
+                ActionChangeInfo info = new ActionChangeInfo() {
+                    changeType = ActionChangeType.ChangeToActionId,
+                    param      = "Jump_Vertical_Fly_Loop",
+                    priority   = 2
+
+                };
+                mOwner.Action.PreorderActionByActionChangeInfo(info);
+            }
+        }
+    }
+
+    public void CheckGrounded(string functionName, string[] args)
+    {
+        if (functionName != "CheckGrounded")
+        {
+            return;
+        }
+        if (mIsGrounded && mController.isGrounded)
+        {
+            //CharacterAction action = mOwner.Action.GetActionById("Jump_Vertical_Landing", out bool found);
+            //if (found && mOwner.Action.CanActionCancelCurrentAction(action, false, out CancelTag foundTag, out BeCanceledTag beCabceledTag))
+            {
+                ActionChangeInfo info = new ActionChangeInfo() {
+                    changeType = ActionChangeType.ChangeToActionId,
+                    param      = "Jump_Vertical_Landing",
+                    priority   = 2
+
+                };
+                mOwner.Action.PreorderActionByActionChangeInfo(info);
+            }
+        }
+    }
 }

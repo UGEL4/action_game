@@ -86,7 +86,7 @@ public class ActionController
         {
             for (int i = 0; i < CurAction.Notifies.Length; i++)
             {
-                if ((int)mCurrentFrameIndex == CurAction.Notifies[i].FrameIndex)
+                if ((int)mCurrentFrameIndex >= CurAction.Notifies[i].Range.min && (int)mCurrentFrameIndex <= CurAction.Notifies[i].Range.max)
                 {
                     //触发通知
                     ActionNotify(CurAction.Notifies[i].FunctionName, CurAction.Notifies[i].Params);
@@ -142,7 +142,7 @@ public class ActionController
     }
 
     private int ActionLoopCount = 0;
-    bool CanActionCancelCurrentAction(CharacterAction actionInfo, bool checkCommand, out CancelTag foundTag, out BeCanceledTag beCabceledTag)
+    public bool CanActionCancelCurrentAction(CharacterAction actionInfo, bool checkCommand, out CancelTag foundTag, out BeCanceledTag beCabceledTag)
     {
         foundTag = new CancelTag();
         beCabceledTag = new BeCanceledTag();
@@ -257,7 +257,7 @@ public class ActionController
         mBoxHits.Clear();
     }
 
-    CharacterAction GetActionById(string actionId, out bool found)
+    public CharacterAction GetActionById(string actionId, out bool found)
     {
         found = false;
         for (int i = 0; i < AllActions.Count; i++)

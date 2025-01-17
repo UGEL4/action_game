@@ -33,12 +33,18 @@
     "ForceMoce": true,
     "Notifies": [
         {
-            "FrameIndex": 48,
+            "Range": {
+                "min": 48,
+                "max": 48
+            },
             "FunctionName": "ToLeftHand",
             "Params": []
         },
         {
-            "FrameIndex": 1,
+            "Range": {
+                "min": 1,
+                "max": 1
+            },
             "FunctionName": "ResetPart01",
             "Params": []
         }
