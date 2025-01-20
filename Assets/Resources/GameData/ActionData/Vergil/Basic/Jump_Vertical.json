@@ -16,7 +16,23 @@
             "fadeInPercentage": 0.0
         }
     ],
-    "mBeCanceledTagList": [],
+    "mBeCanceledTagList": [
+        {
+            "cancelTag": [
+                "JumpVerticalToLanding"
+            ],
+            "fadeOutPercentage": 0.0,
+            "priority": 0,
+            "range": {
+                "min": 0.0,
+                "max": 1.0
+            },
+            "frameIndexRange": {
+                "min": 5,
+                "max": 25
+            }
+        }
+    ],
     "mTempBeCanceledTagList": [],
     "mCommandList": [
         {
@@ -36,7 +52,7 @@
                 "min": 0.0,
                 "max": 1.0
             },
-            "rate": 0.0
+            "rate": 0.5
         }
     ],
     "RootMotionDataPath": "Vergil/Basic/Jump_Vertical",

@@ -1,30 +1,46 @@
 {"data":{
-    "mActionName": "ComboB_2",
-    "mAnimation": "ComboB_2",
-    "mPriority": 100,
-    "mAutoNextActionName": "Idle",
+    "mActionName": "Jump_Vertical_Move",
+    "mAnimation": "Jump_Vertical",
+    "mPriority": 2,
+    "mAutoNextActionName": "Jump_Vertical_Fly_Loop_Move",
     "mAutoTerminate": false,
     "keepPlayingAnim": false,
-    "mTotalFrameCount": 100,
+    "mTotalFrameCount": 25,
     "SelfLoopCount": 0,
     "mCancelTagList": [
         {
-            "tag": "To_ComboB_2",
-            "priority": 1,
+            "tag": "RunLoopAction",
+            "priority": 2,
             "startFromPercentage": 0.0,
             "startFromFrameIndex": 0,
             "fadeInPercentage": 0.0
         }
     ],
-    "mBeCanceledTagList": [],
+    "mBeCanceledTagList": [
+        {
+            "cancelTag": [
+                "JumpVerticalMoveToLanding"
+            ],
+            "fadeOutPercentage": 0.0,
+            "priority": 0,
+            "range": {
+                "min": 0.0,
+                "max": 1.0
+            },
+            "frameIndexRange": {
+                "min": 5,
+                "max": 25
+            }
+        }
+    ],
     "mTempBeCanceledTagList": [],
     "mCommandList": [
         {
             "keySequences": [
-                7
+                9
             ],
             "validInSecond": 0.0,
-            "validInFrameCount": 2
+            "validInFrameCount": 1
         }
     ],
     "attackInfoList": [],
@@ -36,10 +52,10 @@
                 "min": 0.0,
                 "max": 1.0
             },
-            "rate": 0.0
+            "rate": 1
         }
     ],
-    "RootMotionDataPath": "Vergil/Yamato/ComboB_2",
+    "RootMotionDataPath": "Vergil/Basic/Jump_Vertical",
     "RootMotionData": {
         "X": [],
         "Y": [],
@@ -50,25 +66,15 @@
     },
     "MoveSpeed": 0.0,
     "ForceMoce": false,
+    "AppilyGravityInRootMotion": false,
     "Notifies": [
         {
             "Range": {
-                "min": 74,
-                "max": 74
+                "min": 0,
+                "max": 25
             },
-            "FunctionName": "ToLeftHand",
+            "FunctionName": "CheckGrounded",
             "Params": []
-        },
-        {
-            "Range": {
-                "min": 52,
-                "max": 52
-            },
-            "FunctionName": "FixedPart00",
-            "Params": [
-                "0,0,0",
-                "-2,72.5,180"
-            ]
         }
     ]
 }}

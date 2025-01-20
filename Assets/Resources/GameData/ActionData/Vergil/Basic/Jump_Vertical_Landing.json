@@ -16,6 +16,13 @@
             "fadeInPercentage": 0.0
         },
         {
+            "tag": "JumpVerticalToLanding",
+            "priority": 1,
+            "startFromPercentage": 0.0,
+            "startFromFrameIndex": 0,
+            "fadeInPercentage": 0.0
+        },
+        {
             "tag": "JumpVerticalFlyLoopToLanding",
             "priority": 1,
             "startFromPercentage": 0.0,
@@ -41,9 +48,7 @@
     "RootMotionDataPath": "",
     "RootMotionData": {
         "X": [],
-        "Y": [
-            0.38521960377693179
-        ],
+        "Y": [],
         "Z": [],
         "RX": [],
         "RY": [],

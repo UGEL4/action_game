@@ -67,7 +67,7 @@
                 "min": 0.0,
                 "max": 1.0
             },
-            "rate": 1.0
+            "rate": 0.0
         }
     ],
     "RootMotionDataPath": "Vergil/Yamato/ComboB_1",
@@ -80,7 +80,7 @@
         "RZ": []
     },
     "MoveSpeed": 0.0,
-    "ForceMoce": true,
+    "ForceMoce": false,
     "Notifies": [
         {
             "Range": {

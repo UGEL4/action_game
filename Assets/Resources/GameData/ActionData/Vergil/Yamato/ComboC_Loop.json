@@ -4,7 +4,7 @@
     "mPriority": 100,
     "mAutoNextActionName": "ComboC_Finish",
     "mAutoTerminate": false,
-    "keepPlayingAnim": false,
+    "keepPlayingAnim": true,
     "mTotalFrameCount": 18,
     "SelfLoopCount": 7,
     "mCancelTagList": [
@@ -28,7 +28,7 @@
                 "max": 0.0
             },
             "frameIndexRange": {
-                "min": 7,
+                "min": 0,
                 "max": 18
             }
         }
@@ -40,7 +40,7 @@
                 7
             ],
             "validInSecond": 0.0,
-            "validInFrameCount": 2
+            "validInFrameCount": 5
         }
     ],
     "attackInfoList": [],

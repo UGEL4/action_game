@@ -47,6 +47,7 @@ public class MovementComponent : ComponentBase
     }
 
     private bool mIsGrounded;
+    public bool IsGrounded => mIsGrounded;
     // jump相关
 
     public MovementComponent(CharacterObj owner)
@@ -67,7 +68,7 @@ public class MovementComponent : ComponentBase
 
     public override void BeginPlay()
     {
-        mOwner.Action.OnActionNotify += CheckGrounded;
+        //mOwner.Action.OnActionNotify += CheckGrounded;
     }
 
     public override void UpdateLogic(int frameIndex)
@@ -148,7 +149,11 @@ public class MovementComponent : ComponentBase
                 {
                     RootMotionMove.y = -mOwner.GravityComp.Gravity / GameInstance.Instance.LogicFrameRate;
                 }
-                mController.Move(targetRotation * RootMotionMove);
+                RootMotionMove = targetRotation * RootMotionMove;
+                float MoveInputAcceptance = mOwner.GetMoveInputAcceptance();
+                RootMotionMove.x += adjDir.x * 6 *  MoveInputAcceptance * (1f / GameInstance.Instance.LogicFrameRate);
+                RootMotionMove.z += adjDir.z * 6 *  MoveInputAcceptance * (1f / GameInstance.Instance.LogicFrameRate);
+                mController.Move(RootMotionMove);
             }
             else
             {
@@ -300,36 +305,7 @@ controller.Move(finalMoveDelta);
 
     private void HandleInAirAction()
     {
-        if (!mIsGrounded && mController.isGrounded)
-        {
-            CharacterAction action = mOwner.Action.GetActionById("Jump_Vertical_Landing", out bool found);
-            if (found && mOwner.Action.CanActionCancelCurrentAction(action, false, out CancelTag foundTag, out BeCanceledTag beCabceledTag))
-            {
-                ActionChangeInfo info = new ActionChangeInfo() {
-                    changeType = ActionChangeType.ChangeToActionId,
-                    param      = "Jump_Vertical_Landing",
-                    priority   = 2
-
-                };
-                mOwner.Action.PreorderActionByActionChangeInfo(info);
-            }
-        }
-        else if (!mIsGrounded && !mController.isGrounded)
-        {
-            //string actionName = mOwner.Action.CurAction.mActionName;
-            //if (actionName == "")
-            CharacterAction action = mOwner.Action.GetActionById("Jump_Vertical_Fly_Loop", out bool found);
-            if (found && mOwner.Action.CanActionCancelCurrentAction(action, false, out CancelTag foundTag, out BeCanceledTag beCabceledTag))
-            {
-                ActionChangeInfo info = new ActionChangeInfo() {
-                    changeType = ActionChangeType.ChangeToActionId,
-                    param      = "Jump_Vertical_Fly_Loop",
-                    priority   = 2
-
-                };
-                mOwner.Action.PreorderActionByActionChangeInfo(info);
-            }
-        }
+        mOwner.HandleInAirAction();
     }
 
     public void CheckGrounded(string functionName, string[] args)

@@ -1,0 +1,57 @@
+{"data":{
+    "mActionName": "Jump_Vertical_Fly_Loop_Move",
+    "mAnimation": "Jump_Vertical_Fly_Loop",
+    "mPriority": 1,
+    "mAutoNextActionName": "Jump_Vertical_Fly_Loop_Move",
+    "mAutoTerminate": false,
+    "keepPlayingAnim": true,
+    "mTotalFrameCount": 2,
+    "SelfLoopCount": 0,
+    "mCancelTagList": [],
+    "mBeCanceledTagList": [
+        {
+            "cancelTag": [
+                "JumpVerticalFlyLoopMoveToLanding"
+            ],
+            "fadeOutPercentage": 0.0,
+            "priority": 0,
+            "range": {
+                "min": 0.0,
+                "max": 1.0
+            },
+            "frameIndexRange": {
+                "min": 0,
+                "max": 1
+            }
+        }
+    ],
+    "mTempBeCanceledTagList": [],
+    "mCommandList": [],
+    "attackInfoList": [],
+    "attackPhaseList": [],
+    "defensePhases": [],
+    "moveInputAcceptance": [
+        {
+            "range": {
+                "min": 0.0,
+                "max": 1.0
+            },
+            "rate": 1.0
+        }
+    ],
+    "RootMotionDataPath": "",
+    "RootMotionData": {
+        "X": [0],
+        "Y": [
+            -0.38521960377693179
+        ],
+        "Z": [0],
+        "RX": [0],
+        "RY": [0],
+        "RZ": [0]
+    },
+    "MoveSpeed": 0.0,
+    "ForceMoce": false,
+    "AppilyGravityInRootMotion": false,
+    "Notifies": []
+}}

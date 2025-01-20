@@ -1,5 +1,5 @@
 {"data":{
-    "mActionName": "Jump_Vertical_Landing",
+    "mActionName": "Jump_Vertical_Landing_Move",
     "mAnimation": "Jump_Vertical_Landing",
     "mPriority": 1,
     "mAutoNextActionName": "Idle",
@@ -7,7 +7,22 @@
     "keepPlayingAnim": false,
     "mTotalFrameCount": 8,
     "SelfLoopCount": 0,
-    "mCancelTagList": [],
+    "mCancelTagList": [
+        {
+            "tag": "JumpVerticalMoveToLanding",
+            "priority": 1,
+            "startFromPercentage": 0.0,
+            "startFromFrameIndex": 0,
+            "fadeInPercentage": 0.0
+        },
+        {
+            "tag": "JumpVerticalFlyLoopMoveToLanding",
+            "priority": 1,
+            "startFromPercentage": 0.0,
+            "startFromFrameIndex": 0,
+            "fadeInPercentage": 0.0
+        }
+    ],
     "mBeCanceledTagList": [],
     "mTempBeCanceledTagList": [],
     "mCommandList": [],
@@ -20,15 +35,13 @@
                 "min": 0.0,
                 "max": 1.0
             },
-            "rate": 0.0
+            "rate": 1.0
         }
     ],
     "RootMotionDataPath": "",
     "RootMotionData": {
         "X": [],
-        "Y": [
-            0.38521960377693179
-        ],
+        "Y": [],
         "Z": [],
         "RX": [],
         "RY": [],
@@ -36,5 +49,6 @@
     },
     "MoveSpeed": 0.0,
     "ForceMoce": false,
+    "AppilyGravityInRootMotion": false,
     "Notifies": []
 }}

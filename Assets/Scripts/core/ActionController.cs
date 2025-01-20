@@ -79,6 +79,14 @@ public class ActionController
         if (mCurrentFrameIndex >= CurAction.mTotalFrameCount)
         {
             mCurrentFrameIndex = 0;
+            if (CurAction.SelfLoopCount > 0)
+            {
+                ActionLoopCount++;
+            }
+            else
+            {
+                ActionLoopCount = 0;
+            }
         }
 
         //通知
@@ -193,13 +201,16 @@ public class ActionController
         if (currentNormalized >= 1)
         {
             //animator.CrossFade(CurAction.mAnimation, 0, 0, 0);
-            mOwner.PlayAnimation(CurAction.mAnimation, 0, 0);
-            if (mCurrentFrameIndex > CurAction.mTotalFrameCount)
-            {
-                mCurrentFrameIndex = 0;
-            }
+            // mOwner.PlayAnimation(CurAction.mAnimation, 0, 0);
+            // if (mCurrentFrameIndex > CurAction.mTotalFrameCount)
+            // {
+            //     mCurrentFrameIndex = 0;
+            // }
         }
-        if (mCurrentFrameIndex == 0) mCurrentFrameIndex = 1;
+        if (mCurrentFrameIndex == 0)
+        {
+            mOwner.PlayAnimation(CurAction.mAnimation, 0, 0);
+        }
     }
 
     void ChangeAction(string actionName, float normalizedTransitionDuration, float normalizedTimeOffset, uint fromFrameIndex)
@@ -213,14 +224,15 @@ public class ActionController
             //animator.CrossFade(action.mAnimation, normalizedTransitionDuration, 0, normalizedTimeOffset);
             mOwner.PlayAnimation(action.mAnimation, normalizedTransitionDuration, normalizedTimeOffset);
             //
-            if (CurAction.mActionName == actionName && CurAction.SelfLoopCount > 0)
-            {
-                ActionLoopCount++;
-            }
-            else
-            {
-                ActionLoopCount = 0;
-            }
+            // if (CurAction.mActionName == actionName && CurAction.SelfLoopCount > 0)
+            // {
+            //     ActionLoopCount++;
+            // }
+            // else
+            // {
+            //     ActionLoopCount = 0;
+            // }
+            ActionLoopCount = 0;
             CurAction = action;
             curBeCanceledTagList.Clear();
             foreach (BeCanceledTag tag in CurAction.mBeCanceledTagList)

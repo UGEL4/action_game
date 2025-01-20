@@ -60,4 +60,51 @@ public class MainPlayerCharacterObj : CharacterObj
         Y = null;
         base.Destroy();
     }
+
+    public override void HandleInAirAction()
+    {
+        if (!mMovementComponent.IsGrounded && mMovementComponent.GetCharacterController().isGrounded)
+        {
+            bool found;
+            CharacterAction action = Action.GetActionById("Jump_Vertical_Landing", out found);
+            if (found && Action.CanActionCancelCurrentAction(action, false, out CancelTag foundTag, out BeCanceledTag beCabceledTag))
+            {
+                ActionChangeInfo info = new ActionChangeInfo() {
+                    changeType = ActionChangeType.ChangeToActionId,
+                    param      = "Jump_Vertical_Landing",
+                    priority   = 2
+
+                };
+               Action.PreorderActionByActionChangeInfo(info);
+            }
+
+            action = Action.GetActionById("Jump_Vertical_Landing_Move", out found);
+            if (found && Action.CanActionCancelCurrentAction(action, false, out CancelTag foundTag1, out BeCanceledTag beCabceledTag1))
+            {
+                ActionChangeInfo info = new ActionChangeInfo() {
+                    changeType = ActionChangeType.ChangeToActionId,
+                    param      = "Jump_Vertical_Landing_Move",
+                    priority   = 2
+
+                };
+                Action.PreorderActionByActionChangeInfo(info);
+            }
+        }
+        else if (!mMovementComponent.IsGrounded && !mMovementComponent.GetCharacterController().isGrounded)
+        {
+            //string actionName = mOwner.Action.CurAction.mActionName;
+            //if (actionName == "")
+            CharacterAction action = Action.GetActionById("Jump_Vertical_Fly_Loop", out bool found);
+            if (found && Action.CanActionCancelCurrentAction(action, false, out CancelTag foundTag, out BeCanceledTag beCabceledTag))
+            {
+                ActionChangeInfo info = new ActionChangeInfo() {
+                    changeType = ActionChangeType.ChangeToActionId,
+                    param      = "Jump_Vertical_Fly_Loop",
+                    priority   = 2
+
+                };
+                Action.PreorderActionByActionChangeInfo(info);
+            }
+        }
+    }
 }

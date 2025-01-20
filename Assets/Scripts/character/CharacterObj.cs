@@ -343,6 +343,9 @@ public class CharacterObj
         "Vergil/Basic/Jump_Vertical",
         "Vergil/Basic/Jump_Vertical_Fly_Loop",
         "Vergil/Basic/Jump_Vertical_Landing",
+        "Vergil/Basic/Jump_Vertical_Move",
+        "Vergil/Basic/Jump_Vertical_Fly_Loop_Move",
+        "Vergil/Basic/Jump_Vertical_Landing_Move",
     };
     public void LoadActions()
     {
@@ -377,6 +380,11 @@ public class CharacterObj
     public bool HasBegunPlay()
     {
         return IsBeginPlayed;
+    }
+
+    public virtual void HandleInAirAction()
+    {
+        
     }
 }
 
