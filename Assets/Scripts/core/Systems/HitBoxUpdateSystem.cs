@@ -12,6 +12,8 @@ public class HitBoxUpdateSystem
 
     private Dictionary<CharacterObj, List<HitBoxDataPoolSystem.HitBoxData>> mCharacterCurrentActionHitBoxData = new();
 
+    private Dictionary<CharacterObj, AttackBoxTurnOnInfo[]> mCharacterCurrentAttackBoxTurnOnInfo;
+
     public void Init()
     {
         mPlayers    = new();
@@ -39,6 +41,18 @@ public class HitBoxUpdateSystem
         if (!mAllEnemies.Contains(enemy))
         {
             mAllEnemies.Add(enemy);
+        }
+    }
+
+    public void UpdateAttackBoxTurnOnInfo(CharacterObj target, AttackBoxTurnOnInfo[] attackPhaseList)
+    {
+        if (!mCharacterCurrentAttackBoxTurnOnInfo.ContainsKey(target))
+        {
+            mCharacterCurrentAttackBoxTurnOnInfo.Add(target, attackPhaseList);
+        }
+        else
+        {
+            mCharacterCurrentAttackBoxTurnOnInfo[target] = attackPhaseList;
         }
     }
 
@@ -390,5 +404,58 @@ public class HitBoxUpdateSystem
         }
 
         return tNear <= tFar;*/
+    }
+
+    bool AABBIntersectsAABB(Transform rootTransformA1, BoxColliderData A1, Transform rootTransformA2, BoxColliderData A2)
+    {
+        Vector3 worldCenterA1 = rootTransformA1.TransformPoint(A1.center);
+        // 计算盒子的最小和最大边界
+        Vector3 halfSizeA1 = A1.size * 0.5f;
+        //Vector3 boxMin = center - halfSize;
+        //Vector3 boxMax = center + halfSize;
+        Quaternion rotA1 = Quaternion.Euler(A1.rotation);
+        // 创建一个旋转矩阵
+        //Matrix4x4 rotationMatrix = Matrix4x4.Rotate(quaternion.Euler(boxRot));
+        // 计算父节点的变换
+        //Matrix4x4 parentMatrix = Matrix4x4.TRS(rootTransform.position, rootTransform.rotation, rootTransform.localScale);
+        // 将盒子的角点转换到世界坐标
+        Vector3[] cornersA1 = new Vector3[8];
+        cornersA1[0]        = worldCenterA1 + rotA1 * new Vector3(halfSizeA1.x, halfSizeA1.y, halfSizeA1.z);
+        cornersA1[1]        = worldCenterA1 + rotA1 * new Vector3(halfSizeA1.x, halfSizeA1.y, -halfSizeA1.z);
+        cornersA1[2]        = worldCenterA1 + rotA1 * new Vector3(halfSizeA1.x, -halfSizeA1.y, halfSizeA1.z);
+        cornersA1[3]        = worldCenterA1 + rotA1 * new Vector3(halfSizeA1.x, -halfSizeA1.y, -halfSizeA1.z);
+        cornersA1[4]        = worldCenterA1 + rotA1 * new Vector3(-halfSizeA1.x, halfSizeA1.y, halfSizeA1.z);
+        cornersA1[5]        = worldCenterA1 + rotA1 * new Vector3(-halfSizeA1.x, halfSizeA1.y, -halfSizeA1.z);
+        cornersA1[6]        = worldCenterA1 + rotA1 * new Vector3(-halfSizeA1.x, -halfSizeA1.y, halfSizeA1.z);
+        cornersA1[7]        = worldCenterA1 + rotA1 * new Vector3(-halfSizeA1.x, -halfSizeA1.y, -halfSizeA1.z);
+        // 计算包围盒
+        Bounds boxBoundsA1 = new Bounds(cornersA1[0], Vector3.zero);
+        foreach (var corner in cornersA1)
+        {
+            boxBoundsA1.Encapsulate(corner);
+        }
+
+        Vector3 worldCenterA2 = rootTransformA2.TransformPoint(A2.center);
+        // 计算盒子的最小和最大边界
+        Vector3 halfSizeA2 = A2.size * 0.5f;
+        Quaternion rotA2 = Quaternion.Euler(A2.rotation);
+        // 将盒子的角点转换到世界坐标
+        Vector3[] cornersA2 = new Vector3[8];
+        cornersA2[0]        = worldCenterA2 + rotA2 * new Vector3(halfSizeA2.x, halfSizeA2.y, halfSizeA2.z);
+        cornersA2[1]        = worldCenterA2 + rotA2 * new Vector3(halfSizeA2.x, halfSizeA2.y, -halfSizeA2.z);
+        cornersA2[2]        = worldCenterA2 + rotA2 * new Vector3(halfSizeA2.x, -halfSizeA2.y, halfSizeA2.z);
+        cornersA2[3]        = worldCenterA2 + rotA2 * new Vector3(halfSizeA2.x, -halfSizeA2.y, -halfSizeA2.z);
+        cornersA2[4]        = worldCenterA2 + rotA2 * new Vector3(-halfSizeA2.x, halfSizeA2.y, halfSizeA2.z);
+        cornersA2[5]        = worldCenterA2 + rotA2 * new Vector3(-halfSizeA2.x, halfSizeA2.y, -halfSizeA2.z);
+        cornersA2[6]        = worldCenterA2 + rotA2 * new Vector3(-halfSizeA2.x, -halfSizeA2.y, halfSizeA2.z);
+        cornersA2[7]        = worldCenterA2 + rotA2 * new Vector3(-halfSizeA2.x, -halfSizeA2.y, -halfSizeA2.z);
+        // 计算包围盒
+        Bounds boxBoundsA2 = new Bounds(cornersA2[0], Vector3.zero);
+        foreach (var corner in cornersA2)
+        {
+            boxBoundsA2.Encapsulate(corner);
+        }
+
+        return boxBoundsA1.Intersects(boxBoundsA2);
     }
 }

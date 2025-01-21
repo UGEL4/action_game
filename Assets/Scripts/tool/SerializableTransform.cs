@@ -18,7 +18,7 @@ namespace ACTTools
     }
 
     [Serializable]
-    public struct BoxColliderData
+    public class BoxColliderData
     {
         public Vector3 position;
         public Vector3 rotation;

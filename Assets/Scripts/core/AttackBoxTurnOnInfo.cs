@@ -22,7 +22,7 @@ public struct AttackBoxTurnOnInfo
     /// </summary>
     public FrameIndexRange[] FrameIndexRange; //每组射线的开启帧
     public AttackRayPointGroup[] RayPointGroupList; // 所有射线组的数据
-    public SimpleColliderBox[] AttackBoxes; // 攻击盒在开启时所有帧的数据
+    public BoxColliderData[] AttackBoxes; // 攻击盒在开启时所有帧的数据，根据FrameIndexRange来开启
     //public string[] AttackBoxTag; //碰撞盒在开启时所有帧的数据
 
     /// <summary>

@@ -59,3 +59,23 @@ public class HitRayCastEditorPoint
         go.tag = "ActionEditorRayCastPoint";
     }
 }
+
+public class AttackBoxObject
+{
+    [MenuItem("GameObject/攻击框", false, 0)]
+    public static void Create()
+    {
+        GameObject go = new GameObject("Box");
+        GameObject selectedObj = Selection.activeGameObject;
+        if (selectedObj != null)
+        {
+            go.transform.parent        = selectedObj.transform;
+            go.transform.localPosition = Vector3.zero;
+            go.transform.localScale    = Vector3.one;
+            go.transform.localRotation = Quaternion.identity;
+        }
+        Selection.activeGameObject = go;
+        go.AddComponent<CastBox>();
+        //go.tag = "ActionEditorRayCastPoint";
+    }
+}

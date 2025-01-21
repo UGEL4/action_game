@@ -80,6 +80,7 @@
     <Compile Include="Assets\Scripts\Test\TestBoxFrameData.cs" />
     <Compile Include="Assets\Scripts\core\Bounds\OBB.cs" />
     <Compile Include="Assets\Scripts\component\MovementComponent.cs" />
+    <Compile Include="Assets\Scripts\tool\CastShapeBase.cs" />
     <Compile Include="Assets\EasyColliderEditor\Scripts\EasyColliderUIHelpers.cs" />
     <Compile Include="Assets\Scripts\core\ActionCommand.cs" />
     <Compile Include="Assets\Scripts\component\Mono\InputReaderComponentMono.cs" />
@@ -124,6 +125,7 @@
     <Compile Include="Assets\Scripts\character\MainPlayerCharacterObj.cs" />
     <Compile Include="Assets\EasyColliderEditor\Scripts\EasyColliderVertex.cs" />
     <Compile Include="Assets\Scripts\tool\SerializableTransform.cs" />
+    <Compile Include="Assets\Scripts\tool\CastBox.cs" />
     <Compile Include="Assets\Scripts\Test\TestHitBox.cs" />
     <Compile Include="Assets\Scripts\tool\ActionEditorSerializer.cs" />
     <Compile Include="Assets\Scripts\core\InputToCommand.cs" />

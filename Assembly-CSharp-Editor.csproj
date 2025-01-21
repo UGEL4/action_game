@@ -66,16 +66,22 @@
   <ItemGroup>
     <Compile Include="Assets\Scripts\editor\ActionEditHitBoxClip.cs" />
     <Compile Include="Assets\Scripts\editor\AnimationTool\RootMotionToInplace.cs" />
+    <Compile Include="Assets\Scripts\editor\CastShapeTool.cs" />
     <Compile Include="Assets\Scripts\editor\ActionEditActionTrack.cs" />
+    <Compile Include="Assets\Scripts\editor\HitBox\DefenseBox\ActionEditorDefenseBoxClip.cs" />
     <Compile Include="Assets\Scripts\editor\ActionEditHitBoxTrack.cs" />
     <Compile Include="Assets\Scripts\editor\ActionEditorTrack.cs" />
     <Compile Include="Assets\Scripts\editor\HitBox\ActionEditorHitBoxBehaviour.cs" />
+    <Compile Include="Assets\Scripts\editor\HitBox\AttackBox\ActionEditorAttackBoxBehaviour.cs" />
+    <Compile Include="Assets\Scripts\editor\HitBox\AttackBox\ActionEditorAttackBoxClip.cs" />
     <Compile Include="Assets\Scripts\editor\ExportBoxColliderAnimationWindow.cs" />
     <Compile Include="Assets\Scripts\editor\ActionData\ActionEditorActionDataBehaviour.cs" />
     <Compile Include="Assets\Scripts\editor\HitBox\ActionEditorHitBoxTrack.cs" />
+    <Compile Include="Assets\Scripts\editor\HitBox\DefenseBox\ActionEditorDefenseBoxBehaviour.cs" />
     <Compile Include="Assets\Scripts\editor\ActionEditActionClip.cs" />
     <Compile Include="Assets\Scripts\editor\ActionEditorTrackTimeLineClip.cs" />
     <Compile Include="Assets\Scripts\editor\SaveActionWindow.cs" />
+    <Compile Include="Assets\Scripts\editor\CastBoxEditor.cs" />
     <Compile Include="Assets\Scripts\editor\HitBox\ActionEditorHitRayCastClip.cs" />
     <Compile Include="Assets\Scripts\editor\ActionData\ActionEditorActionDataClip.cs" />
     <Compile Include="Assets\Scripts\editor\AnimationTool\GetRootMotionData.cs" />
@@ -83,7 +89,9 @@
     <Compile Include="Assets\Scripts\editor\AnimationPreviewWindow.cs" />
     <Compile Include="Assets\Scripts\editor\HitBox\ActionEditorHitRayCastTrack.cs" />
     <Compile Include="Assets\Scripts\editor\HitBox\ActionEditorHitRayCastBehaviour.cs" />
+    <Compile Include="Assets\Scripts\editor\HitBox\AttackBox\ActionEditorAttackBoxTrack.cs" />
     <Compile Include="Assets\Scripts\editor\ActionData\ActionEditorActionDataTrack.cs" />
+    <Compile Include="Assets\Scripts\editor\HitBox\DefenseBox\ActionEditorDefenseBoxTrack.cs" />
     <Compile Include="Assets\Scripts\editor\CunstmEmptyGameObject.cs" />
     <Compile Include="Assets\Scripts\editor\HitBox\ActionEditorHitBoxClip.cs" />
     <Compile Include="Assets\Scripts\editor\ActionEditor.cs" />
