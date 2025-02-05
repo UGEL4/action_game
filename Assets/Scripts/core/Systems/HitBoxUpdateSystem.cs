@@ -89,6 +89,11 @@ public class HitBoxUpdateSystem
             // player的攻击框
             uint playerFrameIndex = actionController.CurrentFrameIndex;
             int playerAttackPhase = GetAttackPhase(playerCurrentAction, (int)playerFrameIndex);
+            if (playerAttackPhase != -1)
+                DrawWireCube(playerCurrentAction.attackPhaseList[playerAttackPhase].AttackBoxes, (int)playerFrameIndex, player.transform);
+            int playerDefensePhase1 = GetDefensePhase(playerCurrentAction, (int)playerFrameIndex);
+            if (playerDefensePhase1 != -1)
+                DrawWireCube(playerCurrentAction.defensePhases[playerDefensePhase1].DefenseBoxes, (int)playerFrameIndex, player.transform);
 
             //检测player的攻击对每个enemy产生的碰撞, 同时也检测每个enemy的攻击对player产生的碰撞
             for (int e = 0; e < mAllEnemies.Count; ++e)
@@ -142,7 +147,7 @@ public class HitBoxUpdateSystem
         {
             for (int k = 0; k < action.attackPhaseList[j].FrameIndexRange.Length; k++)
             {
-                if (frameIndex <= action.attackPhaseList[j].FrameIndexRange[k].min || frameIndex > action.attackPhaseList[j].FrameIndexRange[k].max)
+                if (frameIndex < action.attackPhaseList[j].FrameIndexRange[k].min || frameIndex > action.attackPhaseList[j].FrameIndexRange[k].max)
                 {
                     continue;
                 }
@@ -166,48 +171,70 @@ public class HitBoxUpdateSystem
         }
         for (int j = 0; j < action.defensePhases.Length; ++j)
         {
-            if (frameIndex < action.defensePhases[j].FrameIndexRange.min || frameIndex > action.defensePhases[j].FrameIndexRange.max)
+            for (int k = 0; k < action.defensePhases[j].DefenseBoxes.Length; k++)
             {
-                continue;
+                if (k >= action.defensePhases[j].FrameIndexRange.Length)
+                {
+                    continue;
+                }
+                if (frameIndex < action.defensePhases[j].FrameIndexRange[k].min || frameIndex > action.defensePhases[j].FrameIndexRange[k].max)
+                {
+                    continue;
+                }
+                defensePhases = j;
+                break;
             }
-            defensePhases = j;
-            break;
+            if (defensePhases != -1)
+            {
+                break;
+            }
         }
         return defensePhases;
     }
 
     void CheckHit(CharacterObj attacker, AttackBoxTurnOnInfo attackBoxInfo, int attackerFrameIndex, CharacterObj target, BeHitBoxTurnOnInfo defenseBoxInfo, int targetFrameIndex)
     {
-        if (!mCharacterCurrentActionHitBoxData.ContainsKey(target))
-        {
-            return;
-        }
         var attackActionController = attacker.Action;
-        var frameDataList          = mCharacterCurrentActionHitBoxData[target];
-        for (int k = 0; k < defenseBoxInfo.Tags.Length; ++k)
+        for (int k = 0; k < defenseBoxInfo.DefenseBoxes.Length; k++)
         {
-            string tag = defenseBoxInfo.Tags[k];
-            for (int n = 0; n < frameDataList.Count; n++)
+            for (int i = 0; i < attackBoxInfo.AttackBoxes.Length; i++)
             {
-                if (tag == frameDataList[n].BoxName)
+                if (CheckIntersects(attackBoxInfo.AttackBoxes[i], attacker, defenseBoxInfo.DefenseBoxes[k], target))
                 {
-                    int index = (int)(targetFrameIndex - defenseBoxInfo.FrameIndexRange.min);
-                    if (index < 0)
-                    {
-                        break;
-                    }
-                    if (index >= frameDataList[n].AllFrameData.Count)
-                    {
-                        index = frameDataList[n].AllFrameData.Count - 1;
-                    }
-                    if (IsHit(attackBoxInfo, attacker, frameDataList[n].AllFrameData[index], target, attackerFrameIndex, out string gropuTag))
-                    {
-                        attackActionController.OnAttackBoxHit(gropuTag, defenseBoxInfo);
-                    }
-                    break;
+                    attackActionController.OnAttackBoxHit(attackBoxInfo, defenseBoxInfo);
                 }
             }
         }
+        // if (!mCharacterCurrentActionHitBoxData.ContainsKey(target))
+        // {
+        //     return;
+        // }
+        // var attackActionController = attacker.Action;
+        // var frameDataList          = mCharacterCurrentActionHitBoxData[target];
+        // for (int k = 0; k < defenseBoxInfo.Tags.Length; ++k)
+        // {
+        //     string tag = defenseBoxInfo.Tags[k];
+        //     for (int n = 0; n < frameDataList.Count; n++)
+        //     {
+        //         if (tag == frameDataList[n].BoxName)
+        //         {
+        //             int index = (int)(targetFrameIndex - defenseBoxInfo.FrameIndexRange.min);
+        //             if (index < 0)
+        //             {
+        //                 break;
+        //             }
+        //             if (index >= frameDataList[n].AllFrameData.Count)
+        //             {
+        //                 index = frameDataList[n].AllFrameData.Count - 1;
+        //             }
+        //             if (IsHit(attackBoxInfo, attacker, frameDataList[n].AllFrameData[index], target, attackerFrameIndex, out string gropuTag))
+        //             {
+        //                 attackActionController.OnAttackBoxHit(gropuTag, defenseBoxInfo);
+        //             }
+        //             break;
+        //         }
+        //     }
+        // }
     }
 
     private void DrawWireCube(List<HitBoxDataPoolSystem.HitBoxData> frameDataList, int frameIndex, Transform rootTransform)
@@ -255,6 +282,47 @@ public class HitBoxUpdateSystem
         }
     }
 
+    void DrawWireCube(BoxColliderData[] boxCollider, int frameIndex, Transform rootTransform)
+    {
+        for (int i = 0; i < boxCollider.Length; i++)
+        {
+            // if (i >= attackBoxInfo.AttackBoxes.Length)
+            // {
+            //     continue;
+            // }
+            // if (frameIndex < attackBoxInfo.FrameIndexRange[i].min || frameIndex > attackBoxInfo.FrameIndexRange[i].max)
+            // {
+            //     continue;
+            // }
+            //Vector3 wCenter = rootTransform.TransformPoint(boxCollider[i].position + boxCollider[i].center);
+            // 计算大小的一半
+            Vector3 halfSize = boxCollider[i].size * 0.5f;
+            Quaternion r     = Quaternion.Euler(boxCollider[i].rotation);
+            Vector3[] corners = new Vector3[8];
+            corners[0]        = rootTransform.TransformPoint(boxCollider[i].position + r * (boxCollider[i].center + new Vector3(halfSize.x, halfSize.y, halfSize.z)));
+            corners[1]        = rootTransform.TransformPoint(boxCollider[i].position + r * (boxCollider[i].center + new Vector3(halfSize.x, halfSize.y, -halfSize.z)));
+            corners[2]        = rootTransform.TransformPoint(boxCollider[i].position + r * (boxCollider[i].center + new Vector3(halfSize.x, -halfSize.y, halfSize.z)));
+            corners[3]        = rootTransform.TransformPoint(boxCollider[i].position + r * (boxCollider[i].center + new Vector3(halfSize.x, -halfSize.y, -halfSize.z)));
+            corners[4]        = rootTransform.TransformPoint(boxCollider[i].position + r * (boxCollider[i].center + new Vector3(-halfSize.x, halfSize.y, halfSize.z)));
+            corners[5]        = rootTransform.TransformPoint(boxCollider[i].position + r * (boxCollider[i].center + new Vector3(-halfSize.x, halfSize.y, -halfSize.z)));
+            corners[6]        = rootTransform.TransformPoint(boxCollider[i].position + r * (boxCollider[i].center + new Vector3(-halfSize.x, -halfSize.y, halfSize.z)));
+            corners[7]        = rootTransform.TransformPoint(boxCollider[i].position + r * (boxCollider[i].center + new Vector3(-halfSize.x, -halfSize.y, -halfSize.z)));
+            // 绘制边界线
+            Debug.DrawLine(corners[0], corners[1], Color.red, 0.033f);
+            Debug.DrawLine(corners[0], corners[2], Color.red, 0.033f);
+            Debug.DrawLine(corners[2], corners[3], Color.red, 0.033f);
+            Debug.DrawLine(corners[1], corners[3], Color.red, 0.033f);
+            Debug.DrawLine(corners[4], corners[5], Color.red, 0.033f);
+            Debug.DrawLine(corners[4], corners[6], Color.red, 0.033f);
+            Debug.DrawLine(corners[6], corners[7], Color.red, 0.033f);
+            Debug.DrawLine(corners[5], corners[7], Color.red, 0.033f);
+            Debug.DrawLine(corners[0], corners[4], Color.red, 0.033f);
+            Debug.DrawLine(corners[2], corners[6], Color.red, 0.033f);
+            Debug.DrawLine(corners[1], corners[5], Color.red, 0.033f);
+            Debug.DrawLine(corners[3], corners[7], Color.red, 0.033f);
+        }
+    }
+
     bool IsHit(AttackBoxTurnOnInfo attackBoxInfo, CharacterObj attacker, BoxColliderData defenseBoxInfo, CharacterObj target, int frame, out string gropuTag)
     {
         for (int i = 0; i < attackBoxInfo.FrameIndexRange.Length; ++i)
@@ -288,6 +356,11 @@ public class HitBoxUpdateSystem
         }
         gropuTag = string.Empty;
         return false;
+    }
+
+    bool CheckIntersects(BoxColliderData attackBox, CharacterObj attacker, BoxColliderData defenseBoxInfo, CharacterObj target)
+    {
+        return AABBIntersectsAABB(attacker.transform, attackBox, target.transform, defenseBoxInfo);
     }
 
     bool IsHitBox(Vector3 startPos, Vector3 endPos, BoxColliderData boxInfo, Transform rootTransform)
@@ -408,7 +481,6 @@ public class HitBoxUpdateSystem
 
     bool AABBIntersectsAABB(Transform rootTransformA1, BoxColliderData A1, Transform rootTransformA2, BoxColliderData A2)
     {
-        Vector3 worldCenterA1 = rootTransformA1.TransformPoint(A1.center);
         // 计算盒子的最小和最大边界
         Vector3 halfSizeA1 = A1.size * 0.5f;
         //Vector3 boxMin = center - halfSize;
@@ -420,14 +492,14 @@ public class HitBoxUpdateSystem
         //Matrix4x4 parentMatrix = Matrix4x4.TRS(rootTransform.position, rootTransform.rotation, rootTransform.localScale);
         // 将盒子的角点转换到世界坐标
         Vector3[] cornersA1 = new Vector3[8];
-        cornersA1[0]        = worldCenterA1 + rotA1 * new Vector3(halfSizeA1.x, halfSizeA1.y, halfSizeA1.z);
-        cornersA1[1]        = worldCenterA1 + rotA1 * new Vector3(halfSizeA1.x, halfSizeA1.y, -halfSizeA1.z);
-        cornersA1[2]        = worldCenterA1 + rotA1 * new Vector3(halfSizeA1.x, -halfSizeA1.y, halfSizeA1.z);
-        cornersA1[3]        = worldCenterA1 + rotA1 * new Vector3(halfSizeA1.x, -halfSizeA1.y, -halfSizeA1.z);
-        cornersA1[4]        = worldCenterA1 + rotA1 * new Vector3(-halfSizeA1.x, halfSizeA1.y, halfSizeA1.z);
-        cornersA1[5]        = worldCenterA1 + rotA1 * new Vector3(-halfSizeA1.x, halfSizeA1.y, -halfSizeA1.z);
-        cornersA1[6]        = worldCenterA1 + rotA1 * new Vector3(-halfSizeA1.x, -halfSizeA1.y, halfSizeA1.z);
-        cornersA1[7]        = worldCenterA1 + rotA1 * new Vector3(-halfSizeA1.x, -halfSizeA1.y, -halfSizeA1.z);
+        cornersA1[0]        = rootTransformA1.TransformPoint(A1.position + rotA1 * (A1.center + new Vector3(halfSizeA1.x, halfSizeA1.y, halfSizeA1.z)));
+        cornersA1[1]        = rootTransformA1.TransformPoint(A1.position + rotA1 * (A1.center + new Vector3(halfSizeA1.x, halfSizeA1.y, -halfSizeA1.z)));
+        cornersA1[2]        = rootTransformA1.TransformPoint(A1.position + rotA1 * (A1.center + new Vector3(halfSizeA1.x, -halfSizeA1.y, halfSizeA1.z)));
+        cornersA1[3]        = rootTransformA1.TransformPoint(A1.position + rotA1 * (A1.center + new Vector3(halfSizeA1.x, -halfSizeA1.y, -halfSizeA1.z)));
+        cornersA1[4]        = rootTransformA1.TransformPoint(A1.position + rotA1 * (A1.center + new Vector3(-halfSizeA1.x, halfSizeA1.y, halfSizeA1.z)));
+        cornersA1[5]        = rootTransformA1.TransformPoint(A1.position + rotA1 * (A1.center + new Vector3(-halfSizeA1.x, halfSizeA1.y, -halfSizeA1.z)));
+        cornersA1[6]        = rootTransformA1.TransformPoint(A1.position + rotA1 * (A1.center + new Vector3(-halfSizeA1.x, -halfSizeA1.y, halfSizeA1.z)));
+        cornersA1[7]        = rootTransformA1.TransformPoint(A1.position + rotA1 * (A1.center + new Vector3(-halfSizeA1.x, -halfSizeA1.y, -halfSizeA1.z)));
         // 计算包围盒
         Bounds boxBoundsA1 = new Bounds(cornersA1[0], Vector3.zero);
         foreach (var corner in cornersA1)
@@ -435,20 +507,19 @@ public class HitBoxUpdateSystem
             boxBoundsA1.Encapsulate(corner);
         }
 
-        Vector3 worldCenterA2 = rootTransformA2.TransformPoint(A2.center);
         // 计算盒子的最小和最大边界
         Vector3 halfSizeA2 = A2.size * 0.5f;
         Quaternion rotA2 = Quaternion.Euler(A2.rotation);
         // 将盒子的角点转换到世界坐标
         Vector3[] cornersA2 = new Vector3[8];
-        cornersA2[0]        = worldCenterA2 + rotA2 * new Vector3(halfSizeA2.x, halfSizeA2.y, halfSizeA2.z);
-        cornersA2[1]        = worldCenterA2 + rotA2 * new Vector3(halfSizeA2.x, halfSizeA2.y, -halfSizeA2.z);
-        cornersA2[2]        = worldCenterA2 + rotA2 * new Vector3(halfSizeA2.x, -halfSizeA2.y, halfSizeA2.z);
-        cornersA2[3]        = worldCenterA2 + rotA2 * new Vector3(halfSizeA2.x, -halfSizeA2.y, -halfSizeA2.z);
-        cornersA2[4]        = worldCenterA2 + rotA2 * new Vector3(-halfSizeA2.x, halfSizeA2.y, halfSizeA2.z);
-        cornersA2[5]        = worldCenterA2 + rotA2 * new Vector3(-halfSizeA2.x, halfSizeA2.y, -halfSizeA2.z);
-        cornersA2[6]        = worldCenterA2 + rotA2 * new Vector3(-halfSizeA2.x, -halfSizeA2.y, halfSizeA2.z);
-        cornersA2[7]        = worldCenterA2 + rotA2 * new Vector3(-halfSizeA2.x, -halfSizeA2.y, -halfSizeA2.z);
+        cornersA2[0]        = rootTransformA2.TransformPoint(A2.position + rotA2 * (A2.center + new Vector3(halfSizeA2.x, halfSizeA2.y, halfSizeA2.z)));
+        cornersA2[1]        = rootTransformA2.TransformPoint(A2.position + rotA2 * (A2.center + new Vector3(halfSizeA2.x, halfSizeA2.y, -halfSizeA2.z)));
+        cornersA2[2]        = rootTransformA2.TransformPoint(A2.position + rotA2 * (A2.center + new Vector3(halfSizeA2.x, -halfSizeA2.y, halfSizeA2.z)));
+        cornersA2[3]        = rootTransformA2.TransformPoint(A2.position + rotA2 * (A2.center + new Vector3(halfSizeA2.x, -halfSizeA2.y, -halfSizeA2.z)));
+        cornersA2[4]        = rootTransformA2.TransformPoint(A2.position + rotA2 * (A2.center + new Vector3(-halfSizeA2.x, halfSizeA2.y, halfSizeA2.z)));
+        cornersA2[5]        = rootTransformA2.TransformPoint(A2.position + rotA2 * (A2.center + new Vector3(-halfSizeA2.x, halfSizeA2.y, -halfSizeA2.z)));
+        cornersA2[6]        = rootTransformA2.TransformPoint(A2.position + rotA2 * (A2.center + new Vector3(-halfSizeA2.x, -halfSizeA2.y, halfSizeA2.z)));
+        cornersA2[7]        = rootTransformA2.TransformPoint(A2.position + rotA2 * (A2.center + new Vector3(-halfSizeA2.x, -halfSizeA2.y, -halfSizeA2.z)));
         // 计算包围盒
         Bounds boxBoundsA2 = new Bounds(cornersA2[0], Vector3.zero);
         foreach (var corner in cornersA2)

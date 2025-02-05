@@ -1,10 +1,10 @@
 using System.Collections.Generic;
 
-public class HitRecordComponent
+public class HitRecordComponent : ComponentBase
 {
     public List<HitRecord> HitRecordList {get; private set;}
 
-    public HitRecordComponent()
+    public HitRecordComponent(CharacterObj owner, int priority = 0) : base(owner, priority)
     {
         HitRecordList = new List<HitRecord>();
     }
@@ -17,7 +17,7 @@ public class HitRecordComponent
         }
     }
 
-    public void Update(ulong frameIndex)
+    public override void UpdateLogic(int frameIndex)
     {
         var hitRecord = HitRecordList;
         for (int i = 0; i < hitRecord.Count; i++)
@@ -29,5 +29,11 @@ public class HitRecordComponent
     public void Clear()
     {
         HitRecordList.Clear();
+    }
+
+    public override void EndPlay()
+    {
+        Clear();
+        base.EndPlay();
     }
 }

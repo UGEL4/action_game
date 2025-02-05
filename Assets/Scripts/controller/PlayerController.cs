@@ -1,11 +1,7 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public class PlayerController
+public class PlayerController : IController
 {
     private InputReader mInput;
 
@@ -17,19 +13,12 @@ public class PlayerController
 
     public Vector3 CurrMoveDir => mCurMoveDir;
 
-    // void Awake()
-    // {
-    //     //freeLookCam.Follow = transform;
-    //     //freeLookCam.LookAt = transform;
-    //     //freeLookCam.OnTargetObjectWarped(transform, transform.position - freeLookCam.transform.position - Vector3.forward);
-    // }
-
     public PlayerController()
     {
 
     }
 
-    public PlayerController(CharacterObj owner)
+    public void SetOwner(CharacterObj owner)
     {
         mOwner = owner;
     }
@@ -49,7 +38,7 @@ public class PlayerController
 
     public void BeginPlay()
     {
-        mInput = mOwner.GetInputReader();
+        //mInput = mOwner.GetInputReader();
         InitializeInput();
     }
 

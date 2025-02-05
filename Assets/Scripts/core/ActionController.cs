@@ -32,8 +32,8 @@ public class ActionController
 
     public float MoveInputAcceptance {get; private set;}
 
-    private Dictionary<string, List<BeHitBoxTurnOnInfo>> mBoxHits = new();
-    public Dictionary<string, List<BeHitBoxTurnOnInfo>> BoxHits => mBoxHits;
+    private Dictionary<AttackBoxTurnOnInfo, List<BeHitBoxTurnOnInfo>> mBoxHits = new();
+    public Dictionary<AttackBoxTurnOnInfo, List<BeHitBoxTurnOnInfo>> BoxHits => mBoxHits;
 
     public Vector3 RootMotionMove {private set; get;} = Vector3.zero;
     public Quaternion RootMotionRotation {private set; get; } = Quaternion.identity;
@@ -316,57 +316,61 @@ public class ActionController
         }
     }
 
-    public void OnAttackBoxHit(string tag, BeHitBoxTurnOnInfo target)
+    public void OnAttackBoxHit(AttackBoxTurnOnInfo attackBox, BeHitBoxTurnOnInfo target)
     {
-        if (!mBoxHits.ContainsKey(tag))
+        if (!mBoxHits.ContainsKey(attackBox))
         {
-            mBoxHits.Add(tag, new List<BeHitBoxTurnOnInfo>());
+            mBoxHits.Add(attackBox, new List<BeHitBoxTurnOnInfo>());
         }
-        bool found = false;
-        List<BeHitBoxTurnOnInfo> list = mBoxHits[tag];
-        for (int i = 0; i < list.Count; i++)
+        if (!mBoxHits[attackBox].Contains(target))
         {
-            for (int j = 0; j < target.Tags.Length; j++)
-            {
-                for (int k = 0; k < list[i].Tags.Length; k++)
-                {
-                    if (target.Tags[j] == list[i].Tags[k])
-                    {
-                        found = true;
-                        break;
-                    }
-                }
-                if (found) break;
-            }
-            if (found) break;
+            mBoxHits[attackBox].Add(target);
         }
-        if (! found)
-        {
-            list.Add(target);
-        }
+        // bool found = false;
+        // List<BeHitBoxTurnOnInfo> list = mBoxHits[tag];
+        // for (int i = 0; i < list.Count; i++)
+        // {
+        //     for (int j = 0; j < target.Tags.Length; j++)
+        //     {
+        //         for (int k = 0; k < list[i].Tags.Length; k++)
+        //         {
+        //             if (target.Tags[j] == list[i].Tags[k])
+        //             {
+        //                 found = true;
+        //                 break;
+        //             }
+        //         }
+        //         if (found) break;
+        //     }
+        //     if (found) break;
+        // }
+        // if (! found)
+        // {
+        //     list.Add(target);
+        // }
     }
 
     public void OnAttackBoxExit(string tag, BeHitBoxTurnOnInfo target)
     {
-        if (!mBoxHits.ContainsKey(tag))
-        {
-            return;
-        }
-        List<BeHitBoxTurnOnInfo> list = mBoxHits[tag];
-        for (int i = 0; i < list.Count; i++)
-        {
-            for (int j = 0; j < target.Tags.Length; j++)
-            {
-                for (int k = 0; k < list[i].Tags.Length; k++)
-                {
-                    if (target.Tags[j] == list[i].Tags[k])
-                    {
-                        list.RemoveAt(i);
-                        return;
-                    }
-                }
-            }
-        }
+        // if (!mBoxHits.ContainsKey(tag))
+        // {
+        //     return;
+        // }
+        // List<BeHitBoxTurnOnInfo> list = mBoxHits[tag];
+        // for (int i = 0; i < list.Count; i++)
+        // {
+        //     for (int j = 0; j < target.Tags.Length; j++)
+        //     {
+        //         for (int k = 0; k < list[i].Tags.Length; k++)
+        //         {
+        //             if (target.Tags[j] == list[i].Tags[k])
+        //             {
+        //                 list.RemoveAt(i);
+        //                 return;
+        //             }
+        //         }
+        //     }
+        // }
     }
 
     public void PreorderActionByActionChangeInfo(ActionChangeInfo info)
@@ -615,9 +619,9 @@ public class ActionController
             RootMotionMove      = deltaPos;
             RootMotionRotation  = deltaRot;
             UnderForceMove      = deltaPos;
-            mOwner.VelocityComp.Velocity.x = deltaPos.x;
-            mOwner.VelocityComp.Velocity.z = deltaPos.z;
-            mOwner.VelocityComp.Velocity.y = deltaPos.y;
+            //mOwner.VelocityComp.Velocity.x = deltaPos.x;
+            //mOwner.VelocityComp.Velocity.z = deltaPos.z;
+            //mOwner.VelocityComp.Velocity.y = deltaPos.y;
         }
         IsUnderForceMove    = CurAction.ForceMoce;
     }

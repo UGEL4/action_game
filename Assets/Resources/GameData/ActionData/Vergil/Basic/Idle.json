@@ -6,43 +6,125 @@
     "mAutoTerminate": false,
     "keepPlayingAnim": true,
     "mTotalFrameCount": 52,
+    "SelfLoopCount": 0,
     "mCancelTagList": [],
     "mBeCanceledTagList": [
         {
             "cancelTag": [
                 "IdleAction"
             ],
-            "fadeOutPercentage": 0.10000000149011612,
+            "fadeOutPercentage": 0.0,
             "priority": 0,
             "range": {
                 "min": 0.0,
-                "max": 1.0
+                "max": 0.0
             },
             "frameIndexRange": {
                 "min": 0,
-                "max": 52
+                "max": 51
             }
         }
     ],
     "mTempBeCanceledTagList": [],
     "mCommandList": [],
     "attackInfoList": [],
-    "attackPhaseList": [],
-    "defensePhases": [],
-    "moveInputAcceptance": [
+    "attackPhaseList": [
         {
-            "range": {
-                "min": 0.0,
-                "max": 1.0
-            },
-            "rate": 0.0
+            "FrameIndexRange": [],
+            "RayPointGroupList": [],
+            "AttackBoxes": [],
+            "AttackPhase": 0,
+            "Priority": 0
         }
     ],
+    "defensePhases": [
+        {
+            "FrameIndexRange": [
+                {
+                    "min": 0,
+                    "max": 51
+                },
+                {
+                    "min": 0,
+                    "max": 51
+                }
+            ],
+            "DefenseBoxes": [
+                {
+                    "position": {
+                        "x": 0.0,
+                        "y": 0.0,
+                        "z": 0.0
+                    },
+                    "rotation": {
+                        "x": 0.0,
+                        "y": 315.0,
+                        "z": 0.0
+                    },
+                    "center": {
+                        "x": 0.019999999552965165,
+                        "y": 0.8500000238418579,
+                        "z": 0.029999999329447748
+                    },
+                    "size": {
+                        "x": 0.6000000238418579,
+                        "y": 1.7000000476837159,
+                        "z": 0.2800000011920929
+                    }
+                },
+                {
+                    "position": {
+                        "x": 0.0,
+                        "y": 1.809999942779541,
+                        "z": 0.0
+                    },
+                    "rotation": {
+                        "x": 0.0,
+                        "y": 0.0,
+                        "z": 0.0
+                    },
+                    "center": {
+                        "x": -0.010999999940395356,
+                        "y": -0.010999999940395356,
+                        "z": 0.050999999046325687
+                    },
+                    "size": {
+                        "x": 0.22100000083446504,
+                        "y": 0.2809999883174896,
+                        "z": 0.2409999966621399
+                    }
+                }
+            ],
+            "TempTurnOnBeCancelTags": [],
+            "Priority": 0,
+            "SelfActionChangeInfo": {
+                "changeType": 0,
+                "param": "",
+                "priority": 0,
+                "fromNormalized": 0.0,
+                "transNormalized": 0.0
+            },
+            "TargetActionChangeInfo": {
+                "changeType": 0,
+                "param": "",
+                "priority": 0,
+                "fromNormalized": 0.0,
+                "transNormalized": 0.0
+            }
+        }
+    ],
+    "moveInputAcceptance": [],
     "RootMotionDataPath": "",
     "RootMotionData": {
         "X": [],
         "Y": [],
-        "Z": []
+        "Z": [],
+        "RX": [],
+        "RY": [],
+        "RZ": []
     },
-    "MoveSpeed": 0.0
+    "MoveSpeed": 0.0,
+    "ForceMoce": false,
+    "AppilyGravityInRootMotion": false,
+    "Notifies": []
 }}

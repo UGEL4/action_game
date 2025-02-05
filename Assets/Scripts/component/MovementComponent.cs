@@ -2,6 +2,7 @@
 using System;
 using Log;
 using Unity.Mathematics;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class MovementComponent : ComponentBase
@@ -50,8 +51,8 @@ public class MovementComponent : ComponentBase
     public bool IsGrounded => mIsGrounded;
     // jump相关
 
-    public MovementComponent(CharacterObj owner)
-        : base(owner)
+    public MovementComponent(CharacterObj owner, int priority = 0)
+        : base(owner, priority)
     {
         Gravity           = -9.8f;
         mIsFalling        = false;
@@ -73,14 +74,28 @@ public class MovementComponent : ComponentBase
 
     public override void UpdateLogic(int frameIndex)
     {
-        if (mOwner.Action.IsUnderForceMove)
+        // if (mOwner.Action.IsUnderForceMove)
+        // {
+        //     ForceMove();
+        // }
+        // else
+        // {
+        //     NatureMove();
+        // }
+        if (mOwner.ModelRoot)
         {
-            ForceMove();
+            mLastPosition = mOwner.ModelRoot.transform.position;
         }
-        else
+        Quaternion rotated  = mOwner.ThisTickRotation();
+        Transform transform = mOwner.gameObject.transform;
+        if (transform != null)
         {
-            NatureMove();
+            transform.Rotate(rotated.eulerAngles);
         }
+        Vector3 moved = mOwner.ThisTickMove();
+        mController.Move(moved);
+        HandleInAirAction();
+        mIsGrounded = mController.isGrounded;
     }
 
     public override void UpdateRender(float deltaTime)
@@ -128,6 +143,10 @@ public class MovementComponent : ComponentBase
             mLastPosition = mOwner.ModelRoot.transform.position;
         }
         PlayerController pc = mOwner.GetPlayerController();
+        if (pc == null)
+        {
+            return;
+        }
         var adjDir          = pc.CharacterRelativeFlatten(pc.CurrMoveDir);
         if (mOwner.Action.CurAction.HasRootMotion())
         {
@@ -147,7 +166,8 @@ public class MovementComponent : ComponentBase
                 // MoveInputAcceptance
                 if (mOwner.Action.CurAction.AppilyGravityInRootMotion)
                 {
-                    RootMotionMove.y = -mOwner.GravityComp.Gravity / GameInstance.Instance.LogicFrameRate;
+                    //RootMotionMove.y = -mOwner.GravityComp.Gravity / GameInstance.Instance.LogicFrameRate;
+                    RootMotionMove.y = -9.8f / GameInstance.Instance.LogicFrameRate;
                 }
                 RootMotionMove = targetRotation * RootMotionMove;
                 float MoveInputAcceptance = mOwner.GetMoveInputAcceptance();
@@ -159,7 +179,8 @@ public class MovementComponent : ComponentBase
             {
                 if (mOwner.Action.CurAction.AppilyGravityInRootMotion)
                 {
-                    RootMotionMove.y = -mOwner.GravityComp.Gravity / GameInstance.Instance.LogicFrameRate;
+                    //RootMotionMove.y = -mOwner.GravityComp.Gravity / GameInstance.Instance.LogicFrameRate;
+                    RootMotionMove.y = -9.8f / GameInstance.Instance.LogicFrameRate;
                 }
                 mController.Move(RootMotionMove);
             }

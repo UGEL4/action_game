@@ -4,7 +4,7 @@ using UnityEngine;
 public class VelocityComponent : ComponentBase
 {
     public Vector3 Velocity;
-    public VelocityComponent(CharacterObj owner) : base(owner)
+    public VelocityComponent(CharacterObj owner, int priority = 0) : base(owner, priority)
     {
         Velocity = Vector3.zero;
     }

@@ -7,9 +7,12 @@ public class ComponentBase
 
     public CharacterObj Owner => mOwner;
 
-    public ComponentBase(CharacterObj owner)
+    public int mPriority = 0;
+
+    public ComponentBase(CharacterObj owner,int priority = 0)
     {
         mOwner = owner;
+        mPriority = priority;
     }
 
     public virtual void UpdateLogic(int frameIndex)

@@ -15,7 +15,7 @@ public struct AttackRayPointGroup
 }
 
 [Serializable]
-public struct AttackBoxTurnOnInfo
+public class AttackBoxTurnOnInfo
 {
     /// <summary>
     /// 开启的时间段, 第几帧到第几帧之间开启

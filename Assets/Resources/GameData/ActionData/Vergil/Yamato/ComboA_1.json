@@ -6,6 +6,7 @@
     "mAutoTerminate": false,
     "keepPlayingAnim": false,
     "mTotalFrameCount": 41,
+    "SelfLoopCount": 0,
     "mCancelTagList": [
         {
             "tag": "IdleAction",
@@ -23,7 +24,7 @@
         },
         {
             "tag": "ComboA_3_End",
-            "priority": 2,
+            "priority": 3,
             "startFromPercentage": 0.0,
             "startFromFrameIndex": 0,
             "fadeInPercentage": 0.0
@@ -57,23 +58,129 @@
         }
     ],
     "attackInfoList": [],
-    "attackPhaseList": [],
-    "defensePhases": [],
-    "moveInputAcceptance": [
+    "attackPhaseList": [
         {
-            "range": {
-                "min": 0.0,
-                "max": 1.0
-            },
-            "rate": 0.0
+            "FrameIndexRange": [
+                {
+                    "min": 6,
+                    "max": 6
+                },
+                {
+                    "min": 6,
+                    "max": 6
+                },
+                {
+                    "min": 7,
+                    "max": 7
+                }
+            ],
+            "RayPointGroupList": [],
+            "AttackBoxes": [
+                {
+                    "position": {
+                        "x": -0.8259999752044678,
+                        "y": 1.4290000200271607,
+                        "z": 0.9359999895095825
+                    },
+                    "rotation": {
+                        "x": 0.0,
+                        "y": 0.0,
+                        "z": 15.479254722595215
+                    },
+                    "center": {
+                        "x": 0.0,
+                        "y": 0.0,
+                        "z": 0.0
+                    },
+                    "size": {
+                        "x": 1.5,
+                        "y": 0.20000000298023225,
+                        "z": 1.5
+                    }
+                },
+                {
+                    "position": {
+                        "x": 0.19200000166893006,
+                        "y": 1.7610000371932984,
+                        "z": 1.2009999752044678
+                    },
+                    "rotation": {
+                        "x": 350.0,
+                        "y": 5.418403148382822e-8,
+                        "z": 10.000004768371582
+                    },
+                    "center": {
+                        "x": 0.0,
+                        "y": 0.0,
+                        "z": 0.0
+                    },
+                    "size": {
+                        "x": 1.5,
+                        "y": 0.20000000298023225,
+                        "z": 1.5
+                    }
+                },
+                {
+                    "position": {
+                        "x": 1.1859999895095826,
+                        "y": 1.906000018119812,
+                        "z": 0.6549999713897705
+                    },
+                    "rotation": {
+                        "x": 0.0,
+                        "y": 0.0,
+                        "z": 19.999998092651368
+                    },
+                    "center": {
+                        "x": 0.0,
+                        "y": 0.0,
+                        "z": 0.0
+                    },
+                    "size": {
+                        "x": 1.0,
+                        "y": 0.20000000298023225,
+                        "z": 1.5
+                    }
+                }
+            ],
+            "AttackPhase": 0,
+            "Priority": 0
         }
     ],
+    "defensePhases": [
+        {
+            "FrameIndexRange": [],
+            "DefenseBoxes": [],
+            "TempTurnOnBeCancelTags": [],
+            "Priority": 0,
+            "SelfActionChangeInfo": {
+                "changeType": 0,
+                "param": "",
+                "priority": 0,
+                "fromNormalized": 0.0,
+                "transNormalized": 0.0
+            },
+            "TargetActionChangeInfo": {
+                "changeType": 0,
+                "param": "",
+                "priority": 0,
+                "fromNormalized": 0.0,
+                "transNormalized": 0.0
+            }
+        }
+    ],
+    "moveInputAcceptance": [],
     "RootMotionDataPath": "Vergil/Yamato/ComboA_1",
     "RootMotionData": {
         "X": [],
         "Y": [],
-        "Z": []
+        "Z": [],
+        "RX": [],
+        "RY": [],
+        "RZ": []
     },
     "MoveSpeed": 0.0,
-    "ForceMoce": true
+    "ForceMoce": true,
+    "AppilyGravityInRootMotion": false,
+    "Notifies": []
 }}

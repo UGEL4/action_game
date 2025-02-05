@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using ACTTools;
+using Unity.Burst.Intrinsics;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.Timeline;
@@ -45,22 +46,33 @@ public class SaveActionWindow : EditorWindow
             return;
         }
 
-        AttackBoxTurnOnInfo[] allTurnOnInfo = new AttackBoxTurnOnInfo[0];
-        BeHitBoxTurnOnInfo[] defensePhases  = new BeHitBoxTurnOnInfo[0];
+        AttackBoxTurnOnInfo[] allTurnOnInfo = new AttackBoxTurnOnInfo[1];
+        BeHitBoxTurnOnInfo[] defensePhases  = new BeHitBoxTurnOnInfo[1];
         CharacterAction characterAction     = new CharacterAction();
         foreach (var track in timelineAsset.GetOutputTracks())
         {
-            if (track.GetType() == typeof(ActionEditorHitRayCastTrack))
-            {
-                GetRayCastPointTurnOnInfo(track, out allTurnOnInfo);
-            }
+            // if (track.GetType() == typeof(ActionEditorHitRayCastTrack))
+            // {
+            //     GetRayCastPointTurnOnInfo(track, out allTurnOnInfo);
+            // }
             if (track.GetType() == typeof(ActionEditorActionDataTrack))
             {
                 GetActionData(track, out characterAction);
             }
             if (track.GetType() == typeof(ActionEditorHitBoxTrack))
             {
-                GetHitBoxTurnOnInfo(track, out defensePhases);
+                //GetHitBoxTurnOnInfo(track, out defensePhases);
+            }
+            if (track.GetType() == typeof(ActionEditorAttackBoxTrack))
+            {
+                GetAttackBoxTurnOnInfo(track, out AttackBoxTurnOnInfo attackBox);
+                allTurnOnInfo[0] = attackBox;
+            }
+            if (track.GetType() == typeof(ActionEditorDefenseBoxTrack))
+            {
+                GetHitBoxTurnOnInfo(track, out BeHitBoxTurnOnInfo hitBoxTurnOnInfo);
+                defensePhases[0] = hitBoxTurnOnInfo;
+
             }
         }
 
@@ -124,6 +136,22 @@ public class SaveActionWindow : EditorWindow
         }
     }
 
+    void GetAttackBoxTurnOnInfo(TrackAsset track, out AttackBoxTurnOnInfo turnOnInfo)
+    {
+        var clips                              = track.GetClips();
+        List<BoxColliderData> AttackBoxes      = new();
+        List<FrameIndexRange> FrameIndexRanges = new();
+        foreach (var clip in clips)
+        {
+            ActionEditorAttackBoxClip clipAsset = clip.asset as ActionEditorAttackBoxClip;
+            AttackBoxes.AddRange(clipAsset.BoxDataList);
+            FrameIndexRanges.AddRange(clipAsset.ActivtFrame);
+        }
+        turnOnInfo                 = new AttackBoxTurnOnInfo();
+        turnOnInfo.AttackBoxes     = AttackBoxes.ToArray();
+        turnOnInfo.FrameIndexRange = FrameIndexRanges.ToArray();
+    }
+
     void GetActionData(TrackAsset track, out CharacterAction action)
     {
         action = new CharacterAction();
@@ -143,27 +171,45 @@ public class SaveActionWindow : EditorWindow
     {
         var clips        = track.GetClips();
         hitBoxTurnOnInfo = new BeHitBoxTurnOnInfo[clips.Count()];
+        // int i            = 0;
+        // foreach (var clip in clips)
+        // {
+        //     ActionEditorHitBoxClip clipAsset = clip.asset as ActionEditorHitBoxClip;
+        //     BeHitBoxTurnOnInfo info          = new();
+        //     info.SelfActionChangeInfo        = clipAsset.SelfActionChangeInfo;
+        //     info.TargetActionChangeInfo      = clipAsset.TargetActionChangeInfo;
+        //     info.FrameIndexRange             = clipAsset.ActiveFrameRang;
+        //     //BeHitBoxTurnOnInfo info          = clipAsset.turnOnInfo;
+        //     List<string> tempList            = new();
+        //     foreach (var boxInfo in clipAsset.boxList)
+        //     {
+        //         if (boxInfo.active && boxInfo.Bone != null)
+        //         {
+        //             tempList.Add(boxInfo.Bone.name);
+        //         }
+        //     }
+        //     info.Tags = new string[tempList.Count];
+        //     tempList.CopyTo(info.Tags);
+
+        //     hitBoxTurnOnInfo[i++] = info;
+        // }
+    }
+
+    void GetHitBoxTurnOnInfo(TrackAsset track, out BeHitBoxTurnOnInfo hitBoxTurnOnInfo)
+    {
+        var clips        = track.GetClips();
+        hitBoxTurnOnInfo = new BeHitBoxTurnOnInfo();
+        hitBoxTurnOnInfo.FrameIndexRange = new FrameIndexRange[clips.Count()];
+        hitBoxTurnOnInfo.DefenseBoxes    = new BoxColliderData[clips.Count()];
         int i            = 0;
+        
         foreach (var clip in clips)
         {
-            ActionEditorHitBoxClip clipAsset = clip.asset as ActionEditorHitBoxClip;
-            BeHitBoxTurnOnInfo info          = new();
-            info.SelfActionChangeInfo        = clipAsset.SelfActionChangeInfo;
-            info.TargetActionChangeInfo      = clipAsset.TargetActionChangeInfo;
-            info.FrameIndexRange             = clipAsset.ActiveFrameRang;
-            //BeHitBoxTurnOnInfo info          = clipAsset.turnOnInfo;
-            List<string> tempList            = new();
-            foreach (var boxInfo in clipAsset.boxList)
-            {
-                if (boxInfo.active && boxInfo.Bone != null)
-                {
-                    tempList.Add(boxInfo.Bone.name);
-                }
-            }
-            info.Tags = new string[tempList.Count];
-            tempList.CopyTo(info.Tags);
-
-            hitBoxTurnOnInfo[i++] = info;
+            ActionEditorDefenseBoxClip clipAsset = clip.asset as ActionEditorDefenseBoxClip;
+            BoxColliderData boxData = clipAsset.mBoxData;
+            hitBoxTurnOnInfo.DefenseBoxes[i] = boxData;
+            hitBoxTurnOnInfo.FrameIndexRange[i] = clipAsset.ActivtFrame;
+            i++;
         }
     }
 }

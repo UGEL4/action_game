@@ -9,7 +9,7 @@ public class ModelComponent : ComponentBase
     private int ModelNum;
     public List<ModelData> ModelDataList;
     private GameObject mModelRoot;
-    public ModelComponent(CharacterObj owner, GameObject modelRoot) : base(owner)
+    public ModelComponent(CharacterObj owner, GameObject modelRoot, int priority = 0) : base(owner, priority)
     {
         ModelNum = 0;
         mLoadCount = 0;
@@ -18,7 +18,7 @@ public class ModelComponent : ComponentBase
         ModelDataList = new List<ModelData>();
     }
 
-    public ModelComponent(CharacterObj owner) : base(owner)
+    public ModelComponent(CharacterObj owner, int priority = 0) : base(owner, priority)
     {
         ModelNum = 0;
         mLoadCount = 0;

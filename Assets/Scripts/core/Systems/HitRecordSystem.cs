@@ -31,7 +31,7 @@ public class HitRecordSystem
         var components = HitRecordList;
         for (int i = 0; i < components.Count; i++)
         {
-            components[i].Update(frameIndex);
+            components[i].UpdateLogic((int)frameIndex);
         }
     }
 }

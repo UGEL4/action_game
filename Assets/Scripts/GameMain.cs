@@ -44,6 +44,9 @@ public class GameMain : MonoBehaviour
                 ch.BeginPlay();
             }
         }
+
+        CharacterObj enemy = new TestPlayerCharacterObj();
+        enemies.Add(enemy);
         for (int i = 0; i < enemies.Count; i++)
         {
             CharacterObj ch = enemies[i];

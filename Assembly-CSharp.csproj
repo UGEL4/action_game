@@ -90,6 +90,7 @@
     <Compile Include="Assets\Scripts\core\CustomBound.cs" />
     <Compile Include="Assets\Scripts\character\Mono\MovementComponentMono.cs" />
     <Compile Include="Assets\Scripts\core\MoveInputAcceptance.cs" />
+    <Compile Include="Assets\Scripts\controller\AIController.cs" />
     <Compile Include="Assets\Scripts\core\state\EStateType.cs" />
     <Compile Include="Assets\EasyColliderEditor\Scripts\EasyColliderVHACD.cs" />
     <Compile Include="Assets\Scripts\tool\WorldTransformInfo.cs" />
@@ -121,7 +122,9 @@
     <Compile Include="Assets\EasyColliderEditor\Scripts\EasyColliderData.cs" />
     <Compile Include="Assets\EasyColliderEditor\Scripts\EasyColliderDraw.cs" />
     <Compile Include="Assets\Scripts\component\ModelComponent.cs" />
+    <Compile Include="Assets\Scripts\controller\Interface\IController.cs" />
     <Compile Include="Assets\Scripts\core\Boxes\BeHitBox.cs" />
+    <Compile Include="Assets\Scripts\character\TestPlayerCharacterObj.cs" />
     <Compile Include="Assets\Scripts\character\MainPlayerCharacterObj.cs" />
     <Compile Include="Assets\EasyColliderEditor\Scripts\EasyColliderVertex.cs" />
     <Compile Include="Assets\Scripts\tool\SerializableTransform.cs" />
@@ -133,6 +136,7 @@
     <Compile Include="Assets\EasyColliderEditor\Scripts\EasyColliderRotateDuplicate.cs" />
     <Compile Include="Assets\EasyColliderEditor\Scripts\EasyColliderSaving.cs" />
     <Compile Include="Assets\Scripts\Input\PlayerInput.cs" />
+    <Compile Include="Assets\Scripts\tool\ExposedReferenceHolder.cs" />
     <Compile Include="Assets\Scripts\core\ActionChangeInfo.cs" />
     <Compile Include="Assets\Scripts\core\Boxes\AttackHitBox.cs" />
     <Compile Include="Assets\Scripts\component\GravityComponent.cs" />

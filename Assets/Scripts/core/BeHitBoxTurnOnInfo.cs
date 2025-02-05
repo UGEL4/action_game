@@ -1,11 +1,13 @@
 using System;
+using ACTTools;
 
 [Serializable]
-public struct BeHitBoxTurnOnInfo
+public class BeHitBoxTurnOnInfo
 {
-    public FrameIndexRange FrameIndexRange;
+    public FrameIndexRange[] FrameIndexRange;
 
-    public string[] Tags;
+    //public string[] Tags;
+    public BoxColliderData[] DefenseBoxes;
     public string[] TempTurnOnBeCancelTags;
     public int Priority;
 

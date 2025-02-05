@@ -21,17 +21,12 @@ public class CharacterObj
         }
     }
 
-    protected PlayerController mPlayerController;
-
-    protected MovementComponent mMovementComponent;
-    public MovementComponent MovementComp => mMovementComponent;
+    protected IController mPlayerController;
 
     protected ActionController mActionCtrl;
     public ActionController Action => mActionCtrl;
 
     protected InputToCommand mInputToCommand;
-
-    public HitRecordComponent HitRecordComponent { get; private set; }
 
     //切换动作时会清空
     protected List<BeHitBox> mBeHitBoxList = new();
@@ -56,23 +51,24 @@ public class CharacterObj
     }
 
     public GameObject ModelRoot;
-    public ModelComponent ModelComp;
 
-    public VelocityComponent VelocityComp;
-
-    public GravityComponent GravityComp;
+    protected List<ComponentBase> mComponents = new();
 
     public CharacterObj()
     {
         IsBeginPlayed = false;
-        mPlayerController = new PlayerController(this);
         mInputToCommand   = new InputToCommand(this);
         mActionCtrl       = new ActionController(this, mInputToCommand);
-        mMovementComponent = new MovementComponent(this);
-        HitRecordComponent = new HitRecordComponent();
-        ModelComp          = new ModelComponent(this);
-        VelocityComp       = new VelocityComponent(this);
-        GravityComp        = new GravityComponent(this);
+    }
+
+    public void AddComponent(ComponentBase component)
+    {
+        if (!mComponents.Contains(component))
+        {
+            mComponents.Add(component);
+            //排序
+            mComponents.Sort((a, b) => a.mPriority < b.mPriority ? -1 : 1);
+        }
     }
 
     public virtual void Init()
@@ -88,43 +84,27 @@ public class CharacterObj
         mGameObject.name = prefab.name;
         mGameObject.transform.SetLocalPositionAndRotation(Vector3.zero, Quaternion.identity);
         mGameObject.transform.localScale = Vector3.one;
-        
-        CharacterController controller = mGameObject.GetComponent<CharacterController>();
-        mMovementComponent.SetCharacterController(controller);
-        
-        //PlayerController
-        var comp = mGameObject.GetComponent<InputReaderComponentMono>();
-        if (comp)
-        {
-            mPlayerController.SetInputReader(comp.Input);
-        }
-        //PlayerController
-
-        //HitRecordComponent
-        GameInstance.Instance.HitRecordSys.Register(HitRecordComponent);
-        mActionCtrl.SetChangeActinCallback((lastAction, newAction) => {
-            HitRecordComponent.Clear();
-        });
-        //HitRecordComponent
     }
 
-    public InputReader GetInputReader()
-    {
-        var comp = mGameObject.GetComponent<InputReaderComponentMono>();
-        if (comp)
-        {
-            return comp.Input;
-        }
-        return null;
-    }
+    // public InputReader GetInputReader()
+    // {
+    //     var comp = mGameObject.GetComponent<InputReaderComponentMono>();
+    //     if (comp)
+    //     {
+    //         return comp.Input;
+    //     }
+    //     return null;
+    // }
 
     public virtual void BeginPlay()
     {
         IsBeginPlayed = true;
         mActionCtrl.BeginPlay();
-        mPlayerController.BeginPlay();
-        ModelComp.BeginPlay();
-        mMovementComponent.BeginPlay();
+        mPlayerController?.BeginPlay();
+        for (int i = 0; i < mComponents.Count; i++)
+        {
+            mComponents[i].BeginPlay();
+        }
     }
 
     public virtual void EndPlay()
@@ -134,35 +114,38 @@ public class CharacterObj
 
     public void UpdateLogic(int frameIndex)
     {
-        mPlayerController.UpdateLogic();
+        mPlayerController?.UpdateLogic();
         mInputToCommand.Tick();
         mActionCtrl.Tick();
 
-        GravityComp.UpdateLogic(frameIndex);
-
-        mMovementComponent.UpdateLogic(frameIndex);
-        ModelComp.UpdateLogic(frameIndex);
+        for (int i = 0; i < mComponents.Count; i++)
+        {
+            mComponents[i].UpdateLogic(frameIndex);
+        }
     }
 
     public void UpdateRender(float deltaTime)
     {
-        mMovementComponent.UpdateRender(deltaTime);
+        for (int i = 0; i < mComponents.Count; i++)
+        {
+            mComponents[i].UpdateRender(deltaTime);
+        }
     }
 
     public virtual void Destroy()
     {
-        ModelComp.EndPlay();
-        GameObject.Destroy(mGameObject);
-        mGameObject = null;
+        for (int i = 0; i < mComponents.Count; i++)
+        {
+            mComponents[i].EndPlay();
+        }
+        mComponents.Clear();
 
         mPlayerController = null;
         mInputToCommand   = null;
         mActionCtrl       = null;
 
-        mMovementComponent.EndPlay();
-        mMovementComponent = null;
-
-        HitRecordComponent = null;
+        GameObject.Destroy(mGameObject);
+        mGameObject = null;
     }
 
     public void AddInputCommand(KeyMap key)
@@ -177,35 +160,12 @@ public class CharacterObj
 
     public PlayerController GetPlayerController()
     {
-        return mPlayerController;
+        return mPlayerController != null ? (mPlayerController as PlayerController) : null;
     }
 
     public float GetMoveInputAcceptance()
     {
         return mActionCtrl.MoveInputAcceptance;
-    }
-
-    void OnMovementInput(InputAction.CallbackContext context)
-    {
-        // Vector2 val       = context.ReadValue<Vector2>();
-        // mCurrMovement.x   = val.x;
-        // mCurrMovement.y   = 0.0f;
-        // mCurrMovement.z   = val.y;
-        // mIsMovementPresed = val.x != 0.0f || val.y != 0.0f;
-    }
-
-    void MoveDir()
-    {
-        // Vector3 posToLookat = new Vector3();
-        // posToLookat.x       = mCurrMovement.x;
-        // posToLookat.y       = 0.0f;
-        // posToLookat.z       = mCurrMovement.z;
-        // Quaternion curRot   = transform.rotation;
-        // if (mIsMovementPresed)
-        // {
-        //     Quaternion targetRot = Quaternion.LookRotation(posToLookat);
-        //     transform.rotation   = Quaternion.Slerp(curRot, targetRot, 1.0f);
-        // }
     }
 
     public bool CanAttackTargetNow(CharacterObj target, out AttackInfo attackPhase, out BeHitBoxTurnOnInfo defensePhase)
@@ -223,7 +183,8 @@ public class CharacterObj
             //BeHitBox best = null;
             int bestPriority = -1;
             bool foundBest = false;
-            AttackBoxTurnOnInfo attackBox = GetAttackBoxTurnOnInfo(pair.Key);
+            //AttackBoxTurnOnInfo attackBox = GetAttackBoxTurnOnInfo(pair.Key);
+            AttackBoxTurnOnInfo attackBox = pair.Key;
             if (attackBox.FrameIndexRange.Length == 0) continue;
             for (int i = 0; i < pair.Value.Count; i++)
             {
@@ -262,17 +223,8 @@ public class CharacterObj
         return new AttackBoxTurnOnInfo();
     }
 
-    public HitRecord GetHitRecord(CharacterObj target, int phase)
+    public virtual HitRecord GetHitRecord(CharacterObj target, int phase)
     {
-        var hitRecordList = HitRecordComponent.HitRecordList;
-        int uid = target.gameObject.GetInstanceID();
-        for (int i = 0; i < hitRecordList.Count; i++)
-        {
-            if (uid == hitRecordList[i].Id && phase == hitRecordList[i].Phase)
-            {
-                return hitRecordList[i];
-            }
-        }
         return null;
     }
 
@@ -282,20 +234,8 @@ public class CharacterObj
     /// <param name="target">谁被命中</param>
     /// <param name="attackPhase">算是第几阶段的攻击命中的</param>
     /// <returns></returns>
-    public void AddHitRecord(CharacterObj target, int attackPhase)
+    public virtual void AddHitRecord(CharacterObj target, int attackPhase)
     {
-        //int idx = action.IndexOfAttack(attackPhase);
-        //if (idx < 0) return;    //没有这个伤害阶段，结束
-        HitRecord rec = GetHitRecord(target, attackPhase);
-        if (rec == null)
-        {
-            HitRecordComponent.AddHitRecord(new HitRecord(target, attackPhase, 0, 0));
-        }
-        else
-        {
-            rec.CooldownFrame = 0;
-            rec.CanHitCount  -= 1;
-        }
     }
 
     public void AddBeHitBox(BeHitBox box)
@@ -326,55 +266,13 @@ public class CharacterObj
         mAttackHitBoxList.Clear();
     }
 
-    public List<string> DebugActionList = new()
+    public virtual void LoadActions()
     {
-        "Vergil/Basic/Idle",
-        "Vergil/Move/RunLoop",
-        "Vergil/Yamato/ComboA_1",
-        "Vergil/Yamato/ComboA_2",
-        "Vergil/Yamato/ComboA_3",
-        "Vergil/Yamato/ComboC_Start",
-        "Vergil/Yamato/ComboC_Loop",
-        "Vergil/Yamato/ComboC_Finish",
-        "Vergil/Yamato/ComboB_1",
-        "Vergil/Yamato/ComboB_2",
-        "Vergil/Yamato/Zigenzan_Zetsu_Start",
-        "Vergil/Yamato/Zigenzan_Zetsu_End",
-        "Vergil/Basic/Jump_Vertical",
-        "Vergil/Basic/Jump_Vertical_Fly_Loop",
-        "Vergil/Basic/Jump_Vertical_Landing",
-        "Vergil/Basic/Jump_Vertical_Move",
-        "Vergil/Basic/Jump_Vertical_Fly_Loop_Move",
-        "Vergil/Basic/Jump_Vertical_Landing_Move",
-    };
-    public void LoadActions()
-    {
-        List<CharacterAction> actions = new List<CharacterAction>();
-        for (int i = 0; i < DebugActionList.Count; i++)
-        {
-            TextAsset ta = Resources.Load<TextAsset>("GameData/ActionData/" + DebugActionList[i]);
-            if (ta)
-            {
-                ActionInfoContainer aic = JsonUtility.FromJson<ActionInfoContainer>(ta.text);
-                //if (aic.data == null) continue;
-                //foreach (CharacterAction info in aic.data)
-                {
-                    aic.data.LoadRootMotion();
-                    actions.Add(aic.data);
-                    GameInstance.Instance.HitBoxDataPool.LoadHitBoxData(aic.data.mActionName);
-                }
-            }
-        }
-        if (actions.Count > 0)
-        {
-            mActionCtrl.SetAllAction(actions, actions[0].mActionName);
-        }
-        SimpleLog.Info(mGameObject.name, " LoadActions, ", "actions:", actions.Count);
+
     }
 
-    public void PlayAnimation(string actionName, float normalizedTransitionDuration, float normalizedTimeOffset)
+    public virtual void PlayAnimation(string actionName, float normalizedTransitionDuration, float normalizedTimeOffset)
     {
-        ModelComp.PlayAnimation(actionName);
     }
 
     public bool HasBegunPlay()
@@ -385,6 +283,16 @@ public class CharacterObj
     public virtual void HandleInAirAction()
     {
         
+    }
+
+    public virtual Vector3 ThisTickMove()
+    {
+        return Vector3.zero;
+    }
+
+    public virtual Quaternion ThisTickRotation()
+    {
+        return Quaternion.identity;
     }
 }
 

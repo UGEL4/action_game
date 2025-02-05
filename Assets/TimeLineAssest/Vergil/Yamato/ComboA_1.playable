@@ -56,11 +56,7 @@ MonoBehaviour:
     attackInfoList: []
     attackPhaseList: []
     defensePhases: []
-    moveInputAcceptance:
-    - range:
-        min: 0
-        max: 1
-      rate: 1
+    moveInputAcceptance: []
     RootMotionDataPath: Vergil/Yamato/ComboA_1
     RootMotionData:
       X: []
@@ -70,7 +66,7 @@ MonoBehaviour:
       RY: []
       RZ: []
     MoveSpeed: 0
-    ForceMoce: 1
+    ForceMoce: 0
     AppilyGravityInRootMotion: 0
     Notifies: []
 --- !u!114 &-4173422482816756392
@@ -200,12 +196,21 @@ MonoBehaviour:
   m_Name: ActionEditorAttackBoxClip
   m_EditorClassIdentifier: 
   ActivtFrame:
-    min: 5
-    max: 5
-  RefBox:
-    exposedName: e444544e379973c46823594a2c197fc0
-    defaultValue: {fileID: 0}
-  Box: {fileID: 0}
+  - min: 6
+    max: 6
+  - min: 6
+    max: 6
+  BoxList:
+  - {fileID: 0}
+  - {fileID: 0}
+  BoxDataList: []
+  RefBoxList:
+  - Reference:
+      exposedName: 88d694d55a2d24f48801836ba16fd8b1
+      defaultValue: {fileID: 0}
+  - Reference:
+      exposedName: 3b5e81ba466257149915446e6b526d1b
+      defaultValue: {fileID: 0}
 --- !u!114 &11400000
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -428,7 +433,7 @@ MonoBehaviour:
     m_PreExtrapolationMode: 0
     m_PostExtrapolationTime: 0
     m_PreExtrapolationTime: 0
-    m_DisplayName: AttackBox5
+    m_DisplayName: AttackBox6
   - m_Version: 1
     m_Start: 0.6666666666666666
     m_ClipIn: 0
@@ -497,7 +502,7 @@ MonoBehaviour:
     m_PreExtrapolationMode: 0
     m_PostExtrapolationTime: 0
     m_PreExtrapolationTime: 0
-    m_DisplayName: AttackBox6
+    m_DisplayName: AttackBox7
   m_Markers:
     m_Objects: []
 --- !u!114 &5041174277603375770
@@ -513,9 +518,12 @@ MonoBehaviour:
   m_Name: ActionEditorAttackBoxClip
   m_EditorClassIdentifier: 
   ActivtFrame:
-    min: 6
-    max: 6
-  RefBox:
-    exposedName: 05a79378557fb934d98c2dab8db1b12c
-    defaultValue: {fileID: 0}
-  Box: {fileID: 0}
+  - min: 7
+    max: 7
+  BoxList:
+  - {fileID: 0}
+  BoxDataList: []
+  RefBoxList:
+  - Reference:
+      exposedName: 14c9e3cdf3f2cbc4f9006abd3ee232cf
+      defaultValue: {fileID: 0}
