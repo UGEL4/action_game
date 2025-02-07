@@ -53,7 +53,31 @@ MonoBehaviour:
     - keySequences: 07000000
       validInSecond: 0
       validInFrameCount: 2
-    attackInfoList: []
+    attackInfoList:
+    - AttackPhase: 0
+      AttackPower: 0
+      CanHitSameTarget: 0
+      HitSameTargetDelay: 0
+      HitStun: 0
+      PushPower:
+        moveDistance: {x: 0, y: 3, z: 0}
+        completeInSecond: 0
+        InFrame: 1
+        tweenMethod: Slowly
+      Freeze: 0
+      SelfActionChangeInfo:
+        changeType: 0
+        param: 
+        priority: 0
+        fromNormalized: 0
+        transNormalized: 0
+      TargetActionChangeInfo:
+        changeType: 0
+        param: 
+        priority: 0
+        fromNormalized: 0
+        transNormalized: 0
+      TempTurnOnBeCanceledTags: []
     attackPhaseList: []
     defensePhases: []
     moveInputAcceptance: []

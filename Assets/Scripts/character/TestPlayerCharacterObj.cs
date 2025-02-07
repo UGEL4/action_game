@@ -156,4 +156,28 @@ public class TestPlayerCharacterObj : CharacterObj
         }
         SimpleLog.Info(mGameObject.name, " LoadActions, ", "actions:", actions.Count);
     }
+
+    public override Vector3 ThisTickMove()
+    {
+        if (UnderForceMove)
+        {
+            return ForceMove();
+        }
+        else
+        {
+            return NatureMove();
+        }
+    }
+
+    Vector3 NatureMove()
+    {
+        return Vector3.zero;
+    }
+
+    Vector3 ForceMove()
+    {
+        Vector3 move = mForceMove.MoveTween(mForceMove);
+        mForceMove.Update();
+        return move;
+    }
 }

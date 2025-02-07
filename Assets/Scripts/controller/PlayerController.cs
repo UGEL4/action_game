@@ -78,6 +78,7 @@ public class PlayerController : IController
 
         //
         ProduceInputDir();
+        UpdateRotation();
     }
 
     public Vector3 GetCameraForward()
@@ -126,6 +127,20 @@ public class PlayerController : IController
         else
         {
             mOwner.AddInputCommand(KeyMap.DirInput);
+        }
+    }
+
+    void UpdateRotation()
+    {
+        RotationComponent comp = mOwner.GetComponent<RotationComponent>();
+        if (comp != null)
+        {
+            Vector3 dir = CharacterRelativeFlatten(mCurMoveDir);
+            if (dir.magnitude > 0.01f)
+            {
+                Quaternion rot = Quaternion.LookRotation(dir);
+                comp.SetRotation(rot.eulerAngles);
+            }
         }
     }
 

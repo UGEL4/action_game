@@ -9,10 +9,13 @@ public class ComponentBase
 
     public int mPriority = 0;
 
-    public ComponentBase(CharacterObj owner,int priority = 0)
+    protected System.Type mType = typeof(ComponentBase);
+
+    public ComponentBase(CharacterObj owner, int priority = 0, System.Type type = null)
     {
-        mOwner = owner;
+        mOwner    = owner;
         mPriority = priority;
+        mType     = type;
     }
 
     public virtual void UpdateLogic(int frameIndex)
@@ -33,5 +36,10 @@ public class ComponentBase
     public virtual void EndPlay()
     {
         mOwner = null;
+    }
+
+    public System.Type GetComponentType()
+    {
+        return mType;
     }
 }

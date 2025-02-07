@@ -5,7 +5,7 @@ public class GravityComponent : ComponentBase
     public float CurrentWeight;
     public float Gravity;
     private float Ticked;
-    public GravityComponent(CharacterObj owner, int priority = 0) : base(owner, priority)
+    public GravityComponent(CharacterObj owner, int priority = 0) : base(owner, priority, typeof(GravityComponent))
     {
         CurrentWeight = 0f;
         Ticked        = 0f;

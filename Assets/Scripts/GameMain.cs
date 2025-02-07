@@ -168,6 +168,12 @@ public class GameMain : MonoBehaviour
         ? attackInfo.TargetActionChangeInfo : defensePhase.SelfActionChangeInfo;
         target.Action.PreorderActionByActionChangeInfo(defenderChangeInfo);
 
+        target.SetForceMove(new MoveInfo {
+            InFrame      = attackInfo.PushPower.InFrame,
+            moveDistance = attackInfo.PushPower.moveDistance,
+            tweenMethod  = attackInfo.PushPower.tweenMethod
+        });
+
         attacker.AddHitRecord(target, attackInfo.AttackPhase);
     }
 }

@@ -30,7 +30,7 @@
         "Z": []
     },
     "MoveSpeed": 0.0,
-    "ForceMoce": true,
+    "ForceMoce": false,
     "Notifies": [
         {
             "Range": {

@@ -79,6 +79,7 @@
     <Compile Include="Assets\Scripts\core\HitRecord.cs" />
     <Compile Include="Assets\Scripts\Test\TestBoxFrameData.cs" />
     <Compile Include="Assets\Scripts\core\Bounds\OBB.cs" />
+    <Compile Include="Assets\Scripts\core\methods\ForceMoveMethod.cs" />
     <Compile Include="Assets\Scripts\component\MovementComponent.cs" />
     <Compile Include="Assets\Scripts\tool\CastShapeBase.cs" />
     <Compile Include="Assets\EasyColliderEditor\Scripts\EasyColliderUIHelpers.cs" />
@@ -137,10 +138,12 @@
     <Compile Include="Assets\EasyColliderEditor\Scripts\EasyColliderSaving.cs" />
     <Compile Include="Assets\Scripts\Input\PlayerInput.cs" />
     <Compile Include="Assets\Scripts\tool\ExposedReferenceHolder.cs" />
+    <Compile Include="Assets\Scripts\component\RotationComponent.cs" />
     <Compile Include="Assets\Scripts\core\ActionChangeInfo.cs" />
     <Compile Include="Assets\Scripts\core\Boxes\AttackHitBox.cs" />
     <Compile Include="Assets\Scripts\component\GravityComponent.cs" />
     <Compile Include="Assets\Scripts\core\Boxes\BoxColliderGizmo.cs" />
+    <Compile Include="Assets\Scripts\core\ForceMove.cs" />
     <Compile Include="Assets\EasyColliderEditor\Scripts\EasyColliderCreator.cs" />
     <Compile Include="Assets\Scripts\GameMain.cs" />
     <Compile Include="Assets\Scripts\core\ActionController.cs" />

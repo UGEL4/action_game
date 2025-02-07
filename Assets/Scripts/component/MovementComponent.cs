@@ -52,7 +52,7 @@ public class MovementComponent : ComponentBase
     // jump相关
 
     public MovementComponent(CharacterObj owner, int priority = 0)
-        : base(owner, priority)
+        : base(owner, priority, typeof(MovementComponent))
     {
         Gravity           = -9.8f;
         mIsFalling        = false;

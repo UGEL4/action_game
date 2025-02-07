@@ -57,7 +57,41 @@
             "validInFrameCount": 2
         }
     ],
-    "attackInfoList": [],
+    "attackInfoList": [
+        {
+            "AttackPhase": 0,
+            "AttackPower": 0.0,
+            "CanHitSameTarget": 0,
+            "HitSameTargetDelay": 0.0,
+            "HitStun": 0.0,
+            "PushPower": {
+                "moveDistance": {
+                    "x": 0.0,
+                    "y": 3.0,
+                    "z": 0.0
+                },
+                "completeInSecond": 0.0,
+                "InFrame": 30,
+                "tweenMethod": "Slowly"
+            },
+            "Freeze": 0.0,
+            "SelfActionChangeInfo": {
+                "changeType": 0,
+                "param": "",
+                "priority": 0,
+                "fromNormalized": 0.0,
+                "transNormalized": 0.0
+            },
+            "TargetActionChangeInfo": {
+                "changeType": 0,
+                "param": "",
+                "priority": 0,
+                "fromNormalized": 0.0,
+                "transNormalized": 0.0
+            },
+            "TempTurnOnBeCanceledTags": []
+        }
+    ],
     "attackPhaseList": [
         {
             "FrameIndexRange": [
@@ -180,7 +214,7 @@
         "RZ": []
     },
     "MoveSpeed": 0.0,
-    "ForceMoce": true,
+    "ForceMoce": false,
     "AppilyGravityInRootMotion": false,
     "Notifies": []
 }}

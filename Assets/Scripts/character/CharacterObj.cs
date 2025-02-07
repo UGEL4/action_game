@@ -54,6 +54,9 @@ public class CharacterObj
 
     protected List<ComponentBase> mComponents = new();
 
+    protected ForceMove mForceMove = ForceMove.NoForceMove;
+    protected bool UnderForceMove => mForceMove.FrameElapsed <= mForceMove.Data.InFrame;
+
     public CharacterObj()
     {
         IsBeginPlayed = false;
@@ -293,6 +296,24 @@ public class CharacterObj
     public virtual Quaternion ThisTickRotation()
     {
         return Quaternion.identity;
+    }
+
+    public T GetComponent<T>() where T : ComponentBase
+    {
+        System.Type t = typeof(T);
+        for (int i = 0; i < mComponents.Count; i++)
+        {
+            if (t == mComponents[i].GetComponentType())
+            {
+                return (T)mComponents[i];
+            }
+        }
+        return null;
+    }
+
+    public void SetForceMove(MoveInfo info)
+    {
+        mForceMove = ForceMove.FromData(info);
     }
 }
 

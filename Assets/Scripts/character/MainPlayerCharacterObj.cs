@@ -11,6 +11,7 @@ public class MainPlayerCharacterObj : CharacterObj
     private ModelComponent mModelComp;
     private HitRecordComponent mHitRecordComp;
     private MovementComponent mMovementComp;
+    private RotationComponent mRotationComp;
 
     public MainPlayerCharacterObj()
     : base()
@@ -23,15 +24,17 @@ public class MainPlayerCharacterObj : CharacterObj
         AddComponent(VelocityComp);
         GravityComponent GravityComp = new GravityComponent(this, 1);
         AddComponent(GravityComp);
-        mModelComp = new ModelComponent(this, 4);
+        mModelComp = new ModelComponent(this, 5);
         AddComponent(mModelComp);
+        mRotationComp = new RotationComponent(this, 3);
+        AddComponent(mRotationComp);
     }
 
     public override void Init()
     {
         base.Init();
 
-        mMovementComp = new MovementComponent(this, 3);
+        mMovementComp = new MovementComponent(this, 4);
         AddComponent(mMovementComp);
         CharacterController controller = mGameObject.GetComponent<CharacterController>();
         mMovementComp.SetCharacterController(controller);
@@ -98,6 +101,7 @@ public class MainPlayerCharacterObj : CharacterObj
         mModelComp     = null;
         mHitRecordComp = null;
         mMovementComp  = null;
+        mRotationComp  = null;
         base.Destroy();
     }
 
@@ -185,7 +189,7 @@ public class MainPlayerCharacterObj : CharacterObj
 
     public override Vector3 ThisTickMove()
     {
-        if (Action.IsUnderForceMove)
+        if (UnderForceMove)
         {
             return ForceMove();
         }
@@ -206,39 +210,21 @@ public class MainPlayerCharacterObj : CharacterObj
         if (Action.CurAction.HasRootMotion())
         {
             Vector3 RootMotionMove = Action.RootMotionMove;
+            Quaternion Rotation    = mRotationComp.GetRotationQ();
             // SimpleLog.Info("RootMotionMove", RootMotionMove);
-            if (adjDir.magnitude > 0.1f)
+            Transform transform = gameObject.transform;
+            transform.rotation  = Rotation;
+            // MoveInputAcceptance
+            if (Action.CurAction.AppilyGravityInRootMotion)
             {
-                Quaternion targetRotation = Quaternion.LookRotation(adjDir);
-                Transform transform       = gameObject.transform;
-                if (transform)
-                {
-                    // // 更新角色的旋转
-                    // transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * 10f);
-                    // transform.LookAt(transform.position + adjDir);
-                    transform.rotation = targetRotation;
-                }
-                // MoveInputAcceptance
-                if (Action.CurAction.AppilyGravityInRootMotion)
-                {
-                    // RootMotionMove.y = -mOwner.GravityComp.Gravity / GameInstance.Instance.LogicFrameRate;
-                    RootMotionMove.y = -9.8f / GameInstance.Instance.LogicFrameRate;
-                }
-                RootMotionMove            = targetRotation * RootMotionMove;
-                float MoveInputAcceptance = GetMoveInputAcceptance();
-                RootMotionMove.x += adjDir.x * 6 * MoveInputAcceptance * (1f / GameInstance.Instance.LogicFrameRate);
-                RootMotionMove.z += adjDir.z * 6 * MoveInputAcceptance * (1f / GameInstance.Instance.LogicFrameRate);
-                return RootMotionMove;
+                // RootMotionMove.y = -mOwner.GravityComp.Gravity / GameInstance.Instance.LogicFrameRate;
+                RootMotionMove.y = -9.8f / GameInstance.Instance.LogicFrameRate;
             }
-            else
-            {
-                if (Action.CurAction.AppilyGravityInRootMotion)
-                {
-                    // RootMotionMove.y = -mOwner.GravityComp.Gravity / GameInstance.Instance.LogicFrameRate;
-                    RootMotionMove.y = -9.8f / GameInstance.Instance.LogicFrameRate;
-                }
-                return RootMotionMove;
-            }
+            RootMotionMove            = Rotation * RootMotionMove;
+            float MoveInputAcceptance = GetMoveInputAcceptance();
+            RootMotionMove.x += adjDir.x * 6 * MoveInputAcceptance * (1f / GameInstance.Instance.LogicFrameRate);
+            RootMotionMove.z += adjDir.z * 6 * MoveInputAcceptance * (1f / GameInstance.Instance.LogicFrameRate);
+            return RootMotionMove;
             /*
                 // 用户输入
 Vector2 input = new Vector2(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical"));
@@ -276,6 +262,7 @@ controller.Move(finalMoveDelta);
         }
         else
         {
+            //todo
             float MoveInputAcceptance = GetMoveInputAcceptance();
             float speed               = Speed;
             speed                     = speed / GameInstance.Instance.LogicFrameRate;
@@ -287,20 +274,20 @@ controller.Move(finalMoveDelta);
 
     Vector3 ForceMove()
     {
-        Vector3 Move        = Action.UnderForceMove;
-        Quaternion Rot      = Action.RootMotionRotation;
-        Transform transform = gameObject.transform;
-        if (transform)
+        Vector3 move = mForceMove.MoveTween(mForceMove);
+        mForceMove.Update();
+        return move;
+        /*Vector3 Move   = Action.UnderForceMove;
+        Quaternion Rot = Action.RootMotionRotation;
+        mRotationComp.SetRotation(Rot.eulerAngles);
+        Transform transform       = gameObject.transform;
+        float MoveInputAcceptance = GetMoveInputAcceptance();
+        if (MoveInputAcceptance > 0)
         {
-            float MoveInputAcceptance = GetMoveInputAcceptance();
-            if (MoveInputAcceptance > 0)
-            {
-                Move *= MoveInputAcceptance;
-            }
-            transform.Rotate(Rot.eulerAngles);
-            return transform.rotation * Move;
+            Move *= MoveInputAcceptance;
         }
-        return Vector3.zero;
+        transform.Rotate(Rot.eulerAngles);
+        return transform.rotation * Move;*/
     }
 
     public override Quaternion ThisTickRotation()
