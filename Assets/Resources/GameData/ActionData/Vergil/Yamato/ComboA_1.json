@@ -68,10 +68,10 @@
                 "moveDistance": {
                     "x": 0.0,
                     "y": 3.0,
-                    "z": 0.0
+                    "z": 6.0
                 },
                 "completeInSecond": 0.0,
-                "InFrame": 30,
+                "InFrame": 10,
                 "tweenMethod": "Slowly"
             },
             "Freeze": 0.0,

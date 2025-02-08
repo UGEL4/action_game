@@ -12,20 +12,40 @@ public static class ForceMoveMethod
             (forceMove) =>
             {
                 if (forceMove.Data.InFrame <= 0) return Vector3.zero;
-                // float wasPec = Mathf.Clamp01((float)forceMove.WasElapsed / forceMove.Data.InFrame);
-                // float curPec = Mathf.Clamp01((float)forceMove.FrameElapsed / forceMove.Data.InFrame);
-                // // 因为愚蠢的unity坐标系和正常游戏坐标系是反过来的，所以y负数向上，但是游戏开发的宇宙标准是y正向上
-                // // 所以我们得为策划填表做个翻译，就是给他的y反个向
-                // float wasRate = 1.00f - Mathf.Pow(1.00f - wasPec, 3);
-                // float curRate = 1.00f - Mathf.Pow(1.00f - curPec, 3);
-                // Vector3 was   = forceMove.Data.moveDistance * wasPec;
-                // Vector3 cur   = forceMove.Data.moveDistance * curPec;
-                // return cur - was;
-                float pec = Mathf.Clamp01((float)forceMove.FrameElapsed / forceMove.Data.InFrame);
-                Vector3 cur = forceMove.Data.moveDistance * pec;
-                SimpleLog.Info("cur:", pec, cur);
-                return cur;
+                return EaseOutQuint(forceMove);
+                //return EaseOutQuart(forceMove);
             }
         }
     };
+
+    // t: 当前时间 (current time)
+    // b: 起始值 (beginning value)
+    // c: 变化量 (change in value = 目标值 - 起始值)
+    // d: 动画持续时间 (duration)
+    public static Vector3 EaseOutQuint(ForceMove forceMove)
+    {
+        float t     = (float)forceMove.WasElapsed / forceMove.Data.InFrame - 1;
+        float t1    = (float)forceMove.FrameElapsed / forceMove.Data.InFrame - 1;
+        Vector3 was = forceMove.Data.moveDistance * (t * t * t * t * t + 1);
+        Vector3 cur = forceMove.Data.moveDistance * (t1 * t1 * t1 * t1 * t1 + 1);
+        // SimpleLog.Info("ccc: ", y1 - y);
+        return cur - was;
+    }
+
+    public static Vector3 EaseOutQuart(ForceMove forceMove)
+    {
+        float t     = (float)forceMove.WasElapsed / forceMove.Data.InFrame;
+        float t1    = (float)forceMove.FrameElapsed / forceMove.Data.InFrame;
+        t = 1 - Mathf.Pow(1 - t, 4);
+        t1 = 1 - Mathf.Pow(1 - t1, 4);
+        Vector3 was = forceMove.Data.moveDistance * t;
+        Vector3 cur = forceMove.Data.moveDistance * t1;
+        return cur - was;
+    }
+
+    //击飞：包括了xz平面的位移和垂直y的位移，类似抛物线的轨迹
+    public static void KnockForce(ForceMove forceMove)
+    {
+
+    }
 }

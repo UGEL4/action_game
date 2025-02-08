@@ -171,7 +171,33 @@ public class TestPlayerCharacterObj : CharacterObj
 
     Vector3 NatureMove()
     {
-        return Vector3.zero;
+        if (Action.CurAction.HasRootMotion())
+        {
+            Vector3 RootMotionMove = Action.RootMotionMove;
+            // SimpleLog.Info("RootMotionMove", RootMotionMove);
+            //Transform transform = gameObject.transform;
+            // MoveInputAcceptance
+            if (Action.CurAction.AppilyGravityInRootMotion)
+            {
+                // RootMotionMove.y = -mOwner.GravityComp.Gravity / GameInstance.Instance.LogicFrameRate;
+                RootMotionMove.y = -9.8f / GameInstance.Instance.LogicFrameRate;
+            }
+            //float MoveInputAcceptance = GetMoveInputAcceptance();
+            //RootMotionMove.x += adjDir.x * 6 * MoveInputAcceptance * (1f / GameInstance.Instance.LogicFrameRate);
+            //RootMotionMove.z += adjDir.z * 6 * MoveInputAcceptance * (1f / GameInstance.Instance.LogicFrameRate);
+            return RootMotionMove;
+        }
+        else
+        {
+            //todo
+            //float MoveInputAcceptance = GetMoveInputAcceptance();
+            //float speed               = Speed;
+            //speed                     = speed / GameInstance.Instance.LogicFrameRate;
+            //Vector3 motion            = adjDir * speed * MoveInputAcceptance;
+            Vector3 motion = new Vector3(0, 0, 0);
+            motion.y                  = -9.8f / GameInstance.Instance.LogicFrameRate;
+            return motion;
+        }
     }
 
     Vector3 ForceMove()
